@@ -1,0 +1,16 @@
+{
+  "header": {
+    "summary": "Summary",
+    "configureDevices": "Deploy Devices",
+    "data": "Distory Data",
+    "cfr": "21 CFR",
+    "preferences": "Preferences",
+    "help": "Help",
+    "about": "About",
+    "basicSettings": "Basic Settings",
+    "cloudSettings":"Cloud Settings",
+    "dateFormat":"Date Format",
+    "timeFormat":"Time Format",
+    "systemLanguage":"System Language"
+  }
+}

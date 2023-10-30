@@ -1,22 +1,24 @@
-import { ConfigProvider, Select, Tabs, TabsProps } from 'antd';
+import { ConfigProvider, Modal, Select, Tabs, TabsProps } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const Preferences = () => {
   const onChange = (key: string) => {
     console.log(key);
   };
-
+  const { t, i18n } = useTranslation();
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: '基本设置',
+      label: t('header.basicSettings'),
       children: <BasicSetting></BasicSetting>,
     },
     {
       key: '2',
-      label: '云设置',
+      label: t('header.cloudSettings'),
       children: <CloudSetting></CloudSetting>,
     },
   ];
+  
   return (
     <div>
       <ConfigProvider
@@ -41,22 +43,28 @@ const BasicSetting = () => {
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
   };
+  const { t, i18n } = useTranslation();
+  const setLanguage = (value: string) => {
+    i18n.changeLanguage(value);
+    localStorage.setItem('language', value);
+    Modal.destroyAll();
+  };
   return (
     <>
       <div className="basic">
-        <label htmlFor="">日期格式：</label>
+        <label htmlFor="">{t('header.dateFormat')}：</label>
         <Select
           defaultValue="chinese"
           style={{ width: 200 }}
           onChange={handleChange}
           options={[
-            { value: 'chinese', label: '中文' },
-            { value: 'english', label: 'English' },
+            { value: 'zh', label: '中文' },
+            { value: 'en', label: 'en_US' },
           ]}
         />
       </div>
       <div className="basic">
-        <label htmlFor="">时间格式：</label>
+        <label htmlFor="">{t('header.timeFormat')}：</label>
         <Select
           defaultValue="chinese"
           style={{ width: 200 }}
@@ -65,14 +73,14 @@ const BasicSetting = () => {
         />
       </div>
       <div className="basic">
-        <label htmlFor="">系统语言：</label>
+        <label htmlFor="">{t('header.systemLanguage')}：</label>
         <Select
-          defaultValue="chinese"
+          defaultValue={localStorage.getItem('language') || 'chinese'}
           style={{ width: 200 }}
-          onChange={handleChange}
+          onChange={setLanguage}
           options={[
-            { value: 'chinese', label: '中文' },
-            { value: 'english', label: 'English' },
+            { value: 'zh_CN', label: '中文' },
+            { value: 'en_US', label: 'en_US' },
           ]}
         />
       </div>

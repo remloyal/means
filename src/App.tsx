@@ -1,28 +1,29 @@
-import { ConfigProvider, Button } from "antd";
-import React, { useState } from "react";
-import appTheme from "@/theme/App";
-import "@/App.scss";
-import "./views/view.scss";
+import { ConfigProvider, Button } from 'antd';
+import React, { useState } from 'react';
+import appTheme from '@/theme/App';
+import '@/App.scss';
+import './views/view.scss';
 
 import {
   BrowserRouter,
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-  Outlet
-} from "react-router-dom";
-import Router from "./router/index";
-import Header from "./views/Header/Header";
-import Left from "./views/Left/Left";
+  Outlet,
+} from 'react-router-dom';
+import Router from './router/index';
+import Header from './views/Header/Header';
+import Left from './views/Left/Left';
+import zhCN from 'antd/locale/zh_CN';
 
 const App: React.FC = () => {
   return (
-    <ConfigProvider theme={appTheme}>
+    <ConfigProvider theme={appTheme} locale={zhCN}>
       <Header />
       <div
         style={{
-          padding: "14px",
-          display:'flex'
+          padding: '14px',
+          display: 'flex',
         }}
       >
         <Left></Left>
@@ -36,14 +37,14 @@ const Home = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [csvData, setCsvData] = useState<null | any>(null);
 
-  window.eventBus.on("friggaDevice:in", (csvData) => {
+  window.eventBus.on('friggaDevice:in', csvData => {
     setIsConnected(true);
     // console.count("frigga:in")
     // console.log("frigga:in", csvData)
     setCsvData(csvData);
   });
 
-  window.eventBus.on("friggaDevice:out", (...datas) => {
+  window.eventBus.on('friggaDevice:out', (...datas) => {
     setIsConnected(false);
     // console.log("frigga:out", datas)
   });
@@ -57,8 +58,8 @@ const Home = () => {
                 <div
                   style={{
                     width: 300,
-                    display: "flex",
-                    justifyContent: "space-between",
+                    display: 'flex',
+                    justifyContent: 'space-between',
                   }}
                 >
                   <span style={{ width: 50 }}>时间：</span>

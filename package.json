@@ -24,7 +24,10 @@
     "drivelist": "^11.1.0",
     "echarts": "^5.4.3",
     "electron-updater": "^6.1.4",
-    "node-hid": "^2.1.2"
+    "i18next": "^23.6.0",
+    "i18next-browser-languagedetector": "^7.1.0",
+    "node-hid": "^2.1.2",
+    "react-i18next": "^13.3.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",

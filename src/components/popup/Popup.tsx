@@ -1,16 +1,19 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import './popup.scss';
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 interface PopupProps {
   title?: string;
   content: React.ReactNode;
   onClose?: () => void;
   onConfirm?: () => void;
   width?: number | string;
+  t: TFunction;
 }
 
 const { confirm } = Modal;
-export const Popup = ({ title, content, onClose, onConfirm, width }: PopupProps) => {
+export const Popup = ({ title, content, onClose, onConfirm, width, t }: PopupProps) => {
   const confirmData = confirm({
     width: width,
     title: (
@@ -20,7 +23,7 @@ export const Popup = ({ title, content, onClose, onConfirm, width }: PopupProps)
             confirmData.destroy();
           }}
         >
-          {title}
+          {t(title!)}
         </div>
         <CloseOutlined
           onClick={() => {
