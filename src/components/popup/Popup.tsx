@@ -1,21 +1,21 @@
-import { CloseOutlined } from "@ant-design/icons";
-import { Modal } from "antd";
-import "./popup.scss";
+import { CloseOutlined } from '@ant-design/icons';
+import { Modal } from 'antd';
+import './popup.scss';
 interface PopupProps {
   title?: string;
   content: React.ReactNode;
+  onClose?: () => void;
+  onConfirm?: () => void;
+  width?: number | string;
 }
 
 const { confirm } = Modal;
-export const Popup = ({ title, content }: PopupProps) => {
+export const Popup = ({ title, content, onClose, onConfirm, width }: PopupProps) => {
   const confirmData = confirm({
+    width: width,
     title: (
-      <div
-        className="popup-title"
-
-      >
+      <div className="popup-title">
         <div
-          style={{ fontSize: "18px" }}
           onClick={() => {
             confirmData.destroy();
           }}
@@ -29,19 +29,17 @@ export const Popup = ({ title, content }: PopupProps) => {
         />
       </div>
     ),
-    // icon: <FullscreenExitOutlined />,
     icon: null,
-    wrapClassName:'popup',
-    closeIcon: <CloseOutlined />,
+    wrapClassName: 'popup',
     maskClosable: true,
     content: content,
     centered: true,
     footer: [],
-    // onOk() {
-    //   console.log('OK');
-    // },
-    // onCancel() {
-    //   console.log('Cancel');
-    // },
+    onOk() {
+      onClose && onClose();
+    },
+    onCancel() {
+      onConfirm && onConfirm();
+    },
   });
 };

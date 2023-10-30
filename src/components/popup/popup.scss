@@ -2,8 +2,12 @@
     .popup-title {
         display: flex;
         justify-content: space-between;
-        padding: 10px;
+        padding: 16px;
         border-bottom: 1px solid #e8e8e8;
+        font-size: 16px;
+        span {
+            margin-right: 10px;
+        }
     }
 
     .ant-modal-content {
@@ -13,7 +17,8 @@
     .ant-modal-confirm-paragraph {
         max-width: 100%;
     }
-    .ant-modal-confirm-content{
-        padding: 10px;
+
+    .ant-modal-confirm-content {
+        padding: 16px;
     }
 }
