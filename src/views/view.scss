@@ -1,0 +1,144 @@
+.header {
+  height: 8vh;
+  // max-height: 90px;
+  width: 100vw;
+  text-align: center;
+  padding: 20px 0;
+  background-color: #e1e3e9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .brand-img {
+    height: 30px;
+    padding-left: 40px;
+  }
+
+  .header-center {
+    display: flex;
+
+    .menu-item>div:nth-child(2) {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .menu-son {
+      width: 46px;
+      margin: 0 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      background-color: rgb(225, 227, 233);
+      border-radius: 5px;
+      cursor: pointer;
+
+      // box-shadow: 0px 0px 3px #c8c8c8,
+      //   /*上边阴影  红色*/
+      //   -3px 0px 3px #c8c8c8,
+      //   /*左边阴影  绿色*/
+      //   3px 0px 3px #c8c8c8,
+      //   /*右边阴影  蓝色*/
+      //   0px 0px 5px #c8c8c8;
+      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .menu-son:hover {
+      span {
+        color: #FB6601;
+      }
+    }
+  }
+
+  .header-right {
+    padding-right: 40px;
+  }
+}
+
+.shadow {
+  height: calc(100vh - (11.5vh + 68px));
+  padding: 10px;
+  background-color: #F0F1F5;
+  border-radius: 5px;
+  box-shadow: rgba(201, 221, 236, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+
+.left {
+  @extend .shadow;
+  width: 18vw;
+
+  .image {
+    margin-top: 10px;
+    position: relative;
+
+    img {
+      width: calc(18vw - 20px);
+    }
+
+    span {
+      position: absolute;
+      right: 10px;
+    }
+  }
+
+  .record-operate {
+    button {
+      margin: 10px;
+    }
+  }
+}
+
+.record {
+  display: flex;
+
+  .record-nature {
+    // width: 8vw;
+    font-size: 14px;
+    padding-left: 10px;
+
+    div {
+      text-align: right;
+      margin: 10px 0;
+    }
+  }
+
+  .record-price {
+    font-size: 14px;
+
+    div {
+      text-align: left;
+      margin: 10px 0;
+    }
+  }
+}
+
+.summary {
+  display: flex;
+  flex-direction: row;
+
+  .summary-main {
+    @extend .shadow;
+    width: calc(100vw - (40vw + 30px));
+    margin: 0 10px;
+  }
+
+  .summary-right {
+    @extend .shadow;
+    width: 18vw;
+
+    &>div {
+      padding: 10px 20px;
+    }
+  }
+
+  .summary-graph {
+    width: calc(100vw - (40vw + 30px));
+    height: calc(88.5vh - (16.5vh + 68px));
+  }
+  .summary-graph-labor{
+    button{
+      margin: 0 10px;
+    }
+  }
+}
