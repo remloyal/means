@@ -66,7 +66,13 @@
 
 .left {
   @extend .shadow;
+  // display: Visibility;
   width: 18vw;
+  overflow: scroll;
+
+  &::-webkit-scrollbar {
+    display: none
+  }
 
   .image {
     margin-top: 10px;
@@ -79,6 +85,7 @@
     span {
       position: absolute;
       right: 10px;
+      top: 0;
     }
   }
 
@@ -107,8 +114,10 @@
     font-size: 14px;
 
     div {
+      max-width: 10vw;
       text-align: left;
       margin: 10px 0;
+      word-break: break-all;
     }
   }
 }
@@ -136,15 +145,16 @@
     width: calc(100vw - (40vw + 30px));
     height: calc(88.5vh - (16.5vh + 68px));
   }
-  .summary-graph-labor{
-    button{
+
+  .summary-graph-labor {
+    button {
       margin: 0 10px;
     }
   }
 }
 
-.basic{
-  &>div{
+.basic {
+  &>div {
     margin: 10px 0;
   }
 }

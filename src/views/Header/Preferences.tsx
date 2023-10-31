@@ -1,5 +1,7 @@
+import { language } from '@/stores';
 import { ConfigProvider, Modal, Select, Tabs, TabsProps } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useRecoilState } from 'recoil';
 
 const Preferences = () => {
   const onChange = (key: string) => {
@@ -18,7 +20,7 @@ const Preferences = () => {
       children: <CloudSetting></CloudSetting>,
     },
   ];
-  
+
   return (
     <div>
       <ConfigProvider
@@ -40,6 +42,8 @@ const Preferences = () => {
 
 // 基本设置
 const BasicSetting = () => {
+  const [tongue, setTongue] = useRecoilState(language);
+
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
   };
@@ -47,8 +51,9 @@ const BasicSetting = () => {
   const setLanguage = (value: string) => {
     i18n.changeLanguage(value);
     localStorage.setItem('language', value);
-    Modal.destroyAll();
+    setTongue(value);
   };
+
   return (
     <>
       <div className="basic">
@@ -75,7 +80,7 @@ const BasicSetting = () => {
       <div className="basic">
         <label htmlFor="">{t('header.systemLanguage')}：</label>
         <Select
-          defaultValue={localStorage.getItem('language') || 'chinese'}
+          defaultValue={tongue}
           style={{ width: 200 }}
           onChange={setLanguage}
           options={[

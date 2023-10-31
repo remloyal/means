@@ -1,7 +1,52 @@
-import disconnect from "@assets/MainForm/DeviceImage/disconnect.png";
-import { Button } from "antd";
+import disconnect from '@assets/MainForm/DeviceImage/disconnect.png';
+import { Button, Descriptions, DescriptionsProps } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const Left: React.FC = () => {
+  const { t } = useTranslation();
+  const items: DescriptionsProps['items']  = [
+    {
+      label: t('left.equipmentModel'),
+      children: '---',
+    },
+    {
+      label: t('left.serialNumber'),
+      children: '---',
+    },
+    {
+      label: t('left.deviceTime'),
+      children: '---',
+    },
+    {
+      label: t('left.batteryLevel'),
+      children: '---',
+    },
+    {
+      label: t('left.DeviceStatus'),
+      children: '---',
+    },
+    {
+      label: t('left.recordPoints'),
+      children: '---',
+    },
+    {
+      label: t('left.firstRecordTime'),
+      children: '---',
+    },
+    {
+      label: t('left.lastRecordedTime'),
+      children: '---',
+    },
+    {
+      label: t('left.maximumValue'),
+      children: '---',
+    },
+    {
+      label: t('left.minimumValue'),
+      children: '---',
+    },
+  ];
+
   return (
     <div className="left">
       <div className="image">
@@ -9,43 +54,37 @@ const Left: React.FC = () => {
         <span>报警</span>
       </div>
       <div className="record">
-        <div className="record-nature">
-          <div>设备型号：</div>
-          <div>序列号：</div>
-          <div>设备时间：</div>
-          <div>电池电量：</div>
-          <div>设备状态：</div>
-          <div>记录点数：</div>
-          <div>首记录时间：</div>
-          <div>末记录时间：</div>
-          <div>最大值：</div>
-          <div>最小值：</div>
+        {/* <div className="record-nature">
+          <div>{t('left.equipmentModel')}：</div>
+          <div>{t('left.serialNumber')}：</div>
+          <div>{t('left.deviceTime')}：</div>
+          <div>{t('left.batteryLevel')}：</div>
+          <div>{t('left.DeviceStatus')}：</div>
+          <div>{t('left.recordPoints')}：</div>
+          <div>{t('left.firstRecordTime')}：</div>
+          <div>{t('left.lastRecordedTime')}：</div>
+          <div>{t('left.maximumValue')}：</div>
+          <div>{t('left.minimumValue')}：</div>
         </div>
-        <RecordPrice></RecordPrice>
+        <RecordPrice></RecordPrice> */}
       </div>
+      <Descriptions
+        items={items}
+        column={1}
+        labelStyle={{
+          color: '#000000',
+        }}
+        contentStyle={{
+          color: '#000000',
+        }}
+        size='small'
+      />
       <div className="record-operate">
         <Button type="primary" danger>
-          停止记录
+          {t('left.stopRecording')}
         </Button>
-        <Button type="primary">重新加载</Button>
+        <Button type="primary">{t('left.reload')}</Button>
       </div>
-    </div>
-  );
-};
-
-const RecordPrice = () => {
-  return (
-    <div className="record-price">
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
-      <div>--</div>
     </div>
   );
 };

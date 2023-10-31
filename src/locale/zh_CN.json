@@ -12,5 +12,42 @@
     "dateFormat": "日期设置",
     "timeFormat": "时间设置",
     "systemLanguage": "系统语言"
+  },
+  "left": {
+    "equipmentModel": "设备型号",
+    "serialNumber": "序列号",
+    "deviceTime": "设备时间",
+    "batteryLevel": "电池电量",
+    "DeviceStatus": "设备状态",
+    "recordPoints": "记录点数",
+    "firstRecordTime": "首记录时间",
+    "lastRecordedTime": "末记录时间",
+    "maximumValue": "最大值",
+    "minimumValue": "最小值",
+    "stopRecording":"停止记录",
+    "reload":"重新加载"
+  },
+  "home":{
+    "graph":"曲线图",
+    "dataSheet":"数据表",
+    "signature":"签名信息",
+    "exportData":"导出数据",
+    "dataFilter":"数据筛选",
+    "summary":"概要",
+    "startMode":"启动模式",
+    "stopMode":"停止模式",
+    "temperatureUnit":"温度单位",
+    "recordInterval":"记录间隔",
+    "sensorType":"传感器类型",
+    "startDelay":"启动延时",
+    "repetitionPriming":"重复启动",
+    "displayTime":"显示时间",
+    "temporaryPDF":"临时 PDF",
+    "timeZone":"时区",
+    "firmwareVersion":"固件版本",
+    "highTemperatureAlarm":"高温报警",
+    "lowTemperatureAlarm":"低温报警",
+    "runLengthCoding":"行程编码",
+    "journeyDescription":"行程描述"
   }
 }

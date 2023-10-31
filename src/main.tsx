@@ -5,11 +5,14 @@ import './index.scss';
 import EventEmitter from 'events';
 import '@/utils/detectDevice';
 import './locale/index';
+import { RecoilRoot } from 'recoil';
 
 window.eventBus = new EventEmitter();
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
   </React.StrictMode>
 );
 
