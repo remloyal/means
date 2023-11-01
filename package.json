@@ -21,6 +21,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "antd": "^5.10.2",
+    "dayjs": "^1.11.10",
     "drivelist": "^11.1.0",
     "echarts": "^5.4.3",
     "electron-updater": "^6.1.4",
@@ -28,7 +29,8 @@
     "i18next-browser-languagedetector": "^7.1.0",
     "node-hid": "^2.1.2",
     "react-i18next": "^13.3.1",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "usb": "^2.11.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",

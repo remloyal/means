@@ -1,72 +1,80 @@
+import { equipment, deviceState } from '@/stores';
 import disconnect from '@assets/MainForm/DeviceImage/disconnect.png';
 import { Button, Descriptions, DescriptionsProps } from 'antd';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRecoilState } from 'recoil';
 
 const Left: React.FC = () => {
   const { t } = useTranslation();
-  const items: DescriptionsProps['items']  = [
+
+  const [device, setDevice] = useRecoilState(equipment);
+  const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
+
+  useEffect(() => {
+    window.eventBus.on('friggaDevice:in', deviceData => {
+      if (deviceMent) return;
+      setDevice(deviceData);
+      setDeviceMent(true);
+    });
+
+    window.eventBus.on('friggaDevice:out', (...datas) => {
+      setDeviceMent(false);
+      setDevice(null);
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log(device);
+  }, [device]);
+
+  const items: DescriptionsProps['items'] = [
     {
       label: t('left.equipmentModel'),
-      children: '---',
+      children: device != null ? device?.record.deviceType : '---',
     },
     {
       label: t('left.serialNumber'),
-      children: '---',
+      children: device != null ? device?.record.getsn : '---',
     },
     {
       label: t('left.deviceTime'),
-      children: '---',
+      children: device != null ? device?.record.getTime : '---',
     },
     {
       label: t('left.batteryLevel'),
-      children: '---',
+      children: device != null ? device?.record.mode : '---',
     },
     {
       label: t('left.DeviceStatus'),
-      children: '---',
+      children: device != null ? device?.record.deviceType : '---',
     },
     {
       label: t('left.recordPoints'),
-      children: '---',
+      children: device != null ? device?.record.deviceType : '---',
     },
     {
       label: t('left.firstRecordTime'),
-      children: '---',
+      children: device != null ? device?.record.firstRecordTime : '---',
     },
     {
       label: t('left.lastRecordedTime'),
-      children: '---',
+      children: device != null ? device?.record.lastRecordedTime : '---',
     },
     {
       label: t('left.maximumValue'),
-      children: '---',
+      children: device != null ? device?.record.maximumValue : '---',
     },
     {
       label: t('left.minimumValue'),
-      children: '---',
+      children: device != null ? device?.record.minimumValue : '---',
     },
   ];
-
   return (
     <div className="left">
       <div className="image">
         <img src={disconnect} alt="" />
         <span>报警</span>
-      </div>
-      <div className="record">
-        {/* <div className="record-nature">
-          <div>{t('left.equipmentModel')}：</div>
-          <div>{t('left.serialNumber')}：</div>
-          <div>{t('left.deviceTime')}：</div>
-          <div>{t('left.batteryLevel')}：</div>
-          <div>{t('left.DeviceStatus')}：</div>
-          <div>{t('left.recordPoints')}：</div>
-          <div>{t('left.firstRecordTime')}：</div>
-          <div>{t('left.lastRecordedTime')}：</div>
-          <div>{t('left.maximumValue')}：</div>
-          <div>{t('left.minimumValue')}：</div>
-        </div>
-        <RecordPrice></RecordPrice> */}
       </div>
       <Descriptions
         items={items}
@@ -77,7 +85,7 @@ const Left: React.FC = () => {
         contentStyle={{
           color: '#000000',
         }}
-        size='small'
+        size="small"
       />
       <div className="record-operate">
         <Button type="primary" danger>

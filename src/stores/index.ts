@@ -1,6 +1,17 @@
-import { atom } from 'recoil';
+import { useEffect, useState } from 'react';
+import { RecoilState, atom, selector } from 'recoil';
 
 export const language = atom({
-  key: 'language', // unique ID (with respect to other atoms/selectors)
-  default: 'zh_CN', // default value (aka initial value)
+  key: 'language',
+  default: 'zh_CN',
+});
+
+export const equipment = atom<DeviceInstanceType | null>({
+  key: 'device',
+  default: null,
+});
+
+export const deviceState = atom<boolean>({
+  key: 'deviceState',
+  default: false,
 });
