@@ -28,7 +28,7 @@
         ]
       }
     ],
-    "artifactName": "${productName}_${version}.${ext}"
+    "artifactName": "${productName}.${ext}"
   },
   "nsis": {
     "oneClick": false,

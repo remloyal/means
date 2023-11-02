@@ -1,10 +1,10 @@
 import { ConfigProvider, Button } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import appTheme from '@/theme/App';
 import '@/App.scss';
 import './views/view.scss';
 
-import { RouterProvider } from 'react-router-dom';
+import { HashRouter, Outlet } from 'react-router-dom';
 import Router from './router/index';
 import Header from './views/Header/Header';
 import Left from './views/Left/Left';
@@ -29,22 +29,26 @@ const App: React.FC = () => {
     setTongue(localStorage.getItem('language') || 'zh_CN');
   }, []);
 
-  useEffect(() => {    
+  useEffect(() => {
     setLocal(languageData[tongue] || zhCN);
   }, [tongue]);
 
   return (
     <ConfigProvider theme={appTheme} locale={locale}>
-      <Header />
-      <div
-        style={{
-          padding: '14px',
-          display: 'flex',
-        }}
-      >
-        <Left></Left>
-        <RouterProvider router={Router} />
-      </div>
+      <HashRouter>
+        <Header />
+        <div
+          style={{
+            padding: '14px',
+            display: 'flex',
+          }}
+        >
+          <Left></Left>
+          <Suspense>
+            <Router />
+          </Suspense>
+        </div>
+      </HashRouter>
     </ConfigProvider>
   );
 };

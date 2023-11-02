@@ -2,6 +2,7 @@ import { Button, ConfigProvider, Descriptions, DescriptionsProps, Tabs, TabsProp
 import React, { useEffect, useRef, useState } from 'react';
 import { ShareChart } from '@/components/echarts/DisplayCharts';
 import { useTranslation } from 'react-i18next';
+import { MainBody, MainRight } from '@/components/main';
 const Summary: React.FC = () => {
   return (
     <div className="summary">
@@ -36,7 +37,7 @@ const SummaryMain: React.FC = () => {
   ];
 
   return (
-    <div className="summary-main">
+    <MainBody>
       <ConfigProvider
         theme={{
           components: {
@@ -55,7 +56,7 @@ const SummaryMain: React.FC = () => {
           destroyInactiveTabPane={true}
         />
       </ConfigProvider>
-    </div>
+    </MainBody>
   );
 };
 
@@ -269,7 +270,7 @@ const SummaryRight: React.FC = () => {
   ];
   
   return (
-    <div className="summary-right">
+    <MainRight>
       <div>
         <div style={{ textAlign: 'left' }}>{t('home.summary')}</div>
         <div className="record">
@@ -287,7 +288,7 @@ const SummaryRight: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </MainRight>
   );
 };
 export default Summary;

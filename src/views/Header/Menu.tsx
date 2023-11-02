@@ -5,19 +5,24 @@ import { Popup } from '@/components/popup/Popup';
 import Preferences from './Preferences';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const Menu: React.FC = () => {
-  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const menuConfig: MenuConfig[] = [
     {
       name: 'header.summary',
-      clock: () => {},
+      clock: () => {
+        navigate('/');
+      },
       icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
     },
     {
       name: 'header.configureDevices',
-      clock: () => {},
+      clock: () => {
+        navigate('deploy');
+      },
       icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
     },
     {
@@ -46,6 +51,7 @@ export const Menu: React.FC = () => {
       icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
     },
   ];
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);

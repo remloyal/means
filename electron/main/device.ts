@@ -10,29 +10,19 @@ usb.on('attach', async function (device) {
     device.deviceDescriptor.idProduct === PRODUCT_ID &&
     device.deviceDescriptor.idVendor === VERSION_ID
   ) {
-    const data = await findByIds(
-      device.deviceDescriptor.idVendor,
-      device.deviceDescriptor.idProduct
-    );
-    // console.log('findByIds', data);
     win?.webContents.send('deviceInsertion', device);
   }
 });
 
 usb.on('detach', function (device) {
   // console.log('监听到 usb 设备拔出：', device);
-  // if (
-  //   device.deviceDescriptor.idProduct === PRODUCT_ID &&
-
-  //   device.deviceDescriptor.idVendor === VERSION_ID
-  // ) {
-  //   win?.webContents.send('deviceRemoval', device);
-  // } else {
-  // }
-  try {
-    win?.webContents.send('deviceRemoval', null);
-  } catch (error) {
-    console.log('deviceRemoval', error);
+  if (
+    device.deviceDescriptor.idProduct === PRODUCT_ID &&
+    device.deviceDescriptor.idVendor === VERSION_ID
+  ) {
+    win?.webContents.send('deviceRemoval', device);
+  } else {
+    win?.webContents.send('deviceRemoval', false);
   }
 });
 
@@ -52,8 +42,7 @@ export const deviceInit = async (browserWindow: BrowserWindow) => {
     }
   }
   win.webContents.on('select-bluetooth-device', (event, deviceList, callback) => {
-    event.preventDefault()
-    console.log('deviceList',deviceList);
-    
-  })
+    event.preventDefault();
+    console.log('deviceList', deviceList);
+  });
 };

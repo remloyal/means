@@ -119,5 +119,7 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
 ipcRenderer.on('deviceRemoval', async (event, data) => {
   previousDevices = await HID.devices();
   previousDrives = await drivelist.list();
-  window.eventBus.emit('friggaDevice:out');
+  if (data) {
+    window.eventBus.emit('friggaDevice:out');
+  }
 });

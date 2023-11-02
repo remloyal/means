@@ -13,8 +13,8 @@ export const instructRead: OperateType<OperateTypeItem> = {
       return data.split(':')[1];
     },
   },
-  multId: {
-    key: 'multId',
+  multIdBootMode: {
+    key: 'multIdBootMode',
     name: '读取启动模式',
     order: () => 'AT+GETMULTID:BootMode:',
     getData: data => {
@@ -152,8 +152,140 @@ export const instructRead: OperateType<OperateTypeItem> = {
 export const instructSetup: OperateType<OperateTypeItem> = {
   setMultidUnit: {
     key: 'setMultidUnit',
-    order: str => `AT+SETMULTID:UNIT:${str}`,
     name: '设置温度单位',
+    order: str => `AT+SETMULTID:UNIT:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setMultidBootMode: {
+    key: 'setMultidBootMode',
+    name: '设置启动模式',
+    order: str => `AT+SETMULTID:BootMode:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setMultidBootTime: {
+    key: 'setMultidBootTime',
+    name: '设置定时开启时间',
+    order: str => `AT+SETMULTID:BootTime:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setMultidSleepTime: {
+    key: 'setMultidSleepTime',
+    name: '设置灭屏时间',
+    order: str => `AT+SETMULTID:SLEEPTIME:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+
+  setMultidExpTime: {
+    key: 'setMultidExpTime',
+    name: '设置过期时间',
+    order: str => `AT+SETMULTID:EXPTIME:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setStartDelay: {
+    key: 'setStartDelay',
+    name: '设置StartDelay时间',
+    order: str => `AT+SETDSTARTTIME:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+
+  setTempPeriod: {
+    key: 'setTempPeriod',
+    name: '设置记录间隔',
+    order: str => `AT+SETTEMPPERIOD:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setTime: {
+    key: 'setTime',
+    name: '设置设备时间和时区',
+    order: str => `AT+SETTIME:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setHightEmp: {
+    key: 'setHightEmp',
+    name: '设置温度阈值上限',
+    order: str => `AT+SETHIGHTEMP:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setLowtEmp: {
+    key: 'setLowtEmp',
+    name: '设置温度阈值下限',
+    order: str => `AT+SETLOWTEMP:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setHighHumi: {
+    key: 'setHighHumi',
+    name: '设置湿度阈值上限：',
+    order: str => `AT+SETHIGHHUMI:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setLowHumi: {
+    key: 'setLowHumi',
+    name: '设置湿度阈值下限',
+    order: str => `AT+SETLOWHUMI:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setKeyStopEnableset: {
+    key: 'setKeyStopEnableset',
+    name: '设置按键停止',
+    order: str => `AT+KEYSTOPENABLESET:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setPdfPwd: {
+    key: 'setPdfPwd',
+    name: '设置PDF密码',
+    order: str => `AT+SETPDFPWD:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setAdjustTime: {
+    key: 'setAdjustTime',
+    name: '调整时间和时区',
+    order: str => `AT+ADJUSTTIME:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+
+  setDevreStore: {
+    key: 'setDevreStore',
+    name: '重置设备(恢复静默)',
+    order: str => `AT+DEVRESTORE:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+
+  setDevreSet: {
+    key: 'setDevreSet',
+    name: '重启设备',
+    order: str => `AT+DEVRESET:${str}`,
     getData: data => {
       return data;
     },
