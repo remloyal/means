@@ -48,6 +48,10 @@
     "highTemperatureAlarm":"高温报警",
     "lowTemperatureAlarm":"低温报警",
     "runLengthCoding":"行程编码",
-    "journeyDescription":"行程描述"
+    "journeyDescription":"行程描述",
+    "serialNumber":"序号",
+    "time": "时间",
+    "temperature":"温度",
+    "humidity":"湿度"
   }
 }

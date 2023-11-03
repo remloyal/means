@@ -63,7 +63,8 @@ const parseCSVData = (csvString): TimeType[] => {
     const date = fields[0];
     const time = fields[1];
     const celsius = parseFloat(fields[2]);
-
+    const temperature = parseFloat(fields[3]);
+    const humi = parseFloat(fields[4]);
     // 合并日期和时间为一个时间戳字符串
     const dateTimeString = `${date} ${time}`;
     const dateTimeParts = dateTimeString.split(/[\/ :]/).map(Number);
@@ -82,6 +83,8 @@ const parseCSVData = (csvString): TimeType[] => {
     data.push({
       timeStamp,
       c: celsius,
+      f: temperature,
+      humi,
     });
   }
 

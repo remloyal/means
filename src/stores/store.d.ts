@@ -13,4 +13,6 @@ interface DeviceType {
 interface TimeType {
   timeStamp: string;
   c: number;
+  f: number;
+  humi: number;
 }

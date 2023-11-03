@@ -1,8 +1,14 @@
 import { ConfigProvider } from 'antd';
 
-export const MainBody = ({ children }) => {
+export const MainBody = ({
+  children,
+  style,
+}: {
+  children: React.ReactNode; 
+  style?: React.CSSProperties; 
+}) => {
   return (
-    <div className="summary-main">
+    <div className="summary-main" style={style}>
       <ConfigProvider
         theme={{
           components: {

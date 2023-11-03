@@ -48,6 +48,10 @@
     "highTemperatureAlarm":"High temperature alarm",
     "lowTemperatureAlarm":"Low temperature alarm",
     "runLengthCoding":"Run Length Coding",
-    "journeyDescription":"Journey Description"
+    "journeyDescription":"Journey Description",
+    "serialNumber":"Number",
+    "time":"Time",
+    "temperature":"temperature",
+    "humidity":"humidity"
   }
 }

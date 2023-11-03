@@ -147,6 +147,10 @@
   }
 
   .summary-graph-labor {
+    position: absolute;
+    bottom: 10px;
+    left: 38%;
+
     button {
       margin: 0 10px;
     }
@@ -156,5 +160,23 @@
 .basic {
   &>div {
     margin: 10px 0;
+  }
+}
+
+.oddRow {
+  background: #F0F1F5;
+}
+
+.evenRow {
+  background: #EAECF0;
+}
+
+.tableTitle {
+
+  .ant-table-thead>tr>th {
+
+    color: #000000 !important;
+    background: #EAECF0 !important;
+
   }
 }
