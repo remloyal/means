@@ -1,6 +1,8 @@
 import * as echarts from 'echarts';
 import React, { useEffect, useRef, useState } from 'react';
 import { ipcRenderer } from 'electron';
+import { useRecoilValue } from 'recoil';
+import { resize } from '@/stores';
 
 interface Chart {
   title?: string;
@@ -23,13 +25,10 @@ export const ShareChart: React.FC<Chart> = props => {
     }
     chartWrapper.current.style.height = `${height! - 100}px`;
     chart.current = echarts.init(chartWrapper.current, 'vintage');
-    ipcRenderer.on('resizeEvent', data => {
-      parent.current &&
-        chart.current.resize({
-          width: parent.current?.clientWidth,
-          height: parent.current?.clientHeight - 100,
-        });
-    });
+
+    return () => {
+      chart.current.dispose();
+    };
   }, []);
 
   useEffect(() => {
@@ -37,6 +36,15 @@ export const ShareChart: React.FC<Chart> = props => {
       chart.current.setOption(option);
     }
   }, [option]);
+
+  const resizeData = useRecoilValue(resize);
+  useEffect(() => {
+    parent.current &&
+      chart.current.resize({
+        width: parent.current?.clientWidth,
+        height: parent.current?.clientHeight - 100,
+      });
+  }, [resizeData]);
   return <div ref={chartWrapper} />;
 };
 
@@ -99,7 +107,7 @@ export const foldLine = (
       left: 0,
       right: 0,
       bottom: 0,
-      top: 30,
+      top: 40,
       containLabel: true,
       show: true,
       backgroundColor: 'transparent',

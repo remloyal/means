@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Segmented, Space, Switch, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { useRecoilValue } from 'recoil';
-import { equipment } from '@/stores';
+import { equipment, resize } from '@/stores';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -44,12 +44,11 @@ const DataSheet = () => {
   }, [device]);
 
   const [axle, setAxle] = useState<number>(500);
+  const resizeData = useRecoilValue(resize);
   useEffect(() => {
-    ipcRenderer.on('resizeEvent', (event, data) => {
-      const num = 500 + (data.width - 1424) / 6;
-      setAxle(num);
-    });
-  }, []);
+    const num = 500 + (resizeData.width - 1424) / 6;
+    setAxle(num);
+  }, [resizeData]);
 
   const getData = () => {
     const todo = device?.csvData;

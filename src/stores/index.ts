@@ -15,3 +15,29 @@ export const deviceState = atom<boolean>({
   key: 'deviceState',
   default: false,
 });
+
+export const deviceList = selector<DeviceInstanceType[]>({
+  key: 'deviceList',
+  get: ({ get }) => {
+    const device = get(equipment);
+    if (device) {
+      return [device];
+    }
+    return [];
+  },
+});
+
+export const resize = atom<any>({
+  key: 'resize',
+  default: {},
+});
+// export const resize = selector({
+//   key: 'size',
+//   get: ({ get }) => {
+//     const [resize, setResize] = useState<any>();
+//     ipcRenderer.on('resizeEvent', data => {
+//       setResize(data);
+//     });
+//     return resize;
+//   },
+// });

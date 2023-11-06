@@ -1,4 +1,13 @@
-import { Button, ConfigProvider, Descriptions, DescriptionsProps, Tabs, TabsProps } from 'antd';
+import {
+  Button,
+  ConfigProvider,
+  Descriptions,
+  DescriptionsProps,
+  Radio,
+  Tabs,
+  TabsProps,
+  Tooltip,
+} from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ShareChart,
@@ -11,6 +20,7 @@ import { MainBody, MainRight } from '@/components/main';
 import { useRecoilValue } from 'recoil';
 import { equipment, language } from '@/stores';
 import DataSheet from './DataSheet';
+import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 const Summary: React.FC = () => {
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
@@ -56,11 +66,11 @@ const SummaryMain: React.FC = () => {
       label: t('home.dataSheet'),
       children: <DataSheet />,
     },
-    {
-      key: '3',
-      label: t('home.signature'),
-      children: 'Content of Tab Pane 3',
-    },
+    // {
+    //   key: '3',
+    //   label: t('home.signature'),
+    //   children: 'Content of Tab Pane 3',
+    // },
   ];
 
   return (
@@ -76,7 +86,7 @@ const SummaryMain: React.FC = () => {
           },
         }}
       >
-        <Tabs defaultActiveKey="1" items={items} />
+        <Tabs defaultActiveKey="1" items={items} destroyInactiveTabPane={true} />
         <ExportData></ExportData>
       </ConfigProvider>
     </MainBody>
@@ -91,6 +101,7 @@ const SummaryGraph: React.FC = () => {
   const [valueList, setValueList] = useState<number[]>([]);
   const [humiList, setHumiList] = useState<number[]>([]);
   const [line, setLine] = useState<StandardLine[]>([]);
+  const [order, setOrder] = useState<string[]>([]);
 
   const { t } = useTranslation();
   const tongue = useRecoilValue(language);
@@ -113,25 +124,21 @@ const SummaryGraph: React.FC = () => {
       const dateLists: string[] = [];
       const valueLists: number[] = [];
       const humiLists: number[] = [];
+      const indexList: string[] = [];
       todo.forEach((item, index) => {
         dateLists.push(item.timeStamp);
         valueLists.push(item.c);
         humiLists.push(item.humi);
+        indexList.push(index.toString());
       });
       const lines = setLines();
-      const chat = foldLine(dateLists, valueLists, lines, humiLists, [
-        t('home.temperature'),
-        t('home.humidity'),
-      ]);
-      setOption(chat);
       setDateList(dateLists);
       setValueList(valueLists);
       setHumiList(humiLists);
       setLine(lines);
+      setOrder(indexList);
     } else {
-      const lines = setLines();
-      const chat = foldLine([], [], lines, [], []);
-      setOption(chat);
+      setLine([]);
       setDateList([]);
       setValueList([]);
       setHumiList([]);
@@ -157,9 +164,46 @@ const SummaryGraph: React.FC = () => {
     return lines;
   };
 
+  useEffect(() => {
+    setChatOption();
+  }, [valueList, humiList, dateList]);
+  const setChatOption = (key = 1) => {
+    const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
+      t('home.temperature'),
+      t('home.humidity'),
+    ]);
+    setOption(chat);
+  };
+
+  const [value, setValue] = useState(1);
+  const onChange = e => {
+    setValue(e.target.value);
+    setChatOption(e.target.value);
+  };
+
   return (
     <>
       <div className="summary-graph" ref={graph}>
+        <div className="summary-graph-title">
+          <div style={{ marginLeft: '20px' }}>
+            <Radio.Group onChange={onChange} value={value}>
+              <Radio value={1}>时间</Radio>
+              <Radio value={2}>序号</Radio>
+            </Radio.Group>
+          </div>
+          <div>
+            <Tooltip title={t('home.thresholdEditing')} destroyTooltipOnHide={true}>
+              <UnorderedListOutlined
+                style={{ fontSize: '28px', marginRight: '14px', cursor: 'pointer' }}
+              />
+            </Tooltip>
+            <Tooltip title={t('home.exportGraph')} destroyTooltipOnHide={true}>
+              <FileJpgOutlined
+                style={{ fontSize: '28px', marginRight: '14px', cursor: 'pointer' }}
+              />
+            </Tooltip>
+          </div>
+        </div>
         <ShareChart option={option} parent={graph} />
       </div>
     </>

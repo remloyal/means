@@ -150,6 +150,11 @@
   .summary-graph {
     width: calc(100vw - (40vw + 30px));
     height: calc(88.5vh - (16.5vh + 68px));
+    .summary-graph-title{
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
   }
 
   .summary-graph-labor {

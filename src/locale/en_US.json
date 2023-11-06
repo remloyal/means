@@ -52,6 +52,8 @@
     "serialNumber":"Number",
     "time":"Time",
     "temperature":"temperature",
-    "humidity":"humidity"
+    "humidity":"humidity",
+    "thresholdEditing":"Threshold editing",
+    "exportGraph":"Export Graph"
   }
 }

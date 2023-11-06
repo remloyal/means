@@ -52,6 +52,8 @@
     "serialNumber":"序号",
     "time": "时间",
     "temperature":"温度",
-    "humidity":"湿度"
+    "humidity":"湿度",
+    "thresholdEditing":"阈值编辑",
+    "exportGraph":"导出曲线图"
   }
 }

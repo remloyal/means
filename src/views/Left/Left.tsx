@@ -1,6 +1,7 @@
-import { equipment, deviceState } from '@/stores';
+import { equipment, deviceState, resize } from '@/stores';
 import disconnect from '@assets/MainForm/DeviceImage/disconnect.png';
 import { Button, Descriptions, DescriptionsProps } from 'antd';
+import { ipcRenderer } from 'electron';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
@@ -10,7 +11,8 @@ const Left: React.FC = () => {
 
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
-
+  const [resizeData, setResizeData] = useRecoilState(resize);
+  
   useEffect(() => {
     window.eventBus.on('friggaDevice:in', deviceData => {
       if (deviceMent) return;
@@ -21,6 +23,9 @@ const Left: React.FC = () => {
     window.eventBus.on('friggaDevice:out', (...datas) => {
       setDeviceMent(false);
       setDevice(null);
+    });
+    ipcRenderer.on('resizeEvent', (event, data) => {
+      setResizeData(data);
     });
   }, []);
 
