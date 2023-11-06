@@ -16,39 +16,39 @@ export const Menu: React.FC = () => {
       clock: () => {
         navigate('/');
       },
-      icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: () => <i className="iconfont icon-shu"></i>,
     },
     {
       name: 'header.configureDevices',
       clock: () => {
         navigate('deploy');
       },
-      icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: () => <i className="iconfont icon-weibaopeizhi"></i>,
     },
     {
       name: 'header.data',
       clock: () => {},
-      icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: () => <i className="iconfont icon-lishi"></i>,
     },
     {
       name: 'header.cfr',
       clock: () => {},
-      icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: () => <i className="iconfont icon-fangyu"></i>,
     },
     {
       name: 'header.preferences',
       clock: () => showModal(),
-      icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: () => <i className="iconfont icon-shezhi"></i>,
     },
     {
       name: 'header.help',
       clock: () => {},
-      icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: () => <i className="iconfont icon-bangzhuye"></i>,
     },
     {
       name: 'header.about',
       clock: () => {},
-      icon: () => <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: () => <i className="iconfont icon-guanyu"></i>,
     },
   ];
   const { t } = useTranslation();

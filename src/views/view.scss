@@ -24,15 +24,20 @@
     }
 
     .menu-son {
-      width: 46px;
+      width: 64px;
       margin: 0 20px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 10px;
+      // padding: 10px;
       background-color: rgb(225, 227, 233);
       border-radius: 5px;
       cursor: pointer;
+
+      i {
+        font-size: 24px;
+        color: #919191;
+      }
 
       // box-shadow: 0px 0px 3px #c8c8c8,
       //   /*上边阴影  红色*/
@@ -41,11 +46,12 @@
       //   3px 0px 3px #c8c8c8,
       //   /*右边阴影  蓝色*/
       //   0px 0px 5px #c8c8c8;
-      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+      rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
     .menu-son:hover {
-      span {
+      i {
         color: #FB6601;
       }
     }

@@ -5,6 +5,7 @@ import './index.scss';
 import EventEmitter from 'events';
 import '@/utils/detectDevice';
 import './locale/index';
+import "./assets/icon/iconfont.css";
 import { RecoilRoot } from 'recoil';
 
 window.eventBus = new EventEmitter();

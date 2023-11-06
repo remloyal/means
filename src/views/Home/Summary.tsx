@@ -44,9 +44,6 @@ const Summary: React.FC = () => {
 
 const SummaryMain: React.FC = () => {
   const { t } = useTranslation();
-  const onChange = (key: string) => {
-    console.log(key);
-  };
 
   const items: TabsProps['items'] = [
     {
@@ -79,12 +76,7 @@ const SummaryMain: React.FC = () => {
           },
         }}
       >
-        <Tabs
-          defaultActiveKey="1"
-          items={items}
-          onChange={onChange}
-          destroyInactiveTabPane={true}
-        />
+        <Tabs defaultActiveKey="1" items={items} />
         <ExportData></ExportData>
       </ConfigProvider>
     </MainBody>

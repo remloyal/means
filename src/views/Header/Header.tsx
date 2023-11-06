@@ -10,7 +10,8 @@ const Header: React.FC = () => {
         <Menu></Menu>
       </div>
       <div className="header-right">
-        <UserOutlined />
+        {/* 用户登录 */}
+        {/* <UserOutlined /> */}
       </div>
     </div>
   );
