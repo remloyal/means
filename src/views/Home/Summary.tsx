@@ -28,7 +28,7 @@ const Summary: React.FC = () => {
     if (device) {
       setDataState(true);
     } else {
-      setDataState(true);
+      setDataState(false);
     }
   }, [device]);
   return dataState ? (
@@ -86,7 +86,7 @@ const SummaryMain: React.FC = () => {
           },
         }}
       >
-        <Tabs defaultActiveKey="1" items={items} destroyInactiveTabPane={true} />
+        <Tabs defaultActiveKey="1" items={items} destroyInactiveTabPane={false} />
         <ExportData></ExportData>
       </ConfigProvider>
     </MainBody>
@@ -187,8 +187,8 @@ const SummaryGraph: React.FC = () => {
         <div className="summary-graph-title">
           <div style={{ marginLeft: '20px' }}>
             <Radio.Group onChange={onChange} value={value}>
-              <Radio value={1}>时间</Radio>
-              <Radio value={2}>序号</Radio>
+              <Radio value={1}>{t('home.time')}</Radio>
+              <Radio value={2}>{t('home.serialNumber')}</Radio>
             </Radio.Group>
           </div>
           <div>

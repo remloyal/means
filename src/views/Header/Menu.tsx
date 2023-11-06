@@ -1,38 +1,47 @@
-import { Button, Modal, Space } from 'antd';
-import summary from '@assets/MainForm/btn.summary.png';
-import { ExclamationCircleFilled, HomeOutlined } from '@ant-design/icons';
-import { Popup } from '@/components/popup/Popup';
+import { Modal } from 'antd';
 import Preferences from './Preferences';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { equipment } from '@/stores';
+import { useRecoilValue } from 'recoil';
 
 export const Menu: React.FC = () => {
   const navigate = useNavigate();
-
+  const [key, setKey] = useState(0);
   const menuConfig: MenuConfig[] = [
     {
       name: 'header.summary',
       clock: () => {
-        navigate('/');
+        if (device) {
+          setKey(0);
+          navigate('/');
+        }
       },
       icon: () => <i className="iconfont icon-shu"></i>,
     },
     {
       name: 'header.configureDevices',
       clock: () => {
-        navigate('deploy');
+        if (device) {
+          setKey(1);
+          navigate('deploy');
+        }
       },
       icon: () => <i className="iconfont icon-weibaopeizhi"></i>,
     },
     {
       name: 'header.data',
-      clock: () => {},
+      clock: () => {
+        setKey(2);
+      },
       icon: () => <i className="iconfont icon-lishi"></i>,
     },
     {
       name: 'header.cfr',
-      clock: () => {},
+      clock: () => {
+        setKey(3);
+      },
       icon: () => <i className="iconfont icon-fangyu"></i>,
     },
     {
@@ -57,10 +66,21 @@ export const Menu: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const device = useRecoilValue(equipment);
+  useEffect(() => {
+    if (device) {
+      setKey(0);
+    } else {
+      if (key === 0 || key === 1) {
+        setKey(-1);
+      }
+    }
+  }, [device]);
+
   return (
     <>
       {menuConfig.map((item, index) => {
-        return MenuItem(item, index);
+        return MenuItem(item, index, key);
       })}
       <Modal
         title={t('header.preferences')}
@@ -77,11 +97,11 @@ export const Menu: React.FC = () => {
   );
 };
 
-export const MenuItem = (props: MenuConfig, index) => {
+export const MenuItem = (props: MenuConfig, index, key?) => {
   const { t, i18n } = useTranslation();
   return (
     <div className="menu-item" key={index} onClick={props.clock}>
-      <div className="menu-son">
+      <div className={`menu-son ${key == index ? 'menu-active' : ''}`}>
         <props.icon />
       </div>
       <div>{t(props.name)}</div>
