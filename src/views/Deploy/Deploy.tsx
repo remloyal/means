@@ -2,7 +2,7 @@ import { MainBody, MainRight } from '@/components/main';
 import { Button, Col, Modal, Row, Tabs, TabsProps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StartModeDom, TempPeriodDom } from './DeviceOperate';
+import { HightEmpDom, StartDelayDom, StartModeDom, TempPeriodDom } from './DeviceOperate';
 
 const Deploy: React.FC = () => {
   return (
@@ -69,6 +69,12 @@ const DeployBasic = ({ state }: { state: boolean }) => {
         </Col>
         <Col span={8}>
           <StartModeDom state={state} />
+        </Col>
+        <Col span={8}>
+          <StartDelayDom state={state} />
+        </Col>
+        <Col>
+          <HightEmpDom state={state} />
         </Col>
         {/* <Col span={8}>
           <div style={{ padding: '10px 0' }}>记录周期</div>

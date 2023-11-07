@@ -66,6 +66,7 @@
     "currentConfiguration":"是否保存当前配置？",
     "recordInterval":"记录间隔",
     "buttonStart":"按键启动",
-    "timingOn":"定时开启"
+    "timingOn":"定时开启",
+    "temperatureUpperLimit":"温度上限"
   }
 }

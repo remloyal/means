@@ -66,6 +66,7 @@
     "currentConfiguration": "Do you want to save the current configuration?",
     "recordInterval":"Record Interval",
     "buttonStart":"Button Start",
-    "timingOn":"Timing on"
+    "timingOn":"Timing on",
+    "temperatureUpperLimit":"Temperature Upper Limit"
   }
 }

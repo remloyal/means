@@ -221,4 +221,25 @@ export const deviceOperate = {
     const data = await setOperateDevice(tempPeriod, instructRead.multIdBootMode);
     return data;
   },
+  /**设置启动延时 */
+  setStartDelay: async value => {
+    const tempPeriod = instructSetup.setStartDelay;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.startDelayTime);
+    return data;
+  },
+  /**设置温度阈值上限 */
+  setHightEmp: async value => {
+    const tempPeriod = instructSetup.setHightEmp;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.hightEmp);
+    return data;
+  },
+  /**设置温度阈值下限 */
+  setLowtEmp: async value => {
+    const tempPeriod = instructSetup.setLowtEmp;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.lowtEmp);
+    return data;
+  },
 };

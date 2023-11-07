@@ -1,13 +1,13 @@
 import { equipment } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
-import { Col, Select } from 'antd';
+import { Col, Input, InputNumber, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
 
-const getTimeOptions = () => {
+const getTimeOptions = (index: number = 12) => {
   const option: { value: string | number; label: string | number }[] = [];
-  for (let i = 0; i <= 12; i++) {
+  for (let i = 0; i <= index; i++) {
     option.push({
       value: i * 3600,
       label: i,
@@ -148,6 +148,164 @@ export const StartModeDom = ({ state }: { state: boolean }) => {
             { label: t('deploy.timingOn'), value: 1 },
           ]}
         />
+      </div>
+    </>
+  );
+};
+
+// 启动延时
+export const StartDelayDom = ({ state }: { state: boolean }) => {
+  useEffect(() => {
+    if (state) {
+      setTempPeriod();
+    }
+  }, [state]);
+  useEffect(() => {
+    initTime();
+  }, []);
+  const { t } = useTranslation();
+  const [device, setDevice] = useRecoilState(equipment);
+  const [day, setDay] = useState(0);
+  const [time, setTime] = useState(0);
+  const [minute, setMinute] = useState(0);
+  const [timeState, setTimeState] = useState(false);
+  const [minuteState, setMinuteState] = useState(false);
+  const timeOptions = getTimeOptions(23);
+  const minuteOptions = getMinuteOptions();
+
+  const initTime = () => {
+    const times = (device?.record.startDelayTime as number) ?? 0;
+    if (times == 86400) {
+      setDay(86400);
+      setTimeState(true);
+      setMinuteState(true);
+      return;
+    }
+
+    if (times === 0) {
+      setDay(0);
+      setTime(0);
+      setMinute(0);
+      return;
+    }
+    // 秒数转时分
+    const timePart = times / 60;
+    const hour = Math.floor(timePart / 60);
+    const minute = timePart % 60;
+    setTime(hour * 3600);
+    setMinute(minute * 60);
+  };
+
+  const dayChange = day => {
+    setDay(day);
+    if (day === 86400) {
+      setTimeState(true);
+      setMinuteState(true);
+    } else {
+      setTimeState(false);
+      setMinuteState(false);
+    }
+  };
+
+  const timeChange = time => {
+    setTime(time);
+  };
+
+  const minuteChange = minute => {
+    setMinute(minute);
+  };
+  const setTempPeriod = async () => {
+    const times = day === 86400 ? day : time + minute;
+    if (times != device?.record.startDelayTime) {
+      await deviceOperate.setStartDelay(times);
+    }
+  };
+
+  return (
+    <>
+      <div style={{ padding: '10px 0' }}>{t('home.startDelay')}</div>
+      <div className="deploy-select">
+        <Select
+          value={day}
+          onChange={dayChange}
+          options={[
+            {
+              value: 0,
+              label: 0,
+            },
+            {
+              value: 86400,
+              label: 1,
+            },
+          ]}
+          popupClassName="deploy-select-popup"
+          size="small"
+        />
+        <span className="deploy-span">D</span>
+        <Select
+          value={time}
+          onChange={timeChange}
+          options={timeOptions}
+          disabled={timeState}
+          popupClassName="deploy-select-popup"
+          size="small"
+        />
+        <span className="deploy-span">H</span>
+        <Select
+          value={minute}
+          onChange={minuteChange}
+          options={minuteOptions}
+          popupClassName="deploy-select-popup"
+          size="small"
+          disabled={minuteState}
+        />
+        <span className="deploy-span">M</span>
+      </div>
+    </>
+  );
+};
+
+// 温度阈值上限
+export const HightEmpDom = ({ state }: { state: boolean }) => {
+  useEffect(() => {
+    if (state) {
+      setHightEmp();
+    }
+  }, [state]);
+  useEffect(() => {
+    init();
+  }, []);
+  const { t } = useTranslation();
+  const [device, setDevice] = useRecoilState(equipment);
+  const [emp, setEmp] = useState(0);
+  const [empState, setEmpState] = useState(false);
+  const [unit, setUnit] = useState('\u2103');
+  const empChange = num => {
+    setEmp(parseInt(num));
+  };
+  const init = () => {
+    const multidUnit = device?.record.multidUnit;
+    const hightEmp = device?.record.hightEmp;
+    if (parseInt(multidUnit) == 0) {
+      setUnit('\u2103');
+    } else {
+      setUnit('\u2109');
+    }
+    setEmp(hightEmp);
+  };
+
+  const setHightEmp = async () => {
+    if (emp != parseInt(device?.record.hightEmp)) {
+      await deviceOperate.setHightEmp(emp);
+    }
+  };
+
+  return (
+    <>
+      <div style={{ padding: '10px 0' }}>{t('deploy.temperatureUpperLimit')}</div>
+      <div className="deploy-select">
+        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <span className="deploy-span">{unit}</span>
       </div>
     </>
   );
