@@ -108,11 +108,11 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
   const newDevices = currentDevices.filter(d => !previousDevices.some(pd => pd.path === d.path));
   const friggaDevices = getFriggaDevice(newDevices);
   if (friggaDevices.length > 0) {
-    const operation = createDeviceInstance(friggaDevices[0]);
+    let operation = createDeviceInstance(friggaDevices[0]);
     operation.getData().then(res => {
       operation.drive = csvData[0];
       operation.setCsvData(csvData[1]);
-      window.eventBus.emit('friggaDevice:in', operation);
+      window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
     });
   }
   previousDevices = currentDevices;

@@ -169,11 +169,12 @@
 
   .summary-graph-labor {
     position: absolute;
+    width: 100%;
     bottom: 10px;
-    // left: 38%;
     left: 50%;
     transform: translate(-50%, 0);
-
+    text-align: center;
+    
 
     button {
       margin: 0 10px;

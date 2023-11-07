@@ -16,6 +16,12 @@ export const deviceState = atom<boolean>({
   default: false,
 });
 
+// 判断是否在第一页
+export const isFirstPage = atom<boolean>({
+  key: 'isFirstPage',
+  default: true,
+});
+
 export const deviceList = selector<DeviceInstanceType[]>({
   key: 'deviceList',
   get: ({ get }) => {

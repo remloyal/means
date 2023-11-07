@@ -3,18 +3,21 @@ import Preferences from './Preferences';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { equipment } from '@/stores';
-import { useRecoilValue } from 'recoil';
+import { equipment, isFirstPage } from '@/stores';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 export const Menu: React.FC = () => {
   const navigate = useNavigate();
   const [key, setKey] = useState(0);
+  const [firstPage, setFirstPage] = useRecoilState(isFirstPage);
+
   const menuConfig: MenuConfig[] = [
     {
       name: 'header.summary',
       clock: () => {
         if (device) {
           setKey(0);
+          setFirstPage(true);
           navigate('/');
         }
       },
@@ -25,6 +28,7 @@ export const Menu: React.FC = () => {
       clock: () => {
         if (device) {
           setKey(1);
+          setFirstPage(false);
           navigate('deploy');
         }
       },
@@ -33,6 +37,7 @@ export const Menu: React.FC = () => {
     {
       name: 'header.data',
       clock: () => {
+        setFirstPage(false);
         setKey(2);
       },
       icon: () => <i className="iconfont icon-lishi"></i>,
@@ -40,6 +45,7 @@ export const Menu: React.FC = () => {
     {
       name: 'header.cfr',
       clock: () => {
+        setFirstPage(false);
         setKey(3);
       },
       icon: () => <i className="iconfont icon-fangyu"></i>,
@@ -70,9 +76,13 @@ export const Menu: React.FC = () => {
   useEffect(() => {
     if (device) {
       setKey(0);
+      if (!firstPage) {
+        navigate('/');
+      }
     } else {
       if (key === 0 || key === 1) {
         setKey(-1);
+        setFirstPage(false)
       }
     }
   }, [device]);

@@ -7,10 +7,11 @@ interface OperateTypeItem {
   order: (string?) => string;
   getData: (data: string) => string | number;
   key: string;
+  param?: number | string;
 }
 
 interface DeviceInstanceType {
-  device: any = null;
+    device: any = null;
   deviceInfo: DeviceType | null;
   operate: OperateTypeItem | null;
   record: OperateType<any>;

@@ -1,37 +1,48 @@
 import { instructRead, instructSetup } from './deviceType';
 
 const HID = require('node-hid');
-
 export const createDeviceInstance = (deviceInfo): DeviceInstanceType => {
-  const deviceInstance: DeviceInstanceType = new DeviceInstance(deviceInfo);
-  return deviceInstance;
+  deviceExample?.init(deviceInfo);
+  return deviceExample;
 };
 
 class DeviceInstance implements DeviceInstanceType {
   device: any = null;
   deviceInfo: DeviceType | null = null;
   operate: OperateTypeItem | null = null;
-  record: OperateType<any> = {};
+  record: any = {};
+  operateConfig: OperateType<any> = {};
   isComplete: boolean = true;
-  actionList: OperateTypeItem[] | [] = [];
+  actionList: OperateTypeItem[] = [];
   csvData: TimeType[] = [];
   drive: any = null;
   param: string | number = '';
   private repetitions: number = 3;
   private currentTimes: number = 0;
-  constructor(deviceInfo: DeviceType) {
-    const operate = [...Object.keys(instructRead), ...Object.keys(instructSetup)];
+  constructor(deviceInfo?: DeviceType) {
+    const operate = [...Object.keys(instructSetup)];
     operate.forEach(item => {
       this.record[item] = null;
     });
-    this.init(deviceInfo);
+    if (deviceInfo) {
+      this.init(deviceInfo);
+    }
   }
   public initialize() {
     this.device = new HID.HID(this.deviceInfo?.path);
     this.device.on('data', res => {
       const todo = Uint8ArrayToString(res);
-      this.record[this.operate!.key.toString()] = this.operate?.getData(todo);
-      this.repeatOperation();
+      console.log(todo);
+      try {
+        const record = this.record;
+        this.record = Object.assign({}, record, {
+          [this.operate!.key.toString()]: this.operate?.getData(todo),
+        });
+        this.repeatOperation();
+      } catch (error) {
+        console.log(error);
+        this.repeatOperation();
+      }
     });
     this.device.on('error', err => {
       console.error('Device error:  ', err);
@@ -41,18 +52,19 @@ class DeviceInstance implements DeviceInstanceType {
         this.repeatOperation();
       } else {
         this.currentTimes++;
-        this.write(this.operate!, this.param);
+        this.write(this.operate!);
       }
     });
   }
   public repeatOperation() {
     if (this.actionList.length > 0) {
-      this.write(this.actionList[0], this.param);
+      this.write(this.actionList[0]);
     } else {
       this.operate = null;
       this.isComplete = true;
       this.param = '';
       this.currentTimes = 0;
+      this.actionList = [];
       this.close();
     }
   }
@@ -63,18 +75,21 @@ class DeviceInstance implements DeviceInstanceType {
     this.write(this.actionList[0]);
     return this;
   }
-  write(item: OperateTypeItem, param?: string | number) {
-    if (!this.device) {
-      this.initialize();
+  write(item: OperateTypeItem) {
+    if (this.isComplete) {
+      const actionList = [...this.actionList];
+      actionList.push(item);
+      this.actionList = actionList;
     }
     this.isComplete = false;
-    if (param !== undefined && param !== null) {
-      this.param = param;
+    if (!this.device) {
+      this.initialize();
     }
     var index = this.actionList.findIndex(res => res.name === item.name);
     this.actionList.splice(index, 1);
     this.operate = item;
-    const dataee = stringToUint8Array(item.order(param));
+    const todo = item.order(item.param);
+    const dataee = stringToUint8Array(todo);
     this.device.write(dataee);
   }
   getData(key?: string) {
@@ -142,3 +157,68 @@ function findMinMax(arr, start, end) {
 
   return { max: maxVal, min: minVal };
 }
+
+// 深度复制类的实例，包括属性和方法
+export function deepCloneObject(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const cloned = Array.isArray(obj) ? [] : {};
+  for (let key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      cloned[key] = deepCloneObject(obj[key]);
+    }
+  }
+
+  return cloned;
+}
+
+export let deviceExample: DeviceInstance = new DeviceInstance();
+
+// 判断是否为OK
+const isOk = (data: any) => {
+  console.log(data);
+  return data == 'OK' ? true : data;
+};
+
+const updateDevice = () => {
+  setTimeout(() => {
+    window.eventBus.emit('friggaDevice:in', Object.assign({}, deviceExample));
+  }, 1000);
+};
+
+// 操作父类
+const setOperateDevice = (item: OperateTypeItem, queryData: OperateTypeItem) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      deviceExample.write(item);
+      deviceExample.getData(item.key).then(res => {
+        deviceExample.write(queryData);
+        updateDevice();
+        resolve(isOk(res) || false);
+      });
+    } catch (error) {
+      reject(false);
+    }
+  });
+};
+
+// 设备操作方法
+export const deviceOperate = {
+  /**设置记录间隔*/
+  setTempPeriod: async value => {
+    const tempPeriod = instructSetup.setTempPeriod;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.tempPeriod);
+    return data;
+  },
+  /**设置启动模式 */
+  setMultidBootMode: async value => {
+    const tempPeriod = instructSetup.setMultidBootMode;
+    tempPeriod.param = value;
+    console.log(tempPeriod, instructRead.multIdBootMode);
+    const data = await setOperateDevice(tempPeriod, instructRead.multIdBootMode);
+    return data;
+  },
+};

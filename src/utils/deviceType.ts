@@ -76,7 +76,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取记录间隔',
     order: () => 'AT+GETTEMPPERIOD:',
     getData: data => {
-      return data.split(':')[1].replaceAll(';', '');
+      return parseInt(data.split(':')[1].replaceAll(';', ''));
     },
   },
   getTime: {

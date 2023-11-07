@@ -62,6 +62,10 @@
     "multipleAlarmSettings":"多报警配置",
     "saveParameters":"保存参数",
     "importTemplate":"导入模版",
-    "exportTemplate":"导出模版"
+    "exportTemplate":"导出模版",
+    "currentConfiguration":"是否保存当前配置？",
+    "recordInterval":"记录间隔",
+    "buttonStart":"按键启动",
+    "timingOn":"定时开启"
   }
 }
