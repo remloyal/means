@@ -55,5 +55,13 @@
     "humidity":"humidity",
     "thresholdEditing":"Threshold editing",
     "exportGraph":"Export Graph"
+  },
+  "deploy":{
+    "basicParameters":"Basic parameters",
+    "advancedParameters":"Advanced parameters",
+    "multipleAlarmSettings":"Multiple alarm settings",
+    "saveParameters":"Save parameters",
+    "importTemplate":"Import Template",
+    "exportTemplate":"Export Template"
   }
 }

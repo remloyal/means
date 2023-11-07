@@ -55,5 +55,13 @@
     "humidity":"湿度",
     "thresholdEditing":"阈值编辑",
     "exportGraph":"导出曲线图"
+  },
+  "deploy":{
+    "basicParameters":"基本参数",
+    "advancedParameters":"高级参数",
+    "multipleAlarmSettings":"多报警配置",
+    "saveParameters":"保存参数",
+    "importTemplate":"导入模版",
+    "exportTemplate":"导出模版"
   }
 }

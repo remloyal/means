@@ -5,17 +5,16 @@
   text-align: center;
   padding: 20px 0;
   background-color: #e1e3e9;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 
   .brand-img {
-    height: 30px;
+    height: 60px;
     padding-left: 40px;
+    padding-top: 8px;
   }
 
   .header-center {
     display: flex;
+    justify-content: center;
 
     .menu-item>div:nth-child(2) {
       font-size: 14px;
@@ -55,7 +54,8 @@
         color: #FB6601;
       }
     }
-    .menu-active{
+
+    .menu-active {
       i {
         color: #FB6601;
       }
@@ -141,6 +141,10 @@
     @extend .shadow;
     width: calc(100vw - (40vw + 30px));
     margin: 0 10px;
+
+    .ant-tabs-nav-wrap {
+      border-bottom: 0.5px solid #D4D5D9;
+    }
   }
 
   .summary-right {
@@ -155,7 +159,8 @@
   .summary-graph {
     width: calc(100vw - (40vw + 30px));
     height: calc(88.5vh - (16.5vh + 68px));
-    .summary-graph-title{
+
+    .summary-graph-title {
       width: 100%;
       display: flex;
       justify-content: space-between;
@@ -165,7 +170,10 @@
   .summary-graph-labor {
     position: absolute;
     bottom: 10px;
-    left: 38%;
+    // left: 38%;
+    left: 50%;
+    transform: translate(-50%, 0);
+
 
     button {
       margin: 0 10px;
@@ -194,5 +202,26 @@
     color: #000000 !important;
     background: #EAECF0 !important;
 
+  }
+}
+
+.deploy-select {
+  .ant-select-selector {
+    border: none !important;
+    border-radius: 6px;
+  }
+
+  .deploy-span {
+    padding: 0 10px;
+  }
+}
+
+.deploy-select-popup {
+  .rc-virtual-list-scrollbar {
+    width: 2px !important;
+  }
+
+  .ant-select-item {
+    padding: 5px 5px;
   }
 }
