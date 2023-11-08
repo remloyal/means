@@ -25,7 +25,9 @@
     "maximumValue": "最大值",
     "minimumValue": "最小值",
     "stopRecording":"停止记录",
-    "reload":"重新加载"
+    "reload":"重新加载",
+    "quickReset":"快速重置",
+    "clearText":"你确定要清空数据，并重置设备吗？"
   },
   "home":{
     "graph":"曲线图",

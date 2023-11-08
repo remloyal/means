@@ -25,7 +25,9 @@
     "maximumValue": "Maximum Value",
     "minimumValue": "Minimum Value",
     "stopRecording": "Stop Recording",
-    "reload": "Reload"
+    "reload": "Reload",
+    "quickReset":"Quick Reset",
+    "clearText":"Are you sure you want to clear the data and reset the device?"
   },
   "home": {
     "graph": "Graph",

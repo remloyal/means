@@ -1,6 +1,7 @@
 import { equipment, deviceState, resize } from '@/stores';
+import { deviceOperate } from '@/utils/deviceOperation';
 import disconnect from '@assets/MainForm/DeviceImage/disconnect.png';
-import { Button, Descriptions, DescriptionsProps } from 'antd';
+import { Button, Descriptions, DescriptionsProps, Modal } from 'antd';
 import { ipcRenderer } from 'electron';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,7 @@ const Left: React.FC = () => {
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [resizeData, setResizeData] = useRecoilState(resize);
-  
+
   useEffect(() => {
     window.eventBus.on('friggaDevice:in', deviceData => {
       if (deviceMent) return;
@@ -75,6 +76,22 @@ const Left: React.FC = () => {
       children: device != null ? device?.record.minimumValue : '---',
     },
   ];
+  const quickReset = () => {
+    deviceOperate.resetDevice();
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    quickReset();
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   return (
     <div className="left">
       <div className="image">
@@ -98,6 +115,19 @@ const Left: React.FC = () => {
         </Button>
         <Button type="primary">{t('left.reload')}</Button>
       </div>
+      <Button type="primary" style={{ width: '100%' }} onClick={showModal}>
+        {t('left.quickReset')}
+      </Button>
+      <Modal
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        centered
+        destroyOnClose={true}
+        width={300}
+      >
+        <h3>{t('left.clearText')}</h3>
+      </Modal>
     </div>
   );
 };

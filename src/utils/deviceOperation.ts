@@ -112,13 +112,13 @@ class DeviceInstance implements DeviceInstanceType {
     this.device = null;
   }
   setCsvData(csvData: TimeType[]) {
-    this.csvData = csvData;
-    this.record.firstRecordTime = csvData[0].timeStamp;
-    this.record.lastRecordedTime = csvData[csvData.length - 1].timeStamp;
-    const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
-    this.record.maximumValue = max;
-    this.record.minimumValue = min;
-  }
+          this.csvData = csvData;
+      this.record.firstRecordTime = csvData[0].timeStamp;
+      this.record.lastRecordedTime = csvData[csvData.length - 1].timeStamp;
+      const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
+      this.record.maximumValue = max;
+      this.record.minimumValue = min;
+      }
 }
 
 function Uint8ArrayToString(fileData: Uint8Array) {
@@ -189,12 +189,14 @@ const updateDevice = () => {
 };
 
 // 操作父类
-const setOperateDevice = (item: OperateTypeItem, queryData: OperateTypeItem) => {
+const setOperateDevice = (item: OperateTypeItem, queryData?: OperateTypeItem) => {
   return new Promise(async (resolve, reject) => {
     try {
       deviceExample.write(item);
       deviceExample.getData(item.key).then(res => {
-        deviceExample.write(queryData);
+        if (queryData) {
+          deviceExample.write(queryData);
+        }
         updateDevice();
         resolve(isOk(res) || false);
       });
@@ -251,6 +253,13 @@ export const deviceOperate = {
     tempPeriod.param = value;
     console.log(tempPeriod);
     const data = await setOperateDevice(tempPeriod, instructRead.getTime);
+    return data;
+  },
+  /** 重置设备*/
+  resetDevice: async () => {
+    const tempPeriod = instructSetup.setDevreStore;
+    const data = await setOperateDevice(tempPeriod);
+    deviceExample.init(deviceExample.deviceInfo!)
     return data;
   },
 };
