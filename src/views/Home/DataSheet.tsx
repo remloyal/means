@@ -66,7 +66,7 @@ const DataSheet = () => {
 
   const getTitle = () => {
     if (device) {
-      const data = `${device?.record.deviceType} ${device?.record.getsn}`;
+      const data = `${device?.record.deviceType} (${device?.record.getsn})`;
       setTitle(data);
     } else {
       setTitle('');
@@ -80,7 +80,7 @@ const DataSheet = () => {
   };
   return (
     <div style={{ padding: 0 }} className="tableTitle">
-      <div style={{ paddingBottom: '10px' }}>{title}</div>
+      <div style={{ paddingBottom: '10px', textAlign: 'center' }}>{title}</div>
       <Table
         bordered={false}
         virtual

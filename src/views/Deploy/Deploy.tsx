@@ -3,6 +3,9 @@ import { Button, Col, Modal, Row, Tabs, TabsProps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HightEmpDom, StartDelayDom, StartModeDom, TempPeriodDom } from './DeviceOperate';
+import { ipcRenderer } from 'electron';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { deviceConfigParam } from '@/stores';
 
 const Deploy: React.FC = () => {
   return (
@@ -56,11 +59,6 @@ const DeployMain: React.FC = () => {
 
 // 基本操作
 const DeployBasic = ({ state }: { state: boolean }) => {
-  // 记录周期
-  const [cycle, setCycle] = useState(0);
-  // 时区
-  const [timezone, setTimezone] = useState(0);
-
   return (
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>
@@ -117,7 +115,7 @@ const DeployMultiple = ({ state }: { state: boolean }) => {
 const DataOperate = ({ save }: { save: () => void }) => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -130,14 +128,30 @@ const DataOperate = ({ save }: { save: () => void }) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const selectTemplate = () => {
+    ipcRenderer.send('select-config');
+  };
+  const exportTemplate = () => {
+    ipcRenderer.send('export-config', deviceConfig);
+  };
+  useEffect(() => {
+    ipcRenderer.on('select-config-reply', (event, arg) => {
+      window.eventBus.emit('deviceConfig', arg);
+      setDeviceConfig(arg);
+    });
+  }, []);
   return (
     <>
       <div className="summary-graph-labor">
         <Button type="primary" size="large" onClick={showModal}>
           {t('deploy.saveParameters')}
         </Button>
-        <Button size="large">{t('deploy.importTemplate')}</Button>
-        <Button size="large">{t('deploy.exportTemplate')}</Button>
+        <Button size="large" onClick={selectTemplate}>
+          {t('deploy.importTemplate')}
+        </Button>
+        <Button size="large" onClick={exportTemplate}>
+          {t('deploy.exportTemplate')}
+        </Button>
       </div>
       <Modal
         open={isModalOpen}

@@ -37,13 +37,8 @@ export const resize = atom<any>({
   key: 'resize',
   default: {},
 });
-// export const resize = selector({
-//   key: 'size',
-//   get: ({ get }) => {
-//     const [resize, setResize] = useState<any>();
-//     ipcRenderer.on('resizeEvent', data => {
-//       setResize(data);
-//     });
-//     return resize;
-//   },
-// });
+
+export const deviceConfigParam = atom<any>({
+  key: 'deviceConfigParam',
+  default: {},
+});

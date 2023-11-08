@@ -201,6 +201,8 @@ const setOperateDevice = (item: OperateTypeItem, queryData: OperateTypeItem) => 
     } catch (error) {
       reject(false);
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 

@@ -1,4 +1,4 @@
-import { equipment } from '@/stores';
+import { deviceConfigParam, equipment } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { Col, Input, InputNumber, Select } from 'antd';
 import { useEffect, useState } from 'react';
@@ -36,6 +36,11 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     initTime();
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (deviceData.tempPeriod) {
+        initTime(deviceData.tempPeriod);
+      }
+    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
@@ -44,12 +49,17 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   const [minuteState, setMinuteState] = useState(false);
   const timeOptions = getTimeOptions();
   const minuteOptions = getMinuteOptions();
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
-  const initTime = () => {
-    const times = (device?.record.tempPeriod as number) ?? 0;
+  const initTime = (data?) => {
+    let times = (device?.record.tempPeriod as number) ?? 0;
+    if (data) {
+      times = data;
+    }
     if (times === 0) {
       setTime(0);
       setMinute(0);
+      return;
     }
     // 秒数转时分
     const timePart = times / 60;
@@ -78,6 +88,16 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
       await deviceOperate.setTempPeriod(times);
     }
   };
+
+  useEffect(() => {
+    const times = time === 43200 ? time : time + minute;
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        tempPeriod: times,
+      };
+    });
+  }, [time, minute]);
 
   return (
     <>
@@ -162,6 +182,11 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     initTime();
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (deviceData.startDelayTime) {
+        initTime(deviceData.startDelayTime);
+      }
+    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
@@ -172,9 +197,13 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
   const [minuteState, setMinuteState] = useState(false);
   const timeOptions = getTimeOptions(23);
   const minuteOptions = getMinuteOptions();
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
-  const initTime = () => {
-    const times = (device?.record.startDelayTime as number) ?? 0;
+  const initTime = (data?) => {
+    let times = (device?.record.startDelayTime as number) ?? 0;
+    if (data) {
+      times = data;
+    }
     if (times == 86400) {
       setDay(86400);
       setTimeState(true);
@@ -214,12 +243,23 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
   const minuteChange = minute => {
     setMinute(minute);
   };
+
   const setTempPeriod = async () => {
     const times = day === 86400 ? day : time + minute;
     if (times != device?.record.startDelayTime) {
       await deviceOperate.setStartDelay(times);
     }
   };
+
+  useEffect(() => {
+    const times = day === 86400 ? day : time + minute;
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        startDelayTime: times,
+      };
+    });
+  }, [day, time, minute]);
 
   return (
     <>
@@ -274,14 +314,25 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     init();
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (deviceData.hightEmp) {
+        setEmp(deviceData.hightEmp || emp);
+      }
+    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
   const [emp, setEmp] = useState(0);
-  const [empState, setEmpState] = useState(false);
   const [unit, setUnit] = useState('\u2103');
   const empChange = num => {
     setEmp(parseInt(num));
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        hightEmp: num,
+      };
+    });
   };
   const init = () => {
     const multidUnit = device?.record.multidUnit;
@@ -292,6 +343,12 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
       setUnit('\u2109');
     }
     setEmp(hightEmp);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        hightEmp: hightEmp,
+      };
+    });
   };
 
   const setHightEmp = async () => {

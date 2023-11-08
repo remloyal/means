@@ -1,5 +1,7 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import { WebUSB, usb, findByIds } from 'usb';
+const path = require('path');
+const fs = require('fs');
 
 let win: BrowserWindow | null = null;
 const VERSION_ID = 10473; // 1003
@@ -46,3 +48,53 @@ export const deviceInit = async (browserWindow: BrowserWindow) => {
     console.log('deviceList', deviceList);
   });
 };
+
+ipcMain.on('export-config', (event, data) => {
+  dialog
+    .showSaveDialog({
+      title: '保存文件', // 对话框标题
+      // defaultPath: '/path/to/default/folder', // 默认保存路径
+      buttonLabel: '保存', // 自定义保存按钮的文本
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+    })
+    .then(result => {
+      console.log(result);
+      if (result.canceled == false) {
+        const jsonData = JSON.stringify(data);
+        fs.writeFileSync(result.filePath, jsonData);
+        shell.openPath(result.filePath!);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    });
+});
+
+ipcMain.on('select-config', (event, data) => {
+  dialog
+    .showOpenDialog({
+      title: '选择配置文件', // 对话框的标题
+      defaultPath: 'config.json', // 默认的文件名字
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+      // buttonLabel: '读取', // 自定义按钮文本显示内容
+    })
+    .then(res => {
+      // 选择文件之后的处理
+      if (!res.canceled) {
+        // 如果不是点击的 取消按钮
+        fs.readFile(res.filePaths[0], { flag: 'r', encoding: 'utf-8' }, (err, data) => {
+          if (err) {
+            console.log(err);
+          } else {
+            event.sender.send('select-config-reply', JSON.parse(data));
+          }
+        });
+      } else {
+        console.log('取消选择===>', res);
+      }
+    })
+    .catch(err => {
+      // 选择文件出错的处理
+      console.log(err);
+    });
+});
