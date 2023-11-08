@@ -44,7 +44,7 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.deviceTime'),
-      children: device != null ? device?.record.getTime : '---',
+      children: device != null ? device?.record.time : '---',
     },
     {
       label: t('left.batteryLevel'),

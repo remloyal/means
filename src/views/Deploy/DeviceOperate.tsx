@@ -100,7 +100,7 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   }, [time, minute]);
 
   return (
-    <>
+    <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.recordInterval')}</div>
       <div className="deploy-select">
         <Select
@@ -121,7 +121,7 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
         />
         <span className="deploy-span">M</span>
       </div>
-    </>
+    </Col>
   );
 };
 
@@ -129,7 +129,7 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
 export const StartModeDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     if (state) {
-      setTempPeriod();
+      // setTempPeriod();
     }
   }, [state]);
 
@@ -155,7 +155,7 @@ export const StartModeDom = ({ state }: { state: boolean }) => {
   };
 
   return (
-    <>
+    <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('home.startMode')}</div>
       <div className="deploy-select">
         <Select
@@ -169,7 +169,7 @@ export const StartModeDom = ({ state }: { state: boolean }) => {
           ]}
         />
       </div>
-    </>
+    </Col>
   );
 };
 
@@ -262,7 +262,7 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
   }, [day, time, minute]);
 
   return (
-    <>
+    <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('home.startDelay')}</div>
       <div className="deploy-select">
         <Select
@@ -301,7 +301,7 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
         />
         <span className="deploy-span">M</span>
       </div>
-    </>
+    </Col>
   );
 };
 
@@ -358,12 +358,76 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   };
 
   return (
-    <>
-      <div style={{ padding: '10px 0' }}>{t('deploy.temperatureUpperLimit')}</div>
+    <Col span={8}>
+      <div style={{ padding: '10px 0' }}>{t('deploy.heatUpperLimit')}</div>
       <div className="deploy-select">
         <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
         <span className="deploy-span">{unit}</span>
       </div>
-    </>
+    </Col>
   );
 };
+
+// 温度阈值下限
+export const LowEmpDom = ({ state }: { state: boolean }) => {
+  useEffect(() => {
+    if (state) {
+      setLowtEmp();
+    }
+  }, [state]);
+  useEffect(() => {
+    init();
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (deviceData.lowtEmp) {
+        setEmp(deviceData.lowtEmp || emp);
+      }
+    });
+  }, []);
+  const { t } = useTranslation();
+  const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const [emp, setEmp] = useState(0);
+  const [unit, setUnit] = useState('\u2103');
+  const empChange = num => {
+    setEmp(parseInt(num));
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        lowtEmp: num,
+      };
+    });
+  };
+  const init = () => {
+    const multidUnit = device?.record.multidUnit;
+    const lowtEmp = device?.record.lowtEmp;
+    if (parseInt(multidUnit) == 0) {
+      setUnit('\u2103');
+    } else {
+      setUnit('\u2109');
+    }
+    setEmp(lowtEmp);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        lowtEmp: lowtEmp,
+      };
+    });
+  };
+
+  const setLowtEmp = async () => {
+    if (emp != parseInt(device?.record.lowtEmp)) {
+      await deviceOperate.setLowtEmp(emp);
+    }
+  };
+
+  return (
+    <Col span={8}>
+      <div style={{ padding: '10px 0' }}>{t('deploy.heatLowerLimit')}</div>
+      <div className="deploy-select">
+        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <span className="deploy-span">{unit}</span>
+      </div>
+    </Col>
+  );
+};
+

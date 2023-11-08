@@ -67,6 +67,7 @@
     "recordInterval":"Record Interval",
     "buttonStart":"Button Start",
     "timingOn":"Timing on",
-    "temperatureUpperLimit":"Temperature Upper Limit"
+    "heatUpperLimit":"Upper limit of temperature threshold",
+    "heatLowerLimit":"Lower limit of temperature threshold"
   }
 }

@@ -244,4 +244,13 @@ export const deviceOperate = {
     const data = await setOperateDevice(tempPeriod, instructRead.lowtEmp);
     return data;
   },
+  /**设置时区 */
+  setTimeZone: async value => {
+    console.log(value);
+    const tempPeriod = instructSetup.setTime;
+    tempPeriod.param = value;
+    console.log(tempPeriod);
+    const data = await setOperateDevice(tempPeriod, instructRead.getTime);
+    return data;
+  },
 };

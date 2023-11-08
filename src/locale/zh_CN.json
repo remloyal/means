@@ -67,6 +67,7 @@
     "recordInterval":"记录间隔",
     "buttonStart":"按键启动",
     "timingOn":"定时开启",
-    "temperatureUpperLimit":"温度上限"
+    "heatUpperLimit":"温度阈值上限",
+    "heatLowerLimit":"温度阈值下限"
   }
 }

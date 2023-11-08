@@ -80,7 +80,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     },
   },
   getTime: {
-    key: 'getTime',
+    key: 'time',
     name: '读取设备时间和时区',
     order: () => 'AT+GETTIME:',
     getData: data => {

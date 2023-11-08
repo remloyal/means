@@ -2,10 +2,17 @@ import { MainBody, MainRight } from '@/components/main';
 import { Button, Col, Modal, Row, Tabs, TabsProps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HightEmpDom, StartDelayDom, StartModeDom, TempPeriodDom } from './DeviceOperate';
+import {
+  HightEmpDom,
+  LowEmpDom,
+  StartDelayDom,
+  StartModeDom,
+  TempPeriodDom,
+} from './DeviceOperate';
 import { ipcRenderer } from 'electron';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceConfigParam } from '@/stores';
+import { TimeZone } from './Timezone';
 
 const Deploy: React.FC = () => {
   return (
@@ -59,33 +66,13 @@ const DeployMain: React.FC = () => {
 
 // 基本操作
 const DeployBasic = ({ state }: { state: boolean }) => {
+  const data = [TempPeriodDom, TimeZone, StartModeDom];
   return (
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>
-        <Col span={8}>
-          <TempPeriodDom state={state} />
-        </Col>
-        <Col span={8}>
-          <StartModeDom state={state} />
-        </Col>
-        <Col span={8}>
-          <StartDelayDom state={state} />
-        </Col>
-        <Col>
-          <HightEmpDom state={state} />
-        </Col>
-        {/* <Col span={8}>
-          <div style={{ padding: '10px 0' }}>记录周期</div>
-        </Col>
-        <Col span={8}>
-          <div style={{ padding: '10px 0' }}>时区</div>
-        </Col>
-        <Col span={8}>col-8</Col>
-        <Col span={8}>col-8</Col>
-        <Col span={8}>col-8</Col>
-        <Col span={8}>col-8</Col>
-        <Col span={8}>col-8</Col>
-        <Col span={8}>col-8</Col> */}
+        {data.map(Item => {
+          return <Item state={state} key={Item.name} />;
+        })}
       </Row>
     </div>
   );
