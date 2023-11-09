@@ -39,6 +39,7 @@ export const Menu: React.FC = () => {
       clock: () => {
         setFirstPage(false);
         setKey(2);
+        navigate('history');
       },
       icon: () => <i className="iconfont icon-lishi"></i>,
     },

@@ -9,15 +9,21 @@ export const Device = database.define(
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
     type: { type: STRING, allowNull: false },
     gentsn: { type: STRING, allowNull: false },
-    data_name: { type: STRING, allowNull: false },
-    start_time: { type: STRING, allowNull: false },
-    data_count: { type: INTEGER, allowNull: false },
-    max_temperature: { type: INTEGER, allowNull: false },
-    min_temperature: { type: INTEGER, allowNull: false },
-    max_humidity: { type: INTEGER, allowNull: false },
-    min_humidity: { type: INTEGER, allowNull: false },
-    data_storage_type: { type: STRING, allowNull: false },
-    other_data: { type: STRING, allowNull: true },
+    dataName: { type: STRING, allowNull: false },
+    startTime: {
+      type: DATE,
+      allowNull: false,
+      get() {
+        return dayjs(this.getDataValue('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
+    dataCount: { type: INTEGER, allowNull: false },
+    maxTemperature: { type: INTEGER, allowNull: false },
+    minTemperature: { type: INTEGER, allowNull: false },
+    maxHumidity: { type: INTEGER, allowNull: false },
+    minHumidity: { type: INTEGER, allowNull: false },
+    dataStorage_type: { type: STRING, allowNull: false },
+    otherData: { type: STRING, allowNull: true },
     notes: { type: STRING, allowNull: true },
     createdAt: {
       type: DATE,
@@ -44,7 +50,7 @@ export const FileData = database.define(
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
     path: { type: STRING, allowNull: false },
     name: { type: STRING, allowNull: false },
-    device_id: { type: INTEGER, allowNull: false },
+    deviceId: { type: INTEGER, allowNull: false },
     createdAt: {
       type: DATE,
       get() {

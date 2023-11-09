@@ -26,8 +26,8 @@
     "minimumValue": "Minimum Value",
     "stopRecording": "Stop Recording",
     "reload": "Reload",
-    "quickReset":"Quick Reset",
-    "clearText":"Are you sure you want to clear the data and reset the device?"
+    "quickReset": "Quick Reset",
+    "clearText": "Are you sure you want to clear the data and reset the device?"
   },
   "home": {
     "graph": "Graph",
@@ -66,10 +66,20 @@
     "importTemplate": "Import Template",
     "exportTemplate": "Export Template",
     "currentConfiguration": "Do you want to save the current configuration?",
-    "recordInterval":"Record Interval",
-    "buttonStart":"Button Start",
-    "timingOn":"Timing on",
-    "heatUpperLimit":"Upper limit of temperature threshold",
-    "heatLowerLimit":"Lower limit of temperature threshold"
+    "recordInterval": "Record Interval",
+    "buttonStart": "Button Start",
+    "timingOn": "Timing on",
+    "heatUpperLimit": "Upper limit of temperature threshold",
+    "heatLowerLimit": "Lower limit of temperature threshold"
+  },
+  "history": {
+    "cloudStorage": "cloud storage",
+    "dataName": "Data Name",
+    "startTime": "Start Time",
+    "currentNumberEntries": "Current number of entries",
+    "localSave": "Local save",
+    "timeOptions":"Time Options",
+    "quickView":"Quick View",
+    "uploadPlatform":"Upload to cloud platform?"
   }
 }

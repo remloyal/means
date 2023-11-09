@@ -2,6 +2,10 @@ import path from 'path';
 import fs from 'fs';
 import { Device, FileData } from '../model';
 import { findMinMax } from '../unitls/tool';
+import dayjs from 'dayjs';
+import { Op } from 'sequelize';
+import { database } from '../db';
+
 const appPath = path.resolve(process.cwd());
 const dbPath = path.join(appPath, 'resources', 'cache');
 if (!fs.existsSync(dbPath)) {
@@ -17,15 +21,15 @@ export const handleDeviceData = async params => {
   const data = await Device.create({
     type: record.deviceType,
     gentsn: record.getsn,
-    data_name: params.csvName.split('.')[0],
-    start_time: record.firstRecordTime,
-    data_count: todo.length,
-    max_temperature: result.c.max,
-    min_temperature: result.c.min,
-    max_humidity: result.humi.max,
-    min_humidity: result.humi.min,
-    data_storage_type: 0,
-    other_data: JSON.stringify(other_data),
+    dataName: params.csvName.split('.')[0],
+    startTime: dayjs(record.firstRecordTime),
+    dataCount: todo.length,
+    maxTemperature: result.c.max,
+    minTemperature: result.c.min,
+    maxHumidity: result.humi.max,
+    minHumidity: result.humi.min,
+    dataStorage_type: 0,
+    otherData: JSON.stringify(other_data),
   });
 
   //   保存数据源
@@ -37,7 +41,7 @@ export const handleDeviceData = async params => {
   await FileData.create({
     path: jsonPath,
     name: jsonName,
-    device_id: data.toJSON().id,
+    deviceId: data.toJSON().id,
   });
   return data;
 };
@@ -55,3 +59,18 @@ function convertToCSV(data: Data[]): string {
   }
   return csv;
 }
+
+export const queryDevice = async params => {
+  // const data = await Device.findAll({...query});
+  const data = await Device.findAll({
+    // group: [database.col('date')],
+    where: {
+      startTime: {
+        [Op.gte]: new Date(params[0]), // 查询大于当前时间的记录
+        [Op.lt]: new Date(params[1]),
+      },
+    },
+  });
+  const todo = data.map(item => item.toJSON());
+  return todo;
+};

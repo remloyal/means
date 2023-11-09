@@ -4,6 +4,7 @@ import { useRoutes } from 'react-router-dom';
 const Home = lazy(() => import('../views/Home/Home'));
 const Summary = lazy(() => import('../views/Home/Summary'));
 const Deploy = lazy(() => import('../views/Deploy/Deploy'));
+const History = lazy(() => import('../views/History/History'));
 
 const routeConfig = [
   {
@@ -13,6 +14,10 @@ const routeConfig = [
   {
     path: '/deploy',
     element: <Deploy />,
+  },
+  {
+    path: '/history',
+    element: <History />,
   },
 ];
 
