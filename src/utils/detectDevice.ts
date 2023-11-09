@@ -2,7 +2,7 @@ const HID = require('node-hid');
 const drivelist = require('drivelist');
 const fs = require('fs');
 const path = require('path');
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, ipcMain } from 'electron';
 import { createDeviceInstance } from './deviceOperation';
 import dayjs from 'dayjs';
 
@@ -30,7 +30,9 @@ const readCSVFilesFromDrive = async drive => {
   const files = fs.readdirSync(drivePath);
   const csvFiles = files.filter(file => file.endsWith('.csv'));
   let dataParsed: TimeType[] = [];
+  let csvName = '';
   for (const csvFile of csvFiles) {
+    csvName = csvFile;
     const filePath = path.join(drivePath, csvFile);
     const data = fs.readFileSync(filePath, 'utf-8');
     // console.log(`读取到CSV文件 ${csvFile} 的内容：`);
@@ -41,7 +43,7 @@ const readCSVFilesFromDrive = async drive => {
     // window.eventBus.emit('friggaDevice:in', dataParsed);
     window.eventBus.emit('friggaDeviceCsv', [drive, dataParsed]);
   }
-  return [drive, dataParsed];
+  return [drive, dataParsed, csvName];
 };
 
 /**
@@ -78,8 +80,6 @@ const parseCSVData = (csvString): TimeType[] => {
         dateTimeParts[5]
       ).valueOf()
     ).format('YYYY-MM-DD HH:mm:ss');
-    console.log(dateTimeParts);
-
     data.push({
       timeStamp,
       c: celsius,
@@ -108,12 +108,20 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
   const newDevices = currentDevices.filter(d => !previousDevices.some(pd => pd.path === d.path));
   const friggaDevices = getFriggaDevice(newDevices);
   if (friggaDevices.length > 0) {
-    let operation = createDeviceInstance(friggaDevices[0]);
-    operation.getData().then(res => {
-      operation.drive = csvData[0];
-      operation.setCsvData(csvData[1]);
-      window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
-    });
+    try {
+      let operation = createDeviceInstance(friggaDevices[0]);
+      operation.getData().then(async res => {
+        if (csvData.length > 0) {
+          operation.drive = csvData[0];
+          await operation.setCsvData(csvData[1]);
+          operation.csvName = csvData[2];
+        }
+        window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
+        ipcRenderer.invoke('createDevice', Object.assign({}, operation));
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
   previousDevices = currentDevices;
   previousDrives = drives;

@@ -101,6 +101,8 @@ export const TimeZone = ({ state }: { state: boolean }) => {
   const setTimeZoneOperate = async () => {
     const times = time!.format('YYYYMMDDHHmmss');
     const timeZoneTZ = convertUTC(timeZoneList[timeZone].name as string);
+    const text = `${times}${timeZoneTZ}`;
+    if (text == device?.record.time) return;
     await deviceOperate.setTimeZone(`${times}${timeZoneTZ}`);
   };
 
@@ -180,7 +182,7 @@ function convertTZ(timezone: string): string {
     time = timezone.split(':')[1];
     sign = '+';
   }
-  if (time.length == 3) {
+  if (time.length == 3 || time.length == 1) {
     time = `0${time}`;
   }
   if (!time) {

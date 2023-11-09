@@ -85,7 +85,7 @@ const DataSheet = () => {
         bordered={false}
         virtual
         columns={columns}
-        scroll={{ x: 100, y: axle }}
+        scroll={{ x: 100, y: axle || 500 }}
         rowKey="id"
         dataSource={csvData}
         pagination={false}

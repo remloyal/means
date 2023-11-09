@@ -3,6 +3,7 @@ import { release } from 'node:os';
 import { join } from 'node:path';
 import { update } from './update';
 import { deviceInit } from './device';
+import '../service/router'
 
 // The built directory structure
 //

@@ -33,12 +33,15 @@
     "react-i18next": "^13.3.1",
     "react-router-dom": "^6.18.0",
     "recoil": "^0.7.7",
+    "sequelize": "^6.34.0",
+    "sqlite3": "^5.1.6",
     "usb": "^2.11.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
+    "@types/sequelize": "^4.28.18",
     "@vitejs/plugin-react": "^4.1.0",
     "electron": "^27.0.2",
     "electron-builder": "^24.6.4",

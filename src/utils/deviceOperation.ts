@@ -1,12 +1,12 @@
 import { instructRead, instructSetup } from './deviceType';
 
 const HID = require('node-hid');
-export const createDeviceInstance = (deviceInfo): DeviceInstanceType => {
+export const createDeviceInstance = (deviceInfo): DeviceInstance => {
   deviceExample?.init(deviceInfo);
   return deviceExample;
 };
 
-class DeviceInstance implements DeviceInstanceType {
+class DeviceInstance {
   device: any = null;
   deviceInfo: DeviceType | null = null;
   operate: OperateTypeItem | null = null;
@@ -15,6 +15,7 @@ class DeviceInstance implements DeviceInstanceType {
   isComplete: boolean = true;
   actionList: OperateTypeItem[] = [];
   csvData: TimeType[] = [];
+  csvName: string = '';
   drive: any = null;
   param: string | number = '';
   private repetitions: number = 3;
@@ -112,13 +113,13 @@ class DeviceInstance implements DeviceInstanceType {
     this.device = null;
   }
   setCsvData(csvData: TimeType[]) {
-          this.csvData = csvData;
-      this.record.firstRecordTime = csvData[0].timeStamp;
-      this.record.lastRecordedTime = csvData[csvData.length - 1].timeStamp;
-      const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
-      this.record.maximumValue = max;
-      this.record.minimumValue = min;
-      }
+    this.csvData = csvData;
+    this.record.firstRecordTime = csvData[0].timeStamp;
+    this.record.lastRecordedTime = csvData[csvData.length - 1].timeStamp;
+    const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
+    this.record.maximumValue = max;
+    this.record.minimumValue = min;
+  }
 }
 
 function Uint8ArrayToString(fileData: Uint8Array) {
@@ -259,7 +260,7 @@ export const deviceOperate = {
   resetDevice: async () => {
     const tempPeriod = instructSetup.setDevreStore;
     const data = await setOperateDevice(tempPeriod);
-    deviceExample.init(deviceExample.deviceInfo!)
+    deviceExample.init(deviceExample.deviceInfo!);
     return data;
   },
 };
