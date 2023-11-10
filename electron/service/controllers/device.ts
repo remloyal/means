@@ -74,3 +74,46 @@ export const queryDevice = async params => {
   const todo = data.map(item => item.toJSON());
   return todo;
 };
+
+export const deleteDevice = async params => {
+  const t = await database.transaction();
+  const queryParameters: { id: string | number }[] = [];
+  params.forEach(element => {
+    queryParameters.push({
+      id: element.id,
+    });
+  });
+  try {
+    await Device.destroy({
+      where: {
+        [Op.or]: queryParameters,
+      },
+    });
+    await t.commit();
+    return true;
+  } catch (error) {
+    await t.rollback();
+    return false;
+  }
+};
+
+export const updateDevice = async params => {
+  const t = await database.transaction();
+  try {
+    await Device.update(
+      {
+        notes: params.notes,
+      },
+      {
+        where: {
+          [Op.or]: [{ id: params.id }],
+        },
+      }
+    );
+    await t.commit();
+    return true;
+  } catch (error) {
+    await t.rollback();
+    return false;
+  }
+};

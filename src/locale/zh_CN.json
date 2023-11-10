@@ -80,6 +80,26 @@
     "localSave": "本地保存",
     "timeOptions": "时间选项",
     "quickView": "快速查看",
-    "uploadPlatform": "上传到云平台？"
+    "uploadPlatform": "上传到云平台？",
+    "alarmEquipment": "报警设备",
+    "alarmOption": "设备选项",
+    "all": "所有",
+    "oneMonth": "一个月",
+    "threeMonths": "三个月",
+    "sixMonths": "六个月",
+    "allData": "所有数据",
+    "localData": "本地数据",
+    "cloudData": "云端数据",
+    "detail": "查看详情",
+    "delete": "删除",
+    "editNotes": "编辑备注",
+    "modifyRemarks": "修改备注",
+    "notes": "备注",
+    "selectHistoricalData": "请选择历史数据！",
+    "dataUpdateSuccessful": "数据更新成功！",
+    "dataUpdateFailed": "数据更新失败！",
+    "dataDeletionSuccessful": "数据删除成功！",
+    "dataDeletionFailed": "数据删除失败！",
+    "deleteThisData":"是否确认删除该数据？"
   }
 }

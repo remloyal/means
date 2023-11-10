@@ -28,6 +28,7 @@
         ]
       }
     ],
+    "requestedExecutionLevel": "requireAdministrator",
     "artifactName": "${productName}.${ext}"
   },
   "nsis": {

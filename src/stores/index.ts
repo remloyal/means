@@ -42,3 +42,13 @@ export const deviceConfigParam = atom<any>({
   key: 'deviceConfigParam',
   default: {},
 });
+
+export const deviceData = atom<any>({
+  key: 'deviceData',
+  default: [],
+});
+
+export const deviceSelectKey = atom<any>({
+  key: 'deviceSelectKey',
+  default: [],
+});
