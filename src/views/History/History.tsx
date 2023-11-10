@@ -58,7 +58,7 @@ const HistoryMain = () => {
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.cloudStorage')}</span>,
       dataIndex: 'cloudStorage',
-      width: 50,
+      width: 60,
       align: 'center',
       render(value, record, index) {
         return (
@@ -80,13 +80,13 @@ const HistoryMain = () => {
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.dataName')}</span>,
       dataIndex: 'dataName',
-      width: 180,
+      width: 280,
       align: 'center',
     },
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.startTime')}</span>,
       dataIndex: 'startTime',
-      width: 90,
+      width: 120,
       align: 'center',
     },
     {

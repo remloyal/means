@@ -5,6 +5,7 @@ import { findMinMax } from '../unitls/tool';
 import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import { database } from '../db';
+import { encrypt } from '../unitls/encryption';
 
 const appPath = path.resolve(process.cwd());
 const dbPath = path.join(appPath, 'resources', 'cache');
@@ -35,9 +36,10 @@ export const handleDeviceData = async params => {
   //   保存数据源
   //   const jsonData = JSON.stringify(todo, null, 2);
   const jsonData = convertToCSV(todo);
+  const encryptText = encrypt(jsonData);
   const jsonName = record.getsn + '_' + new Date().getTime();
-  const jsonPath = path.join(dbPath, jsonName + '.csv');
-  fs.writeFileSync(jsonPath, jsonData);
+  const jsonPath = path.join(dbPath, jsonName + '.dewav');
+  fs.writeFileSync(jsonPath, encryptText);
   await FileData.create({
     path: jsonPath,
     name: jsonName,

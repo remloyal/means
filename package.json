@@ -1,6 +1,6 @@
 {
   "name": "frigga",
-  "version": "1.0.6",
+  "version": "1.0.0",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React boilerplate.",
   "author": "wade",
@@ -21,6 +21,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "antd": "^5.10.2",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
     "drivelist": "^11.1.0",
     "echarts": "^5.4.3",
