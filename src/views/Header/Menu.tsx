@@ -3,14 +3,14 @@ import Preferences from './Preferences';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { equipment, isFirstPage } from '@/stores';
+import { deviceState, deviceTime, equipment, historyDevice, isFirstPage } from '@/stores';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import { deviceExample } from '@/utils/deviceOperation';
 
 export const Menu: React.FC = () => {
   const navigate = useNavigate();
   const [key, setKey] = useState(0);
   const [firstPage, setFirstPage] = useRecoilState(isFirstPage);
-
   const menuConfig: MenuConfig[] = [
     {
       name: 'header.summary',
@@ -19,6 +19,9 @@ export const Menu: React.FC = () => {
           setKey(0);
           setFirstPage(true);
           navigate('/');
+          if (deviceHistory) {
+            restitution(0);
+          }
         }
       },
       icon: () => <i className="iconfont icon-shu"></i>,
@@ -30,6 +33,9 @@ export const Menu: React.FC = () => {
           setKey(1);
           setFirstPage(false);
           navigate('deploy');
+          if (deviceHistory) {
+            restitution(1);
+          }
         }
       },
       icon: () => <i className="iconfont icon-weibaopeizhi"></i>,
@@ -40,6 +46,9 @@ export const Menu: React.FC = () => {
         setFirstPage(false);
         setKey(2);
         navigate('history');
+        if (deviceHistory) {
+          restitution(2);
+        }
       },
       icon: () => <i className="iconfont icon-lishi"></i>,
     },
@@ -73,7 +82,25 @@ export const Menu: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const device = useRecoilValue(equipment);
+  const [device, setDevice] = useRecoilState(equipment);
+  const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
+  const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
+  const [deviceStateTime, setDeviceStateTime] = useRecoilState(deviceTime);
+  const restitution = (index?) => {
+    if (deviceMent) {
+      const data = Object.assign({}, deviceExample);
+      setDevice(data);
+    } else {
+      setDevice(null);
+      setKey(2);
+      navigate('history');
+    }
+    setDeviceHistory(null);
+  };
+  useEffect(() => {
+    console.log(deviceStateTime);
+    setKey(2);
+  }, [deviceStateTime]);
   useEffect(() => {
     if (device) {
       setKey(0);
@@ -83,7 +110,7 @@ export const Menu: React.FC = () => {
     } else {
       if (key === 0 || key === 1) {
         setKey(-1);
-        setFirstPage(false)
+        setFirstPage(false);
       }
     }
   }, [device]);

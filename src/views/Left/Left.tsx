@@ -1,7 +1,9 @@
-import { equipment, deviceState, resize } from '@/stores';
+import { equipment, deviceState, resize, historyDevice } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
+import { splitStringTime } from '@/utils/time';
 import disconnect from '@assets/MainForm/DeviceImage/disconnect.png';
 import { Button, Descriptions, DescriptionsProps, Modal } from 'antd';
+import dayjs from 'dayjs';
 import { ipcRenderer } from 'electron';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +15,7 @@ const Left: React.FC = () => {
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [resizeData, setResizeData] = useRecoilState(resize);
+  const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
   // 设备状态
   // 0: 初始状态，1：工厂模式，2：静默状态，3：延迟状态，4：记录状态、5：停止状态、6：暂停状态
   const DeviceStatus = {
@@ -49,6 +52,10 @@ const Left: React.FC = () => {
   useEffect(() => {
     console.log(device);
   }, [device]);
+  const setTime = (data)=>{
+    const time = splitStringTime(data);
+    return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
+  }
 
   const items: DescriptionsProps['items'] = [
     {
@@ -61,7 +68,7 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.deviceTime'),
-      children: device != null ? device?.record.time : '---',
+      children: device != null ? setTime(device?.record.time) : '---',
     },
     {
       label: t('left.batteryLevel'),
@@ -108,6 +115,13 @@ const Left: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  useEffect(()=>{
+    if (deviceHistory) {
+      setDevice(deviceHistory)
+    }
+  },[deviceHistory])
+  
   return (
     <div className="left">
       <div className="image">

@@ -66,7 +66,7 @@ const DeployMain: React.FC = () => {
 
 // 基本操作
 const DeployBasic = ({ state }: { state: boolean }) => {
-  const data = [TempPeriodDom, TimeZone, StartModeDom];
+  const data = [TempPeriodDom, TimeZone, StartModeDom, HightEmpDom, LowEmpDom, StartDelayDom];
   return (
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>

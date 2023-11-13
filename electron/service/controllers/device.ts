@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 import { Device, FileData } from '../model';
-import { findMinMax } from '../unitls/tool';
+import { findMinMax, parseCSVData } from '../unitls/tool';
 import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import { database } from '../db';
-import { encrypt } from '../unitls/encryption';
+import { decrypt, encrypt } from '../unitls/encryption';
 
 const appPath = path.resolve(process.cwd());
 const dbPath = path.join(appPath, 'resources', 'cache');
@@ -101,20 +101,33 @@ export const deleteDevice = async params => {
 export const updateDevice = async params => {
   const t = await database.transaction();
   try {
-    await Device.update(
-      {
-        notes: params.notes,
-      },
-      {
-        where: {
-          [Op.or]: [{ id: params.id }],
-        },
-      }
-    );
+    const device = await Device.findOne({ where: { id: params.id } });
+    if (!device) {
+      return false;
+    }
+    device.update({ notes: params.notes });
+    await device.save();
     await t.commit();
     return true;
   } catch (error) {
     await t.rollback();
+    return false;
+  }
+};
+
+export const queryHistoryDevice = async params => {
+  try {
+    const file = await FileData.findOne({ where: { deviceId: params.id } });
+    if (!file) {
+      return false;
+    }
+    const data = fs.readFileSync(file.toJSON().path);
+    const decryptText = decrypt(data.toString());
+    const todo = parseCSVData(decryptText);
+    const deviceData = JSON.parse(params.otherData);
+    deviceData.csvData = todo;
+    return deviceData;
+  } catch (error) {
     return false;
   }
 };

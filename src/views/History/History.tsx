@@ -1,5 +1,5 @@
 import { MainBody, MainRight } from '@/components/main';
-import { deviceData, deviceSelectKey, equipment, resize } from '@/stores';
+import { deviceData, deviceSelectKey, equipment, historyDevice, resize } from '@/stores';
 import {
   Button,
   DatePicker,
@@ -89,7 +89,11 @@ const HistoryMain = () => {
       width: 110,
       align: 'center',
       render(value) {
-        return <span>{dayjs(value).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`)}</span>;
+        return (
+          <span>
+            {dayjs(value).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`)}
+          </span>
+        );
       },
     },
     {
@@ -117,7 +121,7 @@ const HistoryMain = () => {
       dataIndex: 'minTemperature',
       width: 60,
       align: 'center',
-      render(value: any, record:any, index: number) {
+      render(value: any, record: any, index: number) {
         return (
           <span>
             {record.temperature.min}
@@ -366,18 +370,37 @@ const HistoryLift = () => {
     const remarkChange = e => {
       setRemark(e.target.value);
     };
+    // 查看详情
+    const [detailsState,setDetailsState] = useState(true);
+    const [noteState,setNoteState]=useState(true)
+    const [device, setDevice] = useRecoilState(historyDevice);
+    useEffect(() => {
+      if (deviceListKey.length == 1) {
+        setDetailsState(false)
+        setNoteState(false)
+      } else {
+        if (detailsState) return
+        setDetailsState(true)
+        setNoteState(true)
+      }
+    }, [deviceListKey]);
+    const viewDetails =async () =>{
+      const foundArr = deviceList.filter(item => deviceListKey.includes(item.id));
+      const todo = await ipcRenderer.invoke('queryHistoryDevice', foundArr[0]);
+      setDevice(todo)
+    }
     return (
       <>
         <div>
           <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.alarmOption')}：</div>
           <Space direction="vertical" style={{ width: '100%' }}>
-            <Button style={{ width: '100%' }} disabled>
+            <Button style={{ width: '100%' }} disabled={detailsState} onClick={viewDetails}>
               {t('history.detail')}
             </Button>
             <Button style={{ width: '100%' }} onClick={deleteData}>
               {t('history.delete')}
             </Button>
-            <Button style={{ width: '100%' }} onClick={showModal}>
+            <Button style={{ width: '100%' }} onClick={showModal} disabled={noteState}>
               {t('history.editNotes')}
             </Button>
           </Space>

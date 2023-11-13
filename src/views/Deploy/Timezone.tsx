@@ -65,7 +65,7 @@ export const TimeZone = ({ state }: { state: boolean }) => {
     const timeData = device?.record.time;
     if (!timeData) return;
     const todo = timeData.split('TZ:');
-
+        
     // 设置时区
     const timeZoneData = convertTZ(timeData.substring(14, timeData.length));
     console.log(timeZoneData);

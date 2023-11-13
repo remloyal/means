@@ -17,14 +17,17 @@ import {
 } from '@/components/echarts/DisplayCharts';
 import { useTranslation } from 'react-i18next';
 import { MainBody, MainRight } from '@/components/main';
-import { useRecoilValue } from 'recoil';
-import { equipment, language } from '@/stores';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { equipment, historyDevice, language } from '@/stores';
 import DataSheet from './DataSheet';
 import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
+import HistoryRight from '../History/historyRight';
 const Summary: React.FC = () => {
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
+  const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
+
   useEffect(() => {
     if (device) {
       setDataState(true);
@@ -32,10 +35,17 @@ const Summary: React.FC = () => {
       setDataState(false);
     }
   }, [device]);
+
   return dataState ? (
     <div className="summary">
       <SummaryMain></SummaryMain>
-      <SummaryRight></SummaryRight>
+      {deviceHistory ? (
+        <MainRight>
+          <HistoryRight></HistoryRight>
+        </MainRight>
+      ) : (
+        <SummaryRight></SummaryRight>
+      )}
     </div>
   ) : (
     <div

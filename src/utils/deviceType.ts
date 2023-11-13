@@ -87,8 +87,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取设备时间和时区',
     order: () => 'AT+GETTIME:',
     getData: data => {
-      const time = splitStringTime(data);
-      return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
+      return data;
     },
   },
 

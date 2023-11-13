@@ -11,6 +11,15 @@ export const equipment = atom<DeviceInstanceType | null>({
   default: null,
 });
 
+export const historyDevice = atom<any>({
+  key: 'historyDevice',
+  default: null,
+});
+export const deviceTime= atom<string>({
+  key: 'deviceTime',
+  default: '',
+});
+
 export const deviceState = atom<boolean>({
   key: 'deviceState',
   default: false,
@@ -52,7 +61,6 @@ export const deviceSelectKey = atom<any>({
   key: 'deviceSelectKey',
   default: [],
 });
-
 
 export const dateFormat = atom<any>({
   key: 'dateFormat',

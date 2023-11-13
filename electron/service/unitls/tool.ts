@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 interface Data {
   c: number;
   f: number;
@@ -56,3 +58,27 @@ function getAverage(arr) {
     }, 0) / arr.length;
   return res.toFixed(1);
 }
+
+/**
+ * 解析 csv 数据
+ * @param {String} csvString csv 数据
+ * @returns 解析后的数据
+ */
+export const parseCSVData = (csvString): TimeType[] => {
+  const lines = csvString.split('\n');
+  const data: TimeType[] = [];
+
+  // 我们从第3行开始处理，因为前几行包含元数据或标题。
+  for (let i = 2; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue; // 跳过空行
+    const fields = line.split(',');
+    data.push({
+      timeStamp: fields[0],
+      c: fields[1],
+      f: fields[2],
+      humi: fields[3],
+    });
+  }
+  return data;
+};
