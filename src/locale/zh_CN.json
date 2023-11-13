@@ -9,8 +9,8 @@
     "about": "关于",
     "basicSettings": "基本设置",
     "cloudSettings": "云设置",
-    "dateFormat": "日期设置",
-    "timeFormat": "时间设置",
+    "dateFormat": "日期格式",
+    "timeFormat": "时间格式",
     "systemLanguage": "系统语言"
   },
   "left": {
@@ -101,5 +101,17 @@
     "dataDeletionSuccessful": "数据删除成功！",
     "dataDeletionFailed": "数据删除失败！",
     "deleteThisData":"是否确认删除该数据？"
+  },
+  "device":{
+    "initialstate":"初始状态",
+    "factorymode":"工厂模式",
+    "silentstate":"静默状态",
+    "delaystate":"延迟状态",
+    "recordingstate":"记录状态",
+    "stopstate":"停止状态",
+    "pausestate":"暂停状态",
+    "keyon":"按键开启",
+    "timingon":"定时开启",
+    "temperaturerange":"温度范围"
   }
 }

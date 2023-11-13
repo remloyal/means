@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import { splitStringTime } from './time';
+
 export const instructRead: OperateType<OperateTypeItem> = {
   deviceType: {
     key: 'deviceType',
@@ -84,7 +87,8 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取设备时间和时区',
     order: () => 'AT+GETTIME:',
     getData: data => {
-      return data;
+      const time = splitStringTime(data);
+      return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
     },
   },
 

@@ -80,14 +80,17 @@ const HistoryMain = () => {
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.dataName')}</span>,
       dataIndex: 'dataName',
-      width: 280,
+      width: 260,
       align: 'center',
     },
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.startTime')}</span>,
       dataIndex: 'startTime',
-      width: 120,
+      width: 110,
       align: 'center',
+      render(value) {
+        return <span>{dayjs(value).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`)}</span>;
+      },
     },
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.currentNumberEntries')}</span>,
@@ -100,10 +103,10 @@ const HistoryMain = () => {
       dataIndex: 'maxTemperature',
       width: 60,
       align: 'center',
-      render(value: any, record: RecordType, index: number) {
+      render(value: any, record: any, index: number) {
         return (
           <span>
-            {value}
+            {record.temperature.max}
             {unit}
           </span>
         );
@@ -114,10 +117,10 @@ const HistoryMain = () => {
       dataIndex: 'minTemperature',
       width: 60,
       align: 'center',
-      render(value: any, record: RecordType, index: number) {
+      render(value: any, record:any, index: number) {
         return (
           <span>
-            {value}
+            {record.temperature.min}
             {unit}
           </span>
         );
@@ -283,7 +286,9 @@ const HistoryLift = () => {
           <Space direction="vertical">
             <Radio value={1}>{t('history.allData')}</Radio>
             <Radio value={2}>{t('history.localData')}</Radio>
-            <Radio value={3} disabled>{t('history.cloudData')}</Radio>
+            <Radio value={3} disabled>
+              {t('history.cloudData')}
+            </Radio>
           </Space>
         </Radio.Group>
       </>

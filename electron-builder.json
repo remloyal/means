@@ -1,31 +1,20 @@
-/**
- * @see https://www.electron.build/configuration/configuration
- */
 {
-  "productName":"鼎为数据中心",
+  "productName": "鼎为数据中心",
   "appId": "com.leon.frigga",
   "asar": true,
   "directories": {
     "output": "release/${version}"
   },
-  "files": [
-    "dist-electron",
-    "dist"
-  ],
+  "files": ["dist-electron", "dist"],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
-    "target": [
-      "dmg",
-      "zip"
-    ]
+    "target": ["dmg", "zip"]
   },
   "win": {
     "target": [
       {
         "target": "nsis",
-        "arch": [
-          "x64"
-        ]
+        "arch": ["x64","ia32"]
       }
     ],
     "requestedExecutionLevel": "requireAdministrator",
@@ -34,8 +23,11 @@
   "nsis": {
     "oneClick": false,
     "perMachine": false,
+    "allowElevation": true,
     "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
+    "deleteAppDataOnUninstall": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
   },
   "publish": {
     "provider": "generic",

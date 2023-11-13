@@ -13,6 +13,22 @@ const Left: React.FC = () => {
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [resizeData, setResizeData] = useRecoilState(resize);
+  // 设备状态
+  // 0: 初始状态，1：工厂模式，2：静默状态，3：延迟状态，4：记录状态、5：停止状态、6：暂停状态
+  const DeviceStatus = {
+    0: t('device.initialstate'),
+    1: t('device.factorymode'),
+    2: t('device.silentstate'),
+    3: t('device.delaystate'),
+    4: t('device.recordingstate'),
+    5: t('device.stopstate'),
+    6: t('device.pausestate'),
+  };
+
+  const MultidUnit = {
+    0: '\u2103',
+    1: '\u2109',
+  };
 
   useEffect(() => {
     window.eventBus.on('friggaDevice:in', deviceData => {
@@ -53,11 +69,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.DeviceStatus'),
-      children: device != null ? device?.record.deviceType : '---',
+      children: device != null ? DeviceStatus[device?.record.mode] : '---',
     },
     {
       label: t('left.recordPoints'),
-      children: device != null ? device?.record.deviceType : '---',
+      children: device != null ? device?.csvData.length : '---',
     },
     {
       label: t('left.firstRecordTime'),
@@ -69,11 +85,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.maximumValue'),
-      children: device != null ? device?.record.maximumValue : '---',
+      children: device != null ? device?.record.maximumValue + MultidUnit[device?.record.multidUnit]: '---',
     },
     {
       label: t('left.minimumValue'),
-      children: device != null ? device?.record.minimumValue : '---',
+      children: device != null ? device?.record.minimumValue + MultidUnit[device?.record.multidUnit]: '---',
     },
   ];
   const quickReset = () => {

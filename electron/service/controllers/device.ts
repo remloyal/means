@@ -25,10 +25,9 @@ export const handleDeviceData = async params => {
     dataName: params.csvName.split('.')[0],
     startTime: dayjs(record.firstRecordTime),
     dataCount: todo.length,
-    maxTemperature: result.c.max,
-    minTemperature: result.c.min,
-    maxHumidity: result.humi.max,
-    minHumidity: result.humi.min,
+    temperature: JSON.stringify(result.c),
+    fahrenheit: JSON.stringify(result.f),
+    humidity: JSON.stringify(result.humi),
     dataStorage_type: 0,
     otherData: JSON.stringify(other_data),
   });

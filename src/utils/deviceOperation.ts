@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { instructRead, instructSetup } from './deviceType';
 
 const HID = require('node-hid');
@@ -114,8 +115,12 @@ class DeviceInstance {
   }
   setCsvData(csvData: TimeType[]) {
     this.csvData = csvData;
-    this.record.firstRecordTime = csvData[0].timeStamp;
-    this.record.lastRecordedTime = csvData[csvData.length - 1].timeStamp;
+    this.record.firstRecordTime = dayjs(csvData[0].timeStamp).format(
+      `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+    );
+    this.record.lastRecordedTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
+      `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+    );
     const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
     this.record.maximumValue = max;
     this.record.minimumValue = min;

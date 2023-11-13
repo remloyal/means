@@ -52,3 +52,9 @@ export const deviceSelectKey = atom<any>({
   key: 'deviceSelectKey',
   default: [],
 });
+
+
+export const dateFormat = atom<any>({
+  key: 'dateFormat',
+  default: '',
+});

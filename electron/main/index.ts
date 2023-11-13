@@ -153,3 +153,13 @@ ipcMain.handle('open-win', (_, arg) => {
     childWindow.loadFile(indexHtml, { hash: arg });
   }
 });
+
+// 应用重启
+ipcMain.on('window-reset', function () {
+  if (url) {
+    win?.webContents.reload(); 
+  } else {
+    app.relaunch();
+    app.exit();
+  }
+});

@@ -13,7 +13,7 @@ import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 
 import { useRecoilState } from 'recoil';
-import { language } from './stores';
+import { dateFormat, language } from './stores';
 import { Locale } from 'antd/es/locale';
 
 const languageData = {
@@ -24,9 +24,11 @@ const languageData = {
 const App: React.FC = () => {
   const [tongue, setTongue] = useRecoilState(language);
   const [locale, setLocal] = useState<Locale>(enUS);
-
+  const [date, setDate] = useRecoilState(dateFormat);
+  
   useEffect(() => {
     setTongue(localStorage.getItem('language') || 'zh_CN');
+    setDate(localStorage.getItem('dateFormat') || 'YYYY-MM-DD');
   }, []);
 
   useEffect(() => {

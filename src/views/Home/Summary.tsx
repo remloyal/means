@@ -225,66 +225,81 @@ const ExportData: React.FC = () => {
 
 const SummaryRight: React.FC = () => {
   const { t } = useTranslation();
+  const device = useRecoilValue(equipment);
+  // 启动模式  0：按键开启，1：定时开启，2：温度范围
+  const MultIdBootMode = {
+    0: t('device.keyon'),
+    1: t('device.timingon'),
+    2: t('device.temperaturerange'),
+  };
+
+  // 温度单位
+  const MultidUnit = {
+    0: '\u2103',
+    1: '\u2109',
+  };
   const items: DescriptionsProps['items'] = [
     {
       label: t('home.startMode'),
-      children: '---',
+      children: device != null ? MultIdBootMode[device?.record.multIdBootMode] : '---',
     },
     {
       label: t('home.stopMode'),
-      children: '---',
+      children: device != null ? device?.record.stopMode : '---',
     },
     {
       label: t('home.temperatureUnit'),
-      children: '---',
+      children: device != null ? MultidUnit[device?.record.multidUnit] : '---',
     },
     {
       label: t('home.recordInterval'),
-      children: '---',
+      children: device != null ? `${device?.record.tempPeriod} S` : '---',
     },
     {
       label: t('home.sensorType'),
-      children: '---',
+      children: device != null ? device?.record.sensorType : '---',
     },
     {
       label: t('home.startDelay'),
-      children: '---',
+      children: device != null ? `${device?.record.startDelayTime} S` : '---',
     },
     {
       label: t('home.repetitionPriming'),
-      children: '---',
+      children: device != null ? device?.record.repetitionPriming : '---',
     },
     {
       label: t('home.displayTime'),
-      children: '---',
+      children: device != null ? `${device?.record.multIdSleepTime} S` : '---',
     },
     {
       label: t('home.temporaryPDF'),
-      children: '---',
+      children: device != null ? device?.record.temporaryPDF : '---',
     },
     {
       label: t('home.timeZone'),
-      children: '---',
+      children: device != null ? device?.record.timeZone : '---',
     },
     {
       label: t('home.firmwareVersion'),
-      children: '---',
+      children: device != null ? device?.record.firmwareVersion : '---',
     },
     {
       label: t('home.highTemperatureAlarm'),
-      children: '---',
+      children:
+        device != null ? device?.record.hightEmp + MultidUnit[device?.record.multidUnit] : '---',
     },
     {
       label: t('home.lowTemperatureAlarm'),
-      children: '---',
+      children:
+        device != null ? device?.record.lowtEmp + MultidUnit[device?.record.multidUnit] : '---',
     },
     {
       label: t('home.runLengthCoding'),
-      children: '---',
+      children: device != null ? device?.record.runLengthCoding : '---',
     },
     {
       label: t('home.journeyDescription'),
-      children: '---',
+      children: device != null ? device?.record.journeyDescription : '---',
     },
   ];
 

@@ -14,14 +14,31 @@ export const Device = database.define(
       type: DATE,
       allowNull: false,
       get() {
-        return dayjs(this.getDataValue('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        return dayjs(this.getDataValue('startTime')).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     dataCount: { type: INTEGER, allowNull: false },
-    maxTemperature: { type: INTEGER, allowNull: false },
-    minTemperature: { type: INTEGER, allowNull: false },
-    maxHumidity: { type: INTEGER, allowNull: false },
-    minHumidity: { type: INTEGER, allowNull: false },
+    temperature: {
+      type: STRING,
+      allowNull: false,
+      get() {
+        return JSON.parse(this.getDataValue('temperature'));
+      },
+    },
+    fahrenheit: {
+      type: STRING,
+      allowNull: false,
+      get() {
+        return JSON.parse(this.getDataValue('fahrenheit'));
+      },
+    },
+    humidity: {
+      type: STRING,
+      allowNull: false,
+      get() {
+        return JSON.parse(this.getDataValue('fahrenheit'));
+      },
+    },
     dataStorage_type: { type: STRING, allowNull: false },
     otherData: { type: STRING, allowNull: true },
     notes: { type: STRING, allowNull: true },

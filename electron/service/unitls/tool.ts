@@ -4,9 +4,9 @@ interface Data {
   humi: number;
 }
 export function findMinMax(data: Data[]): {
-  c: { min: number; max: number };
-  f: { min: number; max: number };
-  humi: { min: number; max: number };
+  c: { min: number; max: number; average: number | string };
+  f: { min: number; max: number; average: number | string };
+  humi: { min: number; max: number; average: number | string };
 } {
   let cList: number[] = [];
   let fList: number[] = [];
@@ -24,9 +24,9 @@ export function findMinMax(data: Data[]): {
   let humiMin = findMinValue(humiList);
   let humiMax = findMaxValue(humiList);
   return {
-    c: { min: cMin, max: cMax },
-    f: { min: fMin, max: fMax },
-    humi: { min: humiMin, max: humiMax },
+    c: { min: cMin, max: cMax, average: getAverage(cList) },
+    f: { min: fMin, max: fMax, average: getAverage(fList) },
+    humi: { min: humiMin, max: humiMax, average: getAverage(humiList) },
   };
 }
 
@@ -47,4 +47,12 @@ function findMinValue(data: number[]): number {
     }
   }
   return min;
+}
+
+function getAverage(arr) {
+  let res =
+    arr.reduce((sum, value) => {
+      return sum + value;
+    }, 0) / arr.length;
+  return res.toFixed(1);
 }
