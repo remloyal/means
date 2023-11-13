@@ -8,7 +8,7 @@ import {
   TabsProps,
   Tooltip,
 } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { createRef, useEffect, useRef, useState } from 'react';
 import {
   ShareChart,
   StandardLine,
@@ -21,6 +21,7 @@ import { useRecoilValue } from 'recoil';
 import { equipment, language } from '@/stores';
 import DataSheet from './DataSheet';
 import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { ipcRenderer } from 'electron';
 const Summary: React.FC = () => {
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
@@ -180,7 +181,11 @@ const SummaryGraph: React.FC = () => {
     setValue(e.target.value);
     setChatOption(e.target.value);
   };
-
+  const childRef = createRef<any>();
+  const exportImage = () => {
+    const baseData = childRef.current.exportImage();
+    ipcRenderer.send('export-jpg', baseData);
+  };
   return (
     <>
       <div className="summary-graph" ref={graph}>
@@ -199,12 +204,13 @@ const SummaryGraph: React.FC = () => {
             </Tooltip>
             <Tooltip title={t('home.exportGraph')} destroyTooltipOnHide={true}>
               <FileJpgOutlined
+                onClick={exportImage}
                 style={{ fontSize: '28px', marginRight: '14px', cursor: 'pointer' }}
               />
             </Tooltip>
           </div>
         </div>
-        <ShareChart option={option} parent={graph} />
+        <ShareChart option={option} parent={graph} ref={childRef} />
       </div>
     </>
   );

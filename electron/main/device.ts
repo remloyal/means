@@ -102,3 +102,28 @@ ipcMain.on('select-config', (event, data) => {
       console.log(err);
     });
 });
+
+
+ipcMain.on('export-jpg', (event, data) => {
+  dialog
+    .showSaveDialog({
+      title: '保存为图片', // 对话框标题
+      // defaultPath: '/path/to/default/folder', // 默认保存路径
+      // buttonLabel: '保存', // 自定义保存按钮的文本
+      filters: [{ name: 'config', extensions: ['jpg'] }],
+    })
+    .then(result => {
+      console.log(result);
+      if (result.canceled == false) {
+        // const jsonData = JSON.stringify(data);
+        // const encryption = encrypt(jsonData);
+        const base64 = data.replace(/^data:image\/\w+;base64,/, "");
+        fs.writeFileSync(result.filePath, base64, 'base64');
+        const directory = result.filePath!.substring(0,  result.filePath!.lastIndexOf("\\"));
+        shell.openPath(directory);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    });
+});

@@ -1,5 +1,5 @@
 import * as echarts from 'echarts';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useImperativeHandle, useRef, useState,forwardRef } from 'react';
 import { ipcRenderer } from 'electron';
 import { useRecoilValue } from 'recoil';
 import { resize } from '@/stores';
@@ -13,7 +13,7 @@ interface Chart {
   parent: React.MutableRefObject<HTMLDivElement | null>;
 }
 
-export const ShareChart: React.FC<Chart> = props => {
+export const ShareChart = forwardRef((props: Chart, ref) => {
   const { option, parent } = props;
   const chartWrapper = useRef<HTMLDivElement>(null);
   const chart = useRef<any>(null);
@@ -45,8 +45,18 @@ export const ShareChart: React.FC<Chart> = props => {
         height: parent.current?.clientHeight - 100,
       });
   }, [resizeData]);
+  useImperativeHandle(ref, () => ({
+    // onFinish,
+    exportImage
+  }));
+  const exportImage = () =>{
+    const data = chart.current.getDataURL({
+      type:"jpg"
+    });
+    return data;
+  }
   return <div ref={chartWrapper} />;
-};
+});
 
 export const foldLine = (
   xList: string[],
@@ -104,9 +114,9 @@ export const foldLine = (
       },
     ],
     grid: {
-      left: 0,
-      right: 0,
-      bottom: 0,
+      left: 10,
+      right: 10,
+      bottom: 10,
       top: 40,
       containLabel: true,
       show: true,
