@@ -11,7 +11,8 @@
     "cloudSettings": "云设置",
     "dateFormat": "日期格式",
     "timeFormat": "时间格式",
-    "systemLanguage": "系统语言"
+    "systemLanguage": "系统语言",
+    "restartNow":"必须重启以使新的设置生效，是否立即重启？"
   },
   "left": {
     "equipmentModel": "设备型号",
@@ -70,7 +71,9 @@
     "buttonStart": "按键启动",
     "timingOn": "定时开启",
     "heatUpperLimit": "温度阈值上限",
-    "heatLowerLimit": "温度阈值下限"
+    "heatLowerLimit": "温度阈值下限",
+    "humiUpperLimit": "湿度阈值上限",
+    "humiLowerLimit": "湿度阈值下限"
   },
   "history": {
     "cloudStorage": "云端存储",

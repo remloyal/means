@@ -210,7 +210,7 @@ const HistoryMain = () => {
   };
 
   const rowSelection = {
-    columnWidth: 20,
+    columnWidth: 26,
     selectedRowKeys,
     onClick: onSelectChange,
     onChange: onSelectChange,

@@ -4,7 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   HightEmpDom,
+  HightHumiDom,
   LowEmpDom,
+  LowHumiDom,
   StartDelayDom,
   StartModeDom,
   TempPeriodDom,
@@ -66,7 +68,7 @@ const DeployMain: React.FC = () => {
 
 // 基本操作
 const DeployBasic = ({ state }: { state: boolean }) => {
-  const data = [TempPeriodDom, TimeZone, StartModeDom, HightEmpDom, LowEmpDom, StartDelayDom];
+  const data = [TempPeriodDom, TimeZone, StartModeDom, HightEmpDom, LowEmpDom, StartDelayDom,HightHumiDom ,LowHumiDom];
   return (
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>

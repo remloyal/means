@@ -11,7 +11,8 @@
     "cloudSettings": "Cloud Settings",
     "dateFormat": "Date Format",
     "timeFormat": "Time Format",
-    "systemLanguage": "System Language"
+    "systemLanguage": "System Language",
+    "restartNow":"You must restart for the new settings to take effect. Do you want to restart now?"
   },
   "left": {
     "equipmentModel": "Equipment Model",
@@ -70,7 +71,9 @@
     "buttonStart": "Button Start",
     "timingOn": "Timing on",
     "heatUpperLimit": "Upper limit of temperature threshold",
-    "heatLowerLimit": "Lower limit of temperature threshold"
+    "heatLowerLimit": "Lower limit of temperature threshold",
+    "humiUpperLimit": "Upper limit of humidity threshold",
+    "humiLowerLimit": "Lower limit of humidity threshold"
   },
   "history": {
     "cloudStorage": "cloud storage",

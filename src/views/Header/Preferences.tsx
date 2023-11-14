@@ -75,8 +75,8 @@ const BasicSetting = () => {
     const handleChange = (value: string) => {
       console.log(`selected ${value}`);
       Modal.confirm({
-        title: 'Do you Want to delete these items?',
-        content: 'Some descriptions',
+        // title: 'Do you Want to delete these items?',
+        content: t('header.restartNow'),
         onOk() {
           localStorage.setItem('dateFormat', value);
           setDate(value);

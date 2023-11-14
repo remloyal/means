@@ -252,6 +252,20 @@ export const deviceOperate = {
     const data = await setOperateDevice(tempPeriod, instructRead.lowtEmp);
     return data;
   },
+  /**设置湿度阈值上限 */
+  setHightHumi: async value => {
+    const tempPeriod = instructSetup.setHighHumi;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.highHumi);
+    return data;
+  },
+  /**设置温度阈值下限 */
+  setLowtHumi: async value => {
+    const tempPeriod = instructSetup.setLowHumi;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.lowHumi);
+    return data;
+  },
   /**设置时区 */
   setTimeZone: async value => {
     console.log(value);

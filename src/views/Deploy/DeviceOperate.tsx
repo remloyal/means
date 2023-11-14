@@ -431,3 +431,115 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   );
 };
 
+
+// 湿度阈值上限
+export const HightHumiDom = ({ state }: { state: boolean }) => {
+  useEffect(() => {
+    if (state) {
+      setHighHumi();
+    }
+  }, [state]);
+  useEffect(() => {
+    init();
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (deviceData.highHumi) {
+        setEmp(deviceData.highHumi || emp);
+      }
+    });
+  }, []);
+  const { t } = useTranslation();
+  const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const [emp, setEmp] = useState(0);
+  const empChange = num => {
+    setEmp(parseInt(num));
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        highHumi: num,
+      };
+    });
+  };
+  const init = () => {
+    const highHumi = device?.record.highHumi;
+    setEmp(highHumi);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        highHumi: highHumi,
+      };
+    });
+  };
+
+  const setHighHumi = async () => {
+    if (emp != parseInt(device?.record.highHumi)) {
+      await deviceOperate.setHightHumi(emp);
+    }
+  };
+
+  return (
+    <Col span={8}>
+      <div style={{ padding: '10px 0' }}>{t('deploy.humiUpperLimit')}</div>
+      <div className="deploy-select">
+        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <span className="deploy-span">RH</span>
+      </div>
+    </Col>
+  );
+};
+
+// 湿度阈值下限
+export const LowHumiDom = ({ state }: { state: boolean }) => {
+  useEffect(() => {
+    if (state) {
+      setLowHumi();
+    }
+  }, [state]);
+  useEffect(() => {
+    init();
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (deviceData.lowHumi) {
+        setEmp(deviceData.lowHumi || emp);
+      }
+    });
+  }, []);
+  const { t } = useTranslation();
+  const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const [emp, setEmp] = useState(0);
+  const empChange = num => {
+    setEmp(parseInt(num));
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        lowHumi: num,
+      };
+    });
+  };
+  const init = () => {
+    const lowHumi = device?.record.lowHumi;
+    setEmp(lowHumi);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        lowHumi: lowHumi,
+      };
+    });
+  };
+
+  const setLowHumi = async () => {
+    if (emp != parseInt(device?.record.lowHumi)) {
+      await deviceOperate.setLowtHumi(emp);
+    }
+  };
+
+  return (
+    <Col span={8}>
+      <div style={{ padding: '10px 0' }}>{t('deploy.humiUpperLimit')}</div>
+      <div className="deploy-select">
+        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <span className="deploy-span">RH</span>
+      </div>
+    </Col>
+  );
+};

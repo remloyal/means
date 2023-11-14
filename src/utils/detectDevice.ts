@@ -57,9 +57,9 @@ const parseCSVData = (csvString): TimeType[] => {
 
   // 我们从第3行开始处理，因为前几行包含元数据或标题。
   for (let i = 3; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line: string = lines[i].trim();
     if (!line) continue; // 跳过空行
-
+    if (line.indexOf('Output') != -1) continue; //结束语句
     const fields = line.split(',');
 
     const date = fields[0];
