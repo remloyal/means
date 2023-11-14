@@ -1,5 +1,12 @@
 import { MainBody, MainRight } from '@/components/main';
-import { deviceData, deviceSelectKey, equipment, historyDevice, resize } from '@/stores';
+import {
+  analysisState,
+  deviceData,
+  deviceSelectKey,
+  equipment,
+  historyDevice,
+  resize,
+} from '@/stores';
 import {
   Button,
   DatePicker,
@@ -16,20 +23,27 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import { ipcRenderer } from 'electron';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import { AnalysisPage, AnalysisPageLeft } from './AnalysisPage';
 const { RangePicker } = DatePicker;
 
 const History: React.FC = () => {
+  const pageState = useRecoilValue(analysisState);
   return (
     <div className="summary">
       <MainBody style={{ position: 'relative', overflow: 'hidden' }}>
-        <HistoryMain></HistoryMain>
+        <HistoryMain />
+        {pageState ? (
+          <></>
+        ) : (
+          <div className="summary-analysis">
+            <AnalysisPage />
+          </div>
+        )}
       </MainBody>
-      <MainRight>
-        <HistoryLift></HistoryLift>
-      </MainRight>
+      <MainRight>{pageState ? <HistoryLift /> : <AnalysisPageLeft />}</MainRight>
     </div>
   );
 };
@@ -171,7 +185,6 @@ const HistoryMain = () => {
   useEffect(() => {
     getData();
     ipcRenderer.on('renewDevice', async (event, data) => {
-      console.log(data);
       if (data && data.length > 0) {
         setDeviceList(data);
       }
@@ -180,7 +193,6 @@ const HistoryMain = () => {
 
   const getData = async () => {
     const data = await ipcRenderer.invoke('queryDevice');
-    console.log(data);
     setDeviceList(data);
     const multidUnit = device?.record.multidUnit;
     if (parseInt(multidUnit) == 1) {
@@ -247,7 +259,6 @@ const HistoryLift = () => {
   const [deviceListKey, setDeviceListKey] = useRecoilState(deviceSelectKey);
 
   const timeChange = async (dates, dateStrings: [string, string]) => {
-    console.log(dateStrings);
     if (dateStrings[0] == '' && dateStrings[1] == '') {
       queryDevice();
     } else {
@@ -371,24 +382,42 @@ const HistoryLift = () => {
       setRemark(e.target.value);
     };
     // 查看详情
-    const [detailsState,setDetailsState] = useState(true);
-    const [noteState,setNoteState]=useState(true)
+    const [detailsState, setDetailsState] = useState(true);
+    const [noteState, setNoteState] = useState(true);
     const [device, setDevice] = useRecoilState(historyDevice);
+    const [compareState, setCompareState] = useState(true);
     useEffect(() => {
-      if (deviceListKey.length == 1) {
-        setDetailsState(false)
-        setNoteState(false)
+      if (deviceListKey.length > 1 && compareState != false) {
+        setCompareState(false);
       } else {
-        if (detailsState) return
-        setDetailsState(true)
-        setNoteState(true)
+        setCompareState(true);
+      }
+      if (deviceListKey.length == 1) {
+        setDetailsState(false);
+        setNoteState(false);
+      } else {
+        if (detailsState) return;
+        setDetailsState(true);
+        setNoteState(true);
       }
     }, [deviceListKey]);
-    const viewDetails =async () =>{
+    const viewDetails = async () => {
       const foundArr = deviceList.filter(item => deviceListKey.includes(item.id));
       const todo = await ipcRenderer.invoke('queryHistoryDevice', foundArr[0]);
-      setDevice(todo)
-    }
+      setDevice(todo);
+    };
+    const [pageState, setPageState] = useRecoilState(analysisState);
+
+    const analysisPageState = () => {
+      if (deviceListKey.length > 10) {
+        Modal.warning({
+          content: t('history.piecesData', { count: 10, select: deviceListKey.length }),
+          centered: true,
+        });
+        return;
+      }
+      setPageState(false);
+    };
     return (
       <>
         <div>
@@ -402,6 +431,9 @@ const HistoryLift = () => {
             </Button>
             <Button style={{ width: '100%' }} onClick={showModal} disabled={noteState}>
               {t('history.editNotes')}
+            </Button>
+            <Button style={{ width: '100%' }} onClick={analysisPageState} disabled={compareState}>
+              {t('history.contrastAnalysis')}
             </Button>
           </Space>
         </div>

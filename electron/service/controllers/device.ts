@@ -22,7 +22,7 @@ export const handleDeviceData = async params => {
   const data = await Device.create({
     type: record.deviceType,
     gentsn: record.getsn,
-    dataName: params.csvName.split('.')[0],
+    dataName: `${record.getsn}_${dayjs(new Date()).format('YYYYMMDDHHmmss')}`,
     startTime: dayjs(record.firstRecordTime),
     dataCount: todo.length,
     temperature: JSON.stringify(result.c),
@@ -130,4 +130,29 @@ export const queryHistoryDevice = async params => {
   } catch (error) {
     return false;
   }
+};
+
+export const queryHistoryDeviceList = async (params: number[]) => {
+  try {
+    const deviceList = await Device.findAll({ where: { id: params } });
+    const files = await FileData.findAll({ where: { deviceId: params } });
+    const dataList: any[] = [];
+    for (let index = 0; index < deviceList.length; index++) {
+      const element = deviceList[index].toJSON();
+      const file = files[index].toJSON();
+      const data = getDeviceList(element, file);
+      dataList.push(data);
+    }
+    return dataList;
+  } catch (error) {
+    return [];
+  }
+};
+
+const getDeviceList = (device, file) => {
+  const data = fs.readFileSync(file.path);
+  const decryptText = decrypt(data.toString());
+  const todo = parseCSVData(decryptText);
+  device.csvData = todo;
+  return device;
 };

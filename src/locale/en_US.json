@@ -103,7 +103,17 @@
     "dataUpdateFailed":"Data update failed!",
     "dataDeletionSuccessful":"Data deletion successful!",
     "dataDeletionFailed":"Data deletion failed!",
-    "deleteThisData":"Are you sure to delete this data?"
+    "deleteThisData":"Are you sure to delete this data?",
+    "contrastAnalysis":"Analyze data",
+    "operate":"operate",
+    "remove":"remove",
+    "identify":"identify",
+    "recordName":"Record Name",
+    "recordNumber":"record number",
+    "dataPoints":"data points",
+    "duration":"duration",
+    "averageValue":"average value",
+    "piecesData":"Please keep the data within {{count}} items. {{select}} items have been selected, please reselect!"
   },
   "device":{
     "initialstate":"Initial state",

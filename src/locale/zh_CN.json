@@ -103,7 +103,17 @@
     "dataUpdateFailed": "数据更新失败！",
     "dataDeletionSuccessful": "数据删除成功！",
     "dataDeletionFailed": "数据删除失败！",
-    "deleteThisData":"是否确认删除该数据？"
+    "deleteThisData":"是否确认删除该数据？",
+    "contrastAnalysis":"分析数据",
+    "operate":"操作",
+    "remove":"移除",
+    "identify":"标识",
+    "recordName":"记录名称",
+    "recordNumber":"记录编号",
+    "dataPoints":"数据点数",
+    "duration":"时长",
+    "averageValue":"平均值",
+    "piecesData":"数据请在{{count}}条以内，已选择{{select}}条，请重新选择！"
   },
   "device":{
     "initialstate":"初始状态",

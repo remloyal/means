@@ -182,7 +182,7 @@ const SummaryGraph: React.FC = () => {
     const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
       t('home.temperature'),
       t('home.humidity'),
-    ]);
+    ]);    
     setOption(chat);
   };
 

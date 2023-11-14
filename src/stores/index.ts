@@ -15,7 +15,7 @@ export const historyDevice = atom<any>({
   key: 'historyDevice',
   default: null,
 });
-export const deviceTime= atom<string>({
+export const deviceTime = atom<string>({
   key: 'deviceTime',
   default: '',
 });
@@ -65,4 +65,14 @@ export const deviceSelectKey = atom<any>({
 export const dateFormat = atom<any>({
   key: 'dateFormat',
   default: '',
+});
+
+export const analysisState = atom<boolean>({
+  key: 'analysisState',
+  default: true,
+});
+
+export const analysisList = atom<any[]>({
+  key: 'analysisList',
+  default: [],
 });
