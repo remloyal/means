@@ -57,7 +57,8 @@
     "temperature": "temperature",
     "humidity": "humidity",
     "thresholdEditing": "Threshold editing",
-    "exportGraph": "Export Graph"
+    "exportGraph": "Export Graph",
+    "goBack":"Go Back"
   },
   "deploy": {
     "basicParameters": "Basic parameters",

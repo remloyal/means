@@ -409,9 +409,9 @@ const HistoryLift = () => {
     const [pageState, setPageState] = useRecoilState(analysisState);
 
     const analysisPageState = () => {
-      if (deviceListKey.length > 10) {
+      if (deviceListKey.length > 30) {
         Modal.warning({
-          content: t('history.piecesData', { count: 10, select: deviceListKey.length }),
+          content: t('history.piecesData', { count: 30, select: deviceListKey.length }),
           centered: true,
         });
         return;

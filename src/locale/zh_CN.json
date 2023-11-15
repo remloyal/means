@@ -57,7 +57,8 @@
     "temperature": "温度",
     "humidity": "湿度",
     "thresholdEditing": "阈值编辑",
-    "exportGraph": "导出曲线图"
+    "exportGraph": "导出曲线图",
+    "goBack":"返回"
   },
   "deploy": {
     "basicParameters": "基本参数",

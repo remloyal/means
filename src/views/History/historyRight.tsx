@@ -3,8 +3,10 @@ import { Button } from 'antd';
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
 import { deviceExample } from '@/utils/deviceOperation';
+import { useTranslation } from 'react-i18next';
 
 const HistoryRight = () => {
+  const { t } = useTranslation();
   const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
@@ -26,7 +28,7 @@ const HistoryRight = () => {
   return (
     <>
       <Button style={{ width: '100%' }} onClick={toback}>
-        返回
+      {t('home.goBack')}
       </Button>
     </>
   );

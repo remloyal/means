@@ -218,13 +218,14 @@ export const AnalysisTable = ({ data, ondelete }) => {
 };
 
 export const AnalysisPageLeft = () => {
+  const { t } = useTranslation();
   const [pageState, setPageState] = useRecoilState(analysisState);
   const handleClick = () => {
     setPageState(true);
   };
   return (
     <Button onClick={handleClick} style={{ width: '100%' }}>
-      返回
+      {t('home.goBack')}
     </Button>
   );
 };
