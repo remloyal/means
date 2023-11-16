@@ -9,13 +9,15 @@ const dbPath = path.join(appPath, 'resources', 'database.db');
 if (!fs.existsSync(configDir)) {
   fs.mkdirSync(configDir);
 }
-console.log(dbPath);
-
+import log from '../pdfgen/log';
 export const database = new Sequelize({
   dialect: 'sqlite',
   storage: dbPath,
   // timezone: '+08:00',
   dialectModule: sqlite3,
+  logging: (manage) => {
+    log.db(manage);
+  },
 });
 
 // 测试数据库链接
@@ -24,9 +26,9 @@ database
   .then(() => {
     // 创建模型
     database
-      .sync({ force: false, alter: true })
+      .sync({ force: false, alter: false })
       .then(() => {
-        console.log('数据库同步成功 66666666');
+        console.log('数据库同步成功');
       })
       .catch(err => {
         console.error('数据库同步失败====>', err);

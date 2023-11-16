@@ -29,6 +29,10 @@
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true
   },
+  "extraResources":{
+    "from": "resources/static",
+    "to": "./static"
+  },
   "publish": {
     "provider": "generic",
     "channel": "latest",
