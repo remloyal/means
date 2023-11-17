@@ -69,7 +69,7 @@ export const formatDate = function (timestamp, timeZone, mask = 'YY-MM-DD HH:mm:
   // 根据传入时间 + 相应时间戳 毫秒数
   const date = new Date(timestamp + tz * 60 * 60 * 1000);
 
-  return dayjs(date).format(mask || 'YY-MM-DD HH:mm:ss');
+  return dayjs(timestamp).format(mask || 'YY-MM-DD HH:mm:ss');
 };
 
 /**
@@ -91,7 +91,7 @@ export const getChartDate = function (
     timestamp = timestamp.getTime();
   }
   // 根据传入时间 + 相应时间戳 毫秒数
-  const date = new Date(timestamp + tz * 60 * 60 * 1000);
+  const date = new Date(timestamp);
   const time = dayjs(date).format('HH:mm');
   let month = dayjs(date).format('DD.MM');
   if (special) {

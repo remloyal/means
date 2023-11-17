@@ -37,3 +37,5 @@ yarn.lock
 /resources/logs
 /resources/database.db
 /resources/file
+
+.vscode

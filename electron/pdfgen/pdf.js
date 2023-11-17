@@ -3,14 +3,13 @@ import _log from './log';
 import { buildPdf } from './process/index';
 const { CODES_COMMON } = RESPONSE_CODES;
 
-export const createPdf = (info, monitors) => {
-  //   console.log(info, monitors);
-
-  buildPdf(info, monitors)
-    .then(result => {
-      _log.info('build success = ', result);
-    })
-    .catch(err => {
-      _log.error('build error = ', err);
-    });
+export const createPdf = async (info, monitors) => {
+  try {
+    const data = await buildPdf(info, monitors);
+    _log.info('build success = ', data);
+    return data;
+  } catch (error) {
+    _log.error('build error = ', error);
+    return false;
+  }
 };

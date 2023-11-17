@@ -51,7 +51,7 @@ const savePdfToFile = (pdf, fileName) => {
 };
 
 export const buildPdf = async function (info, monitors) {
-  const { filter } = info || {};
+  const { filter, customer } = info || {};
   const {
     generateType = PDF_CONFIG.GENERATE_TYPE.BLOB,
     archiveFolder = _common.formatDate(new Date(), 8, PDF_CONFIG.PDF_ARCHIVE_FORMAT),
@@ -92,7 +92,10 @@ export const buildPdf = async function (info, monitors) {
     },
   });
   // !1、 pipe the document to a blob
-  const file = path.resolve(PDF_DIR, archiveFolder, pdfName);
+  let file = path.resolve(PDF_DIR, archiveFolder, pdfName);
+  if (customer.filePath) {
+    file = path.resolve(customer.filePath, pdfName);
+  }
   _log.info('file path :', file);
   let pdfApiInfo = {};
   let pdfBtPrintInfo = {};
@@ -239,7 +242,7 @@ const drawPdf = (doc, info, monitors) => {
     return createPdf(doc, { ...info, pdfLanguage }, monitors);
   } catch (error) {
     _log.error('pdf  error =', error);
-    return error
+    return error;
   }
 };
 

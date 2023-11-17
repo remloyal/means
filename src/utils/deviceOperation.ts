@@ -10,6 +10,7 @@ export const createDeviceInstance = (deviceInfo): DeviceInstance => {
 class DeviceInstance {
   device: any = null;
   deviceInfo: DeviceType | null = null;
+  database: any = null;
   operate: OperateTypeItem | null = null;
   record: any = {};
   operateConfig: OperateType<any> = {};
@@ -59,9 +60,18 @@ class DeviceInstance {
     });
   }
   public repeatOperation() {
-    if (this.actionList.length > 0) {
-      this.write(this.actionList[0]);
-    } else {
+    try {
+      if (this.actionList.length > 0) {
+        this.write(this.actionList[0]);
+      } else {
+        this.operate = null;
+        this.isComplete = true;
+        this.param = '';
+        this.currentTimes = 0;
+        this.actionList = [];
+        this.close();
+      }
+    } catch (error) {
       this.operate = null;
       this.isComplete = true;
       this.param = '';

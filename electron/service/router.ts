@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { Device } from './model';
 import { findMinMax } from './unitls/tool';
 import { deleteDevice, handleDeviceData, queryDevice, queryHistoryDevice, queryHistoryDeviceList, updateDevice } from './controllers/device';
+import { exportDevicePdf } from './controllers/exportDevice';
 
 ipcMain.handle('createDevice', (event, params) => {
   return new Promise(async (resolve, reject) => {
@@ -64,6 +65,18 @@ ipcMain.handle('queryHistoryDevice', (event, params) => {
         const data = queryHistoryDevice(params);
         resolve(data);
       }
+    } catch (error) {
+      resolve(false);
+    }
+  });
+});
+
+// 导出数据
+ipcMain.handle('exportDevice', (event, params) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const data = exportDevicePdf(params);
+      resolve(data);
     } catch (error) {
       resolve(false);
     }

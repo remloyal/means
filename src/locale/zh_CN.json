@@ -58,7 +58,13 @@
     "humidity": "湿度",
     "thresholdEditing": "阈值编辑",
     "exportGraph": "导出曲线图",
-    "goBack":"返回"
+    "goBack":"返回",
+    "date": "日期",
+    "sensorData":"传感器数据",
+    "exportAs":"导出为",
+    "language":"语言",
+    "cancellation":"取消",
+    "exportFailed":"导出失败"
   },
   "deploy": {
     "basicParameters": "基本参数",

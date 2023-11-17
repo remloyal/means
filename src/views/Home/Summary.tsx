@@ -7,6 +7,7 @@ import {
   Tabs,
   TabsProps,
   Tooltip,
+  Modal,
 } from 'antd';
 import React, { createRef, useEffect, useRef, useState } from 'react';
 import {
@@ -23,6 +24,7 @@ import DataSheet from './DataSheet';
 import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
 import HistoryRight from '../History/historyRight';
+import { DataExport } from './DataExport';
 const Summary: React.FC = () => {
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
@@ -182,7 +184,7 @@ const SummaryGraph: React.FC = () => {
     const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
       t('home.temperature'),
       t('home.humidity'),
-    ]);    
+    ]);
     setOption(chat);
   };
 
@@ -229,13 +231,34 @@ const SummaryGraph: React.FC = () => {
 // 数据导出
 const ExportData: React.FC = () => {
   const { t } = useTranslation();
+  const device = useRecoilValue(equipment);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+    console.log(device);
+  };
+
   return (
-    <div className="summary-graph-labor">
-      <Button type="primary" size="large">
-        {t('home.exportData')}
-      </Button>
-      <Button size="large">{t('home.dataFilter')}</Button>
-    </div>
+    <>
+      <div className="summary-graph-labor">
+        <Button type="primary" size="large" onClick={showModal}>
+          {t('home.exportData')}
+        </Button>
+        <Button size="large">{t('home.dataFilter')}</Button>
+      </div>
+      <Modal
+        title={t('header.preferences')}
+        open={isModalOpen}
+        footer={null}
+        onOk={() => setIsModalOpen(false)}
+        onCancel={() => setIsModalOpen(false)}
+        destroyOnClose={true}
+        centered
+        maskClosable={false}
+      >
+        <DataExport onCancel={() => setIsModalOpen(false)} />
+      </Modal>
+    </>
   );
 };
 

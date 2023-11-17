@@ -20,6 +20,8 @@ process.env.DIST = join(process.env.DIST_ELECTRON, '../dist');
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   ? join(process.env.DIST_ELECTRON, '../public')
   : process.env.DIST;
+console.log("resourcesPath",process.resourcesPath);
+console.log("resources",join(process.cwd(), '/resources'));
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();

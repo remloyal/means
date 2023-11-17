@@ -3,8 +3,6 @@ import { decrypt, encrypt } from '../service/unitls/encryption';
 import { WebUSB, usb, findByIds } from 'usb';
 const path = require('path');
 const fs = require('fs');
-import demo from '../demo.json';
-import { createPdf } from '../pdfgen/pdf';
 
 let win: BrowserWindow | null = null;
 const VERSION_ID = 10473; // 1003
@@ -54,11 +52,6 @@ export const deviceInit = async (browserWindow: BrowserWindow) => {
     event.preventDefault();
     console.log('deviceList', deviceList);
   });
-  try {
-    createPdf(demo.info, demo.monitors);
-  } catch (error) {
-    console.log(error);
-  }
 };
 
 ipcMain.on('export-config', (event, data) => {

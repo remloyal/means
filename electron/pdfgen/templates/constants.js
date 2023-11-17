@@ -154,7 +154,7 @@ export const PDF_INFO = {
   },
   // 符号，pdf中打印用
   SIGN = {
-    SHANGBIAO: '\\256', // 商标 Ⓡ
+    SHANGBIAO: '\xae', // 商标 Ⓡ
     UNIT: (type, lan = 'en', options) => {
       const { unit = TEMP_UNIT.CELS } = options || {};
       let units = '';
@@ -162,9 +162,9 @@ export const PDF_INFO = {
         case SENSORS.TEMP:
         case SENSORS.SUB_TEMP:
           if (lan !== 'zh') {
-            units = '\\260C'; // ℃
+            units = '\xb0C'; // ℃
             if (unit === TEMP_UNIT.FAHR) {
-              units = '\\260F';
+              units = `\xb0F`;
             }
           } else {
             units = '℃'; //

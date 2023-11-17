@@ -44,7 +44,7 @@ export const handleDeviceData = async params => {
     name: jsonName,
     deviceId: data.toJSON().id,
   });
-  return data;
+  return data.toJSON();
 };
 
 interface Data {
