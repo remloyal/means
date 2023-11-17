@@ -23,7 +23,7 @@ const Deploy: React.FC = () => {
         <DeployMain></DeployMain>
       </MainBody>
       <MainRight>
-        <div>Deploy</div>
+        <div></div>
       </MainRight>
     </div>
   );

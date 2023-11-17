@@ -48,10 +48,7 @@ const Left: React.FC = () => {
       setResizeData(data);
     });
   }, []);
-
-  useEffect(() => {
-    console.log(device);
-  }, [device]);
+  
   const setTime = (data)=>{
     const time = splitStringTime(data);
     return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);

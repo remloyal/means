@@ -47,6 +47,10 @@ export const TimeZone = ({ state }: { state: boolean }) => {
         setTime(dayjs(deviceData.time));
       }
     });
+    const interval = setInterval(() => {
+      timeChange(dayjs(new Date()));
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -66,7 +70,7 @@ export const TimeZone = ({ state }: { state: boolean }) => {
     const timeData = device?.record.time;
     if (!timeData) return;
     const todo = timeData.split('TZ:');
-        
+
     // 设置时区
     const timeZoneData = convertTZ(timeData.substring(14, timeData.length));
     console.log(timeZoneData);
@@ -112,9 +116,8 @@ export const TimeZone = ({ state }: { state: boolean }) => {
   const disabledDate = current => {
     return current && current > dayjs().endOf('day');
   };
-  const timeChange = (value, option) => {
+  const timeChange = value => {
     if (value) {
-      console.log(value.format('YYYYMMDDHHmmss'));
       setTime(value);
       setDeviceConfig(item => {
         return {
@@ -148,6 +151,7 @@ export const TimeZone = ({ state }: { state: boolean }) => {
             disabledDate={disabledDate}
             format="YYYY-MM-DD HH:mm:ss"
             size="small"
+            disabled
             showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
           />
         </div>
@@ -171,5 +175,3 @@ const getTimeZoneValue = (data: string) => {
   const todo = data.split(' ')[0].replace('(', '').replace(')', '');
   return todo;
 };
-
-

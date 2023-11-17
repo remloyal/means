@@ -31,19 +31,22 @@ const readCSVFilesFromDrive = async drive => {
   const csvFiles = files.filter(file => file.endsWith('.csv'));
   let dataParsed: TimeType[] = [];
   let csvName = '';
+  let stopMode = '';
   for (const csvFile of csvFiles) {
     csvName = csvFile;
     const filePath = path.join(drivePath, csvFile);
     const data = fs.readFileSync(filePath, 'utf-8');
     // console.log(`读取到CSV文件 ${csvFile} 的内容：`);
     // console.log(data);
-    dataParsed = parseCSVData(data);
+    const { data: todo, stopMode: mode } = parseCSVData(data);
+    dataParsed = todo;
+    stopMode = mode;
     // console.log(`解析后得到的数据：`)
     // console.log(dataParsed);
     // window.eventBus.emit('friggaDevice:in', dataParsed);
     window.eventBus.emit('friggaDeviceCsv', [drive, dataParsed]);
   }
-  return [drive, dataParsed, csvName];
+  return [drive, dataParsed, csvName, stopMode];
 };
 
 /**
@@ -51,10 +54,11 @@ const readCSVFilesFromDrive = async drive => {
  * @param {String} csvString csv 数据
  * @returns 解析后的数据
  */
-const parseCSVData = (csvString): TimeType[] => {
+const parseCSVData = csvString => {
   const lines = csvString.split('\n');
   const data: TimeType[] = [];
-
+  // Stop Mode,USB Stop,
+  const stopMode = lines[1].split(',');
   // 我们从第3行开始处理，因为前几行包含元数据或标题。
   for (let i = 3; i < lines.length; i++) {
     const line: string = lines[i].trim();
@@ -88,7 +92,7 @@ const parseCSVData = (csvString): TimeType[] => {
     });
   }
 
-  return data;
+  return { data, stopMode: stopMode[1] };
 };
 
 ipcRenderer.on('deviceOnload', async (event, data) => {
@@ -115,9 +119,10 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
           operation.drive = csvData[0];
           await operation.setCsvData(csvData[1]);
           operation.csvName = csvData[2];
+          operation.record.stopMode = csvData[3];
         }
         const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
-        operation.database = data
+        operation.database = data;
         window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
       });
     } catch (error) {

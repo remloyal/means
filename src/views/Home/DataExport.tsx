@@ -63,17 +63,39 @@ export const DataExport = ({ onCancel }) => {
     const startTime = start[1].split(':');
     const endTime = end[1].split(':');
     if (type === 'start') {
+      const presentTime = _!.format('HH:mm:ss').split(':');
+      let hours = parseInt(startTime[0]);
+      let minutes = parseInt(startTime[1]);
+      let seconds = parseInt(startTime[2]);
+      if (parseInt(presentTime[0]) > parseInt(startTime[0])) {
+        minutes = 0;
+        seconds = 0;
+      }
+      if (parseInt(presentTime[1]) > parseInt(startTime[1])) {
+        seconds = 0;
+      }
       return {
-        disabledHours: () => range(0, 60).splice(0, parseInt(startTime[0])),
-        disabledMinutes: () => range(0, 60).splice(0, parseInt(startTime[1])),
-        disabledSeconds: () => range(0, 60).splice(0, parseInt(startTime[2])),
+        disabledHours: () => range(0, 60).splice(0, hours),
+        disabledMinutes: () => range(0, 60).splice(0, minutes),
+        disabledSeconds: () => range(0, 60).splice(0, seconds),
       };
     }
     if (_!.valueOf() > dayjs(end[0]).valueOf()) {
+      const presentTime = _!.format('HH:mm:ss').split(':');
+      let hours = parseInt(endTime[0]) + 1;
+      let minutes = parseInt(endTime[1]) + 1;
+      let seconds = parseInt(endTime[2]) + 1;
+      if (parseInt(presentTime[0]) < parseInt(endTime[0])) {
+        minutes = 60;
+        seconds = 60;
+      }
+      if (parseInt(presentTime[1]) < parseInt(endTime[1])) {
+        seconds = 60;
+      }
       return {
-        disabledHours: () => range(0, 60).splice(parseInt(endTime[0]) + 1, 60),
-        disabledMinutes: () => range(0, 60).splice(parseInt(endTime[1]) + 1, 60),
-        disabledSeconds: () => range(0, 60).splice(parseInt(endTime[2]) + 1, 60),
+        disabledHours: () => range(0, 60).splice(hours, 60),
+        disabledMinutes: () => range(0, 60).splice(minutes, 60),
+        disabledSeconds: () => range(0, 60).splice(seconds, 60),
       };
     }
     return {

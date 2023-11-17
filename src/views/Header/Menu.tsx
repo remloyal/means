@@ -97,11 +97,15 @@ export const Menu: React.FC = () => {
     }
     setDeviceHistory(null);
   };
+  // useEffect(() => {
+  //   console.log(deviceStateTime);
+  //   setKey(2);
+  // }, [deviceStateTime]);
   useEffect(() => {
-    console.log(deviceStateTime);
-    setKey(2);
-  }, [deviceStateTime]);
-  useEffect(() => {
+    if (deviceHistory) {
+      navigate('/');
+      return;
+    }
     if (device) {
       setKey(0);
       if (!firstPage) {
