@@ -21,7 +21,9 @@ import _config from '../gloable/config';
 import * as _util from '../unitl';
 import * as _common from '../gloable/common';
 import _log from '../log';
-import { templateRouter } from './routePath';
+import dayjs from 'dayjs';
+import createPdf from '../templates/frigga/guoshu/index';
+
 const { CODES_COMMON } = RESPONSE_CODES;
 
 const savePdfToFile = (pdf, fileName) => {
@@ -176,42 +178,6 @@ const initFileSystem = archiveFolder => {
   return { worked, error };
 };
 
-/**
- * 动态获取 drawPdf 方法的路径，用于require返回响应的方法
- * @param {*} pdfTemplateId model中配置的pdf模板id
- * @param {*} alertStrategy model中配置的果蔬还是医药，生成策略
- * @param {*} pdfLanguage  设置如果设置了PDFLanguage，用设置中的，如果没有用model配置的默认值
- * @returns  drawPdf方法的路径
- * ./frigga/guoshu/en
- * ./frigga/yiyao/zh
- * ......
- */
-const getPdfRequirePath = (
-  pdfTemplateId = 0,
-  alertStrategy = ALERT_STRATEGY_TYPE.GUOSHU,
-  pdfLanguage = _config.language
-) => {
-  const firstStage = PDF_TEMPLATE[pdfTemplateId];
-  const secondStage = ALERT_STRATEGY[alertStrategy];
-  const thirdStage = pdfLanguage;
-  _log.info('pdf template require path :', `${firstStage}/${secondStage}/${thirdStage}`);
-  let defaultMthod = templateRouter.frigga.guoshu.en;
-  const mthodPath =
-    templateRouter[firstStage || 'frigga'][secondStage || 'guoshu'][thirdStage || 'en'] || null;
-  console.log('mthodPath', mthodPath);
-  if (mthodPath != null) {
-    defaultMthod = mthodPath;
-  }
-  // cause the params differ between yiyao and guoshu ,we make sure alertStrategy is correct
-  // let pdfPath = `../templates/frigga/${ALERT_STRATEGY[alertStrategy]}/en`;
-  // // judge the fixed path exsits or not
-  // const fixedTemplatePath = `../templates/${PDF_TEMPLATE[pdfTemplateId]}/${ALERT_STRATEGY[alertStrategy]}/${pdfLanguage}`;
-  // if (fs.existsSync(path.join(__dirname, `${fixedTemplatePath}.js`))) {
-  //   pdfPath = fixedTemplatePath;
-  // }
-
-  return defaultMthod;
-};
 
 const getPdfLanguage = info => {
   const { product, device, filter } = info || {};
@@ -237,7 +203,6 @@ const drawPdf = (doc, info, monitors) => {
   } = product || {};
 
   const pdfLanguage = getPdfLanguage(info);
-  const createPdf = getPdfRequirePath(pdfTemplateId, alertStrategy, pdfLanguage);
   try {
     return createPdf(doc, { ...info, pdfLanguage }, monitors);
   } catch (error) {
@@ -266,90 +231,14 @@ const pathPartCheckAndRefine = str => {
  * @param {*} info
  * @param {*} monitors
  * * 一定要注意校验文件名的合法性
+ * * 设备型号_设备ID_创建时间
  */
 const getPdfName = (info, monitors) => {
-  const { filter = {}, order = {}, product = {}, device = {} } = info || {};
-  const { bounded, unbounded } = order || {};
-  const NOVALUE = '\u2610';
-  const { usage = 0, terNo, params = {} } = device || {};
-  const { timeZone, tripId, from, to } = params || {};
-  const { pdfNameType = PDF_NAME_TYPE.FRIGGA.type, pdfTemplateId = 0 } = product || {};
+  const { device = {} } = info || {};
+  const { params = {} } = device || {};
+  const { tripId, to } = params || {};
 
-  // 这部分是前端传来的，用户筛选的部分
-  const {
-    forRenewReport = false, // 是否以用户传来的time作为pdf的start，end
-    startTime: startTimeFromWeb,
-    endTime: endTimeFromWeb,
-  } = filter;
-
-  const monitor = (monitors || {})[SENSORS.TEMP] || [];
-  const startTime = _util.pdfApiStartEndTime(
-    monitor.length > 0 ? new Date(monitor[0].timestamp) : bounded,
-    startTimeFromWeb,
-    forRenewReport,
-    bounded
-  );
-  const endTime = _util.pdfApiStartEndTime(
-    unbounded
-      ? unbounded
-      : monitor.length > 0
-      ? new Date(monitor[monitor.length - 1].timestamp)
-      : null, // 没有解绑时间时用数据的最后一点的时间，没有数据时，就不填了,
-    endTimeFromWeb,
-    forRenewReport,
-    unbounded
-  );
-
-  const defaultName = _util.stringFormat([
-    PDF_NAME_TYPE.FRIGGA.format,
-    terNo,
-    _common.formatDate(_util.isNumber(startTime) ? startTime : null, timeZone, 'YYYYMMDDHHmmss'),
-    _common.formatDate(_util.isNumber(endTime) ? endTime : null, timeZone, 'YYYYMMDDHHmmss'),
-  ]);
-  let name = defaultName;
-  const shengshengName = _util.stringFormat([
-    PDF_NAME_TYPE.SHENGSHENG.format,
-    (tripId && pathPartCheckAndRefine(tripId)) || NOVALUE,
-    (from && pathPartCheckAndRefine(from)) || NOVALUE,
-    (to && pathPartCheckAndRefine(to)) || NOVALUE,
-    _common.formatDate(_util.isNumber(endTime) ? endTime : null, timeZone, 'YYYYMMDDHHmm'),
-    terNo,
-  ]);
-  // 生生pdf文件名固化
-  if (PDF_TEMPLATE[pdfTemplateId] === PDF_TEMPLATE_NAME.SHENGSHENG) {
-    name = shengshengName;
-  } else {
-    switch (pdfNameType) {
-      case PDF_NAME_TYPE.FRIGGA.type:
-        name = defaultName;
-        break;
-      case PDF_NAME_TYPE.USAGE.type:
-        name = _util.stringFormat([
-          PDF_NAME_TYPE.USAGE.format,
-          terNo,
-          usage < 10 ? `0${usage}` : usage,
-          _common.formatDate(
-            _util.isNumber(startTime) ? startTime : null,
-            timeZone,
-            'YYYYMMDDHHmmss'
-          ),
-          _common.formatDate(_util.isNumber(endTime) ? endTime : null, timeZone, 'YYYYMMDDHHmmss'),
-        ]);
-        break;
-      case PDF_NAME_TYPE.SHENGSHENG.type:
-        name = shengshengName;
-        break;
-      default:
-    }
-  }
-  const ext = '.pdf';
-  const fileName = name.slice(0, 0 - ext.length); // 获取实际文件名（去掉扩展名
-  // windows：232  linux:255
-  const maxNameLen = 255 - ext.length;
-  if (fileName.length > maxNameLen) {
-    _log.error('PDF文件名过长:', name);
-    name = fileName.slice(0, maxNameLen) + ext;
-    _log.warn('只保留最长长度：', name);
-  }
-  return name;
+  const time = dayjs(new Date()).format('YYYYMMDDHHmmss');
+  const fileName = `${tripId}_${to}_${time}.pdf`;
+  return fileName;
 };

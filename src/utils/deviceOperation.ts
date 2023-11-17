@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { instructRead, instructSetup } from './deviceType';
+import { convertTZ } from './time';
 
 const HID = require('node-hid');
 export const createDeviceInstance = (deviceInfo): DeviceInstance => {
@@ -134,6 +135,7 @@ class DeviceInstance {
     const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
     this.record.maximumValue = max;
     this.record.minimumValue = min;
+    this.record.timeZone = convertTZ(this.record.time)
   }
 }
 
@@ -217,7 +219,7 @@ const setOperateDevice = (item: OperateTypeItem, queryData?: OperateTypeItem) =>
         resolve(isOk(res) || false);
       });
     } catch (error) {
-      reject(false);
+      resolve(false);
     }
   }).catch(err => {
     console.log(err);

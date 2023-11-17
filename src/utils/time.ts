@@ -23,3 +23,29 @@ export function color16() {
   let color = '#' + r16 + g16 + b16;
   return color;
 }
+
+// TZ ==> UTC
+export function convertTZ(timezone: string): string {
+  let time = '';
+  let sign = '';
+  if (timezone.indexOf('-') != -1) {
+    time = timezone.split('-')[1];
+    sign = '-';
+  } else {
+    time = timezone.split(':')[1];
+    sign = '+';
+  }
+  if (time.length == 3 || time.length == 1) {
+    time = `0${time}`;
+  }
+  if (!time) {
+    time = '00';
+  }
+  return `UTC${sign}${time.substring(0, 2)}:00`;
+}
+
+// UTC==> TZ
+export function convertUTC(timezone: string): string {
+  // UTC+00:00
+  return timezone.replace(':', '').replace('+', '').replace('UTC', 'TZ:');
+}

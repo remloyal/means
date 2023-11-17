@@ -247,7 +247,7 @@ const ExportData: React.FC = () => {
         <Button size="large">{t('home.dataFilter')}</Button>
       </div>
       <Modal
-        title={t('header.preferences')}
+        title={t('home.exportData')}
         open={isModalOpen}
         footer={null}
         onOk={() => setIsModalOpen(false)}

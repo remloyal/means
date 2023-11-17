@@ -1,6 +1,7 @@
 import { timeZoneCollection } from '@/locale/timeZone';
 import { deviceConfigParam, equipment, language } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
+import { convertTZ, convertUTC } from '@/utils/time';
 import { Col, DatePicker, Select } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -171,27 +172,4 @@ const getTimeZoneValue = (data: string) => {
   return todo;
 };
 
-// TZ ==> UTC
-function convertTZ(timezone: string): string {
-  let time = '';
-  let sign = '';
-  if (timezone.indexOf('-') != -1) {
-    time = timezone.split('-')[1];
-    sign = '-';
-  } else {
-    time = timezone.split(':')[1];
-    sign = '+';
-  }
-  if (time.length == 3 || time.length == 1) {
-    time = `0${time}`;
-  }
-  if (!time) {
-    time = '00';
-  }
-  return `UTC${sign}${time.substring(0, 2)}:00`;
-}
-// UTC==> TZ
-function convertUTC(timezone: string): string {
-  // UTC+00:00
-  return timezone.replace(':', '').replace('+', '').replace('UTC', 'TZ:');
-}
+
