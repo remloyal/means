@@ -30,10 +30,10 @@ createTimer();
 export const CheckForUpdates = () => {
   return new Promise(async (resolve, reject) => {
     // 判断是否开发环境
-    // if (!app.isPackaged) {
-    //   resolve(false);
-    //   return;
-    // }
+    if (!app.isPackaged) {
+    resolve(false);
+    return;
+    }
 
     // 获取远程配置
     const remoteConfiguration = (await axios.get(getUrl())).data;
@@ -43,7 +43,7 @@ export const CheckForUpdates = () => {
      */
     const localVersion = app.getVersion();
     const ment = compareVersions(data.version, localVersion);
-    if (ment == -1) {
+    if (ment == -1 || ment == 0) {
       resolve(false);
     } else {
       createRenew(data);
@@ -67,19 +67,19 @@ export const downLoad = async (deploy?) => {
     await deleteDir(updatePath);
   }
   return new Promise(async (resolve, reject) => {
-    if (!deploy.downloadurl) {
+    if (!deploy.downloadUrl) {
       mainWindow?.webContents.send('updateFail');
       resolve(false);
       return;
     }
-    
+
     /**
      * app.zip包含 update.asar 和 app-update.yml
      */
 
     // 创建一个可以写入的流，
     mainWindow?.webContents.downloadURL(
-      deploy.downloadurl || 'http://127.0.0.1:3000/files/app.zip'
+      deploy.downloadUrl || 'http://127.0.0.1:3000/files/app.zip'
     );
     mainWindow?.webContents.session.on('will-download', (e, item) => {
       const filePath = path.join(updatePath, item.getFilename());
@@ -106,10 +106,7 @@ export const downLoad = async (deploy?) => {
         }
         //下载被取消或中断了
         if (state === 'interrupted') {
-          electron.dialog.showErrorBox(
-            '下载失败',
-            `文件 ${item.getFilename()} 因为某些原因被中断下载`
-          );
+          mainWindow?.webContents.send('updateFail');
         }
         // 下载成功后打开文件所在文件夹
         if (state === 'completed') {
@@ -269,7 +266,7 @@ const createRenew = (data?) => {
 };
 
 export const quitRenew = async () => {
-  if (fs.existsSync(updatePath) && fs.existsSync(updatePath + '\\app.zip')) {
+  if (fs.existsSync(baseUrl + 'update.asar')) {
     await _unzip(filePath, updatePath);
     if (!fs.existsSync(cachePath)) {
       // 备份
@@ -313,3 +310,7 @@ const renewMac = () => {
     log.error('mac 增量更新失败', error);
   }
 };
+
+ipcMain.handle('language', (_, arg) => {
+  mainWindow?.webContents.send('language', arg);
+});

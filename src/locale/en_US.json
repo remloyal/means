@@ -60,11 +60,11 @@
     "exportGraph": "Export Graph",
     "goBack": "Go Back",
     "date": "Date",
-    "sensorData":"Sensor Data",
-    "exportAs":"Export As",
-    "language":"Language",
-    "cancellation":"Cancellation",
-    "exportFailed":"Export failed"
+    "sensorData": "Sensor Data",
+    "exportAs": "Export As",
+    "language": "Language",
+    "cancellation": "Cancellation",
+    "exportFailed": "Export failed"
   },
   "deploy": {
     "basicParameters": "Basic parameters",
@@ -133,5 +133,15 @@
     "keyon": "Key on",
     "timingon": "Timing on",
     "temperaturerange": "temperature range"
+  },
+  "renew": {
+    "applyUpdate": "Apply Update",
+    "restartUpdatenow":"Restart update now!",
+    "currentVersion":"current version",
+    "latestVersion":"Latest version",
+    "updat":"UPDATE",
+    "downloadProgress":"Download progress",
+    "startUpdating":"Start updating",
+    "updateAgain":"An error occurred during the update. Please try again or contact the administrator!"
   }
 }

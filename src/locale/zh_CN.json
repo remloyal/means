@@ -133,5 +133,15 @@
     "keyon":"按键开启",
     "timingon":"定时开启",
     "temperaturerange":"温度范围"
+  },
+  "renew":{
+    "applyUpdate":"应用更新",
+    "restartUpdatenow":"立即重启更新！",
+    "currentVersion":"当前版本",
+    "latestVersion":"最新版本",
+    "updat":"更新内容",
+    "downloadProgress":"下载进度",
+    "startUpdating":"开始更新",
+    "updateAgain":"更新发生错误，请重试或请联系管理员！"
   }
 }

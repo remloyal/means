@@ -1,9 +1,11 @@
 import { Button, Modal, Progress } from 'antd';
 import { ipcRenderer } from 'electron';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 let modalData: any = null;
 const App = () => {
+  const { t, i18n } = useTranslation();
   const create = () => {
     ipcRenderer.send('openMain');
   };
@@ -29,14 +31,19 @@ const App = () => {
     });
     ipcRenderer.on('updateFail', async (event, data) => {
       setTimeout(() => {
+        setState(false);
         Modal.destroyAll();
         Modal.info({
-          content: <div>更新发生错误，请联系管理员！</div>,
+          content: <div>{t('renew.updateAgain')}</div>,
           onOk() {
             handleOk();
           },
         });
       }, 1000);
+    });
+    ipcRenderer.on('language', async (event, data) => {
+      console.log(data);
+      i18n.changeLanguage(data);
     });
   }, []);
   const [state, setState] = useState(false);
@@ -49,8 +56,8 @@ const App = () => {
   const showModal = () => {
     if (modalData) return;
     modalData = Modal.info({
-      title: '应用更新',
-      content: <div>立即重启更新！</div>,
+      title: t('renew.applyUpdate'),
+      content: <div>{t('renew.restartUpdatenow')}</div>,
       onOk() {
         handleOk();
       },
@@ -63,19 +70,27 @@ const App = () => {
   };
   return (
     <div className="renew">
-      <div>当前版本：{version.old}</div>
-      <div>最新版本：{version.new}</div>
-      <div>更新内容：{content ? content ?? '无' : '--'}</div>
+      <div>
+        {t('renew.currentVersion')}：{version.old}
+      </div>
+      <div>
+        {t('renew.latestVersion')}：{version.new}
+      </div>
+      <div>
+        {t('renew.updat')}：{content ? content ?? '无' : '--'}
+      </div>
       {state ? (
         <div>
-          下载进度：
-          <Progress percent={percent} />
+          {t('renew.downloadProgress')}：
+          <Progress percent={Math.floor(percent)} />
         </div>
       ) : (
         ''
       )}
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={startUpdating}>开始更新</Button>
+        <Button onClick={startUpdating} disabled={state}>
+          {t('renew.startUpdating')}
+        </Button>
       </div>
     </div>
   );

@@ -67,6 +67,7 @@ const BasicSetting = () => {
     i18n.changeLanguage(value);
     localStorage.setItem('language', value);
     setTongue(value);
+    ipcRenderer.invoke('language', value);
   };
 
   const DateComponent = () => {
@@ -81,10 +82,10 @@ const BasicSetting = () => {
           localStorage.setItem('dateFormat', value);
           setDate(value);
           setTime(dayjs(new Date()).format(value));
-          ipcRenderer.send("window-reset");
+          ipcRenderer.send('window-reset');
         },
         onCancel() {
-          setDate(`${date}`)
+          setDate(`${date}`);
         },
       });
 
