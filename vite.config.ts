@@ -13,7 +13,7 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve';
   const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
-
+  
   return {
     resolve: {
       alias: {
@@ -74,12 +74,18 @@ export default defineConfig(({ command }) => {
         return {
           host: url.hostname,
           port: +url.port,
+          strictPort: false,
         };
       })(),
     clearScreen: false,
     build: {
       chunkSizeWarningLimit: 8000,
       rollupOptions: {
+        input: {
+          // 配置所有页面路径，使得所有页面都会被打包
+          index: path.resolve(__dirname, 'index.html'),
+          renew: path.resolve(__dirname, 'renewIndex.html'),
+        },
         output: {
           chunkFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: 'assets/css/[name]-[hash][extname]',

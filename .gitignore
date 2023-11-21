@@ -32,10 +32,6 @@ yarn.lock
 /playwright-report/
 /playwright/.cache/
 # resources
+/resources/*
 !/resources/static
-/resources/cache
-/resources/logs
-/resources/database.db
-/resources/file
-
 .vscode

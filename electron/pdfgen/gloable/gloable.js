@@ -2,7 +2,7 @@
 import { text } from './language';
 import _config from './config';
 import _cfg from './config.json';
-import { filePath } from '../../unitls';
+import { filePath } from '../../unitls/unitls';
 // 发送短信时的类型区分
 export const SMS_TYPE = {
   TEMP: 1,

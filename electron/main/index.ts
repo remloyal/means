@@ -3,7 +3,9 @@ import { release } from 'node:os';
 import { join } from 'node:path';
 import { update } from './update';
 import { deviceInit } from './device';
-import '../service/router'
+import '../service/router';
+import './renew';
+import { CheckForUpdates, quitRenew } from './renew';
 
 // The built directory structure
 //
@@ -20,8 +22,6 @@ process.env.DIST = join(process.env.DIST_ELECTRON, '../dist');
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   ? join(process.env.DIST_ELECTRON, '../public')
   : process.env.DIST;
-console.log("resourcesPath",process.resourcesPath);
-console.log("resources",join(process.cwd(), '/resources'));
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -43,11 +43,11 @@ let win: BrowserWindow | null = null;
 const WIDTH = 1440;
 const HEIGHT = 900;
 // Here, you can also use other preload
-const preload = join(__dirname, '../preload/index.js');
+export const preload = join(__dirname, '../preload/index.js');
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, 'index.html');
 
-async function createWindow() {
+export async function createWindow() {
   win = new BrowserWindow({
     autoHideMenuBar: true,
     title: '鼎为数据中心',
@@ -74,6 +74,7 @@ async function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
     win?.webContents.send('deviceOnload', new Date().toLocaleString());
+    // CheckForUpdates();
   });
   win.on('resize', () => {
     let sizeData = win?.getContentBounds();
@@ -111,8 +112,10 @@ async function createWindow() {
   });
 
   // Apply electron-updater
-  update(win);
   deviceInit(win);
+  // update(win);
+  // downLoad();
+  CheckForUpdates();
 }
 
 app.whenReady().then(createWindow);
@@ -138,7 +141,6 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
 // New window example arg: new windows url
 ipcMain.handle('open-win', (_, arg) => {
   const childWindow = new BrowserWindow({
@@ -159,9 +161,13 @@ ipcMain.handle('open-win', (_, arg) => {
 // 应用重启
 ipcMain.on('window-reset', function () {
   if (url) {
-    win?.webContents.reload(); 
+    win?.webContents.reload();
   } else {
     app.relaunch();
     app.exit();
   }
+});
+
+ipcMain.handle('restartNow', () => {
+  quitRenew();
 });

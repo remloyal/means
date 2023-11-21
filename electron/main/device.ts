@@ -1,5 +1,5 @@
 import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
-import { decrypt, encrypt } from '../service/unitls/encryption';
+import { decrypt, encrypt } from '../unitls/encryption';
 import { WebUSB, usb, findByIds } from 'usb';
 const path = require('path');
 const fs = require('fs');

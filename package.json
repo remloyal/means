@@ -12,15 +12,18 @@
     }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "chcp 65001 && vite",
     "build": "tsc && vite build && electron-builder",
+    "build:dir": "tsc && vite build && electron-builder install-app-deps",
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
     "e2e": "playwright test"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "adm-zip": "^0.5.10",
     "antd": "^5.10.2",
+    "axios": "^1.6.2",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
     "drivelist": "^11.1.0",

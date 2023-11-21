@@ -1,7 +1,7 @@
 // 'use strict';
 // eslint-disable-next-line
 import { SENSORS, TEMP_UNIT } from '../gloable/gloable';
-import { filePath } from '../../unitls';
+import { filePath } from '../../unitls/unitls';
 const path = require('path');
 
 /**

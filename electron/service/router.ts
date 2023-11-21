@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { Device } from './model';
-import { findMinMax } from './unitls/tool';
+import { findMinMax } from '../unitls/tool';
 import { deleteDevice, handleDeviceData, queryDevice, queryHistoryDevice, queryHistoryDeviceList, updateDevice } from './controllers/device';
 import { exportDevicePdf } from './controllers/exportDevice';
 

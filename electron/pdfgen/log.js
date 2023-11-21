@@ -91,7 +91,7 @@ log4js.configure({
 
 /**
  * 日志输出 level为bug
- * @param { string } content
+ * @param { any } content
  */
 const debug = content => {
   let logger = log4js.getLogger('debug');
@@ -106,27 +106,27 @@ const debug = content => {
 const info = (...content) => {
   let logger = log4js.getLogger('info');
   logger.level = levels.info;
-  logger.info(content);
+  logger.info(content.toString());
 };
 
 /**
  * 日志输出 数据库
- * @param { string } content
+ * @param { any } content
  */
 const db = content => {
   let logger = log4js.getLogger('database');
   logger.level = levels.info;
-  logger.info(content);
+  logger.info(content.toString());
 };
 
 /**
  * 日志输出 level为error
- * @param { string } content
+ * @param { any } content
  */
 const error = (...content) => {
   let logger = log4js.getLogger('error');
   logger.level = levels.error;
-  logger.error(content);
+  logger.error(content.toString());
 };
 
 const formatError = (ctx, err) => {

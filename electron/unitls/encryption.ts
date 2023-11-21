@@ -46,3 +46,11 @@ export function decrypt(data) {
   const decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
   return decryptedStr.toString();
 }
+
+const salt = 'WCSAadf9092_1212sfAOIJCSsdz12';
+export function cryptMd5(data: string) {
+  // 密码“加盐”
+  var saltPassword = data + salt;
+  var result =  CryptoJS.MD5(saltPassword).toString().toLowerCase()
+  return result;
+}
