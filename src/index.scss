@@ -12,6 +12,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --text-color: #ffffff;
+  --bg-color: #f8dcc4;
+  --bg-to-color: #fb6601;
+  --bg-right-color: #f5b986;
+  --bg-gradient: linear-gradient(0deg, #fb6601, #f5b986);
+  --table-bg-color: #fef7f1;
+  --table-title-color: #f9ddc5;
 }
 
 a {
@@ -74,7 +81,7 @@ code {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #EAEBEE;
+    background-color: #eaebee;
   }
   a:hover {
     color: #747bff;
@@ -87,7 +94,6 @@ code {
   }
 }
 
-
-.span_10{
+.span_10 {
   font-size: 10px;
 }

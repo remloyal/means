@@ -79,7 +79,7 @@ const HistoryMain = () => {
           <Tooltip title={t('history.uploadPlatform')} destroyTooltipOnHide={true}>
             <i
               className="iconfont icon-yunduanshangchuan"
-              style={{ fontSize: '20px', color: '#0078D7' }}
+              style={{ fontSize: '20px', color: 'var(--bg-to-color)' }}
             ></i>
           </Tooltip>
         );

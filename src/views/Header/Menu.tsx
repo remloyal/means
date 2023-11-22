@@ -7,6 +7,8 @@ import { deviceState, deviceTime, equipment, historyDevice, isFirstPage } from '
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceExample } from '@/utils/deviceOperation';
 
+import * as ImgMenu from './ImgMenu';
+
 export const Menu: React.FC = () => {
   const navigate = useNavigate();
   const [key, setKey] = useState(0);
@@ -24,7 +26,7 @@ export const Menu: React.FC = () => {
           }
         }
       },
-      icon: () => <i className="iconfont icon-shu"></i>,
+      icon: () => <ImgMenu.SummaryImg />,
     },
     {
       name: 'header.configureDevices',
@@ -38,7 +40,7 @@ export const Menu: React.FC = () => {
           }
         }
       },
-      icon: () => <i className="iconfont icon-weibaopeizhi"></i>,
+      icon: () => <ImgMenu.DeviceImg />,
     },
     {
       name: 'header.data',
@@ -50,7 +52,7 @@ export const Menu: React.FC = () => {
           restitution(2);
         }
       },
-      icon: () => <i className="iconfont icon-lishi"></i>,
+      icon: () => <ImgMenu.HistoryImg />,
     },
     {
       name: 'header.cfr',
@@ -58,22 +60,22 @@ export const Menu: React.FC = () => {
         setFirstPage(false);
         setKey(3);
       },
-      icon: () => <i className="iconfont icon-fangyu"></i>,
+      icon: () => <ImgMenu.CfrImg />,
     },
     {
       name: 'header.preferences',
       clock: () => showModal(),
-      icon: () => <i className="iconfont icon-shezhi"></i>,
+      icon: () => <ImgMenu.SetupImg />,
     },
     {
       name: 'header.help',
       clock: () => {},
-      icon: () => <i className="iconfont icon-bangzhuye"></i>,
+      icon: () => <ImgMenu.HelpImg />,
     },
     {
       name: 'header.about',
       clock: () => {},
-      icon: () => <i className="iconfont icon-guanyu"></i>,
+      icon: () => <ImgMenu.AboutImg />,
     },
   ];
   const { t } = useTranslation();

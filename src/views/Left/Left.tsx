@@ -1,7 +1,9 @@
+import { MainLeft } from '@/components/main';
 import { equipment, deviceState, resize, historyDevice } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { splitStringTime } from '@/utils/time';
 import disconnect from '@assets/MainForm/DeviceImage/disconnect.png';
+import alarmPng from '@/assets/img/报警.png';
 import { Button, Descriptions, DescriptionsProps, Modal } from 'antd';
 import dayjs from 'dayjs';
 import { ipcRenderer } from 'electron';
@@ -48,11 +50,11 @@ const Left: React.FC = () => {
       setResizeData(data);
     });
   }, []);
-  
-  const setTime = (data)=>{
+
+  const setTime = data => {
     const time = splitStringTime(data);
     return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
-  }
+  };
 
   const items: DescriptionsProps['items'] = [
     {
@@ -89,11 +91,17 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.maximumValue'),
-      children: device != null ? device?.record.maximumValue + MultidUnit[device?.record.multidUnit]: '---',
+      children:
+        device != null
+          ? device?.record.maximumValue + MultidUnit[device?.record.multidUnit]
+          : '---',
     },
     {
       label: t('left.minimumValue'),
-      children: device != null ? device?.record.minimumValue + MultidUnit[device?.record.multidUnit]: '---',
+      children:
+        device != null
+          ? device?.record.minimumValue + MultidUnit[device?.record.multidUnit]
+          : '---',
     },
   ];
   const quickReset = () => {
@@ -113,49 +121,59 @@ const Left: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     if (deviceHistory) {
-      setDevice(deviceHistory)
+      setDevice(deviceHistory);
     }
-  },[deviceHistory])
-  
+  }, [deviceHistory]);
+
   return (
-    <div className="left">
-      <div className="image">
-        <img src={disconnect} alt="" />
-        <span>报警</span>
-      </div>
-      <Descriptions
-        items={items}
-        column={1}
-        labelStyle={{
-          color: '#000000',
-        }}
-        contentStyle={{
-          color: '#000000',
-        }}
-        size="small"
-      />
-      <div className="record-operate">
-        <Button type="primary" danger>
-          {t('left.stopRecording')}
+    <MainLeft>
+      <div className="left">
+        <div className="image">
+          <img src={disconnect} alt="" />
+          {/* <span>报警</span> */}
+          <img src={alarmPng}  className='image-alarm'/>
+        </div>
+        <Descriptions
+          items={items}
+          column={1}
+          labelStyle={{
+            color: '#FFFFFF',
+          }}
+          contentStyle={{
+            color: '#FFFFFF',
+          }}
+          size="small"
+        />
+        <div className="record-operate">
+          <Button type="primary" danger>
+            {t('left.stopRecording')}
+          </Button>
+          <Button
+            style={{ backgroundColor: '#3577F1', color: '#fff', border: '1px #3577F1 solid' }}
+          >
+            {t('left.reload')}
+          </Button>
+        </div>
+        <Button
+          style={{ width: '100%', backgroundColor: '#4DAC53', color: '#fff', border: 0 }}
+          onClick={showModal}
+        >
+          {t('left.quickReset')}
         </Button>
-        <Button type="primary">{t('left.reload')}</Button>
+        <Modal
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          centered
+          destroyOnClose={true}
+          width={300}
+        >
+          <h3>{t('left.clearText')}</h3>
+        </Modal>
       </div>
-      <Button type="primary" style={{ width: '100%' }} onClick={showModal}>
-        {t('left.quickReset')}
-      </Button>
-      <Modal
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        centered
-        destroyOnClose={true}
-        width={300}
-      >
-        <h3>{t('left.clearText')}</h3>
-      </Modal>
-    </div>
+    </MainLeft>
   );
 };
 
