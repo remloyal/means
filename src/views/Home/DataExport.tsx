@@ -42,8 +42,9 @@ export const DataExport = ({ onCancel }) => {
     console.log(startTime, endTime);
   };
 
-  const onChange = checkedValues => {
-    if (checkedValues.length === 0) {
+  const onChange = (checkedValues) => {
+    // 必须有温度
+    if (!checkedValues.includes('temp')) {
       setExportState(true);
     } else {
       setExportState(false);

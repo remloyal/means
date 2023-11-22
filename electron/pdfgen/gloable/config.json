@@ -1,78 +1,7 @@
 {
-  "isLocal": true,
-  "isMac": false,
-  "restApiRoot": "/export-api",
-  "host": "0.0.0.0",
-  "port": 3003,
-  "remoting": {
-    "context": false,
-    "rest": {
-      "handleErrors": false,
-      "normalizeHttpPath": false,
-      "xml": false
-    },
-    "json": {
-      "strict": false,
-      "limit": "100kb"
-    },
-    "urlencoded": {
-      "extended": true,
-      "limit": "100kb"
-    },
-    "cors": false
-  },
   "frigga": {
-    "host": "172.16.22.82",
-    "port": 8080,
-    "shareport": 8888,
-    "cloudHost": "172.16.22.82",
-    "cloudPort": 8080,
-
-    "winhost": "172.16.22.82",
-    "winport": 8080,
-    "winshareport": 8888,
-    "wincloudHost": "172.16.22.82",
-    "wincloudPort": 8080,
-
-    "machost": "47.101.161.158",
-    "macport": 8081,
-    "macshareport": 8089,
-    "maccloudHost": "47.101.161.158",
-    "maccloudPort": 8081,
-    "businessHost": "172.16.22.82",
-    "businessPort": 18080,
-    "payHost": "172.16.22.82",
-    "payPort": 8888,
-    "terDomain": "opt.friggatech.com",
-    "terPort": 28686,
-    "apn": "",
-    "user": "",
-    "pwd": "",
-    "webProtocol": "http",
-    "webHost": "localhost",
-    "webPort": 8000,
-    "mailFrom": "noreply@dewav.com",
-    "mailRedirect": "/",
     "smsLang": "en",
     "language": "en",
-    "pushEnvIsProuct": false,
-    "company": "Frigga",
-    "website": "http://172.16.22.82:8088",
-    "mailTemplate": {
-      "noMailAvailable": {
-        "subject": "本地测试：没有可用发件箱了！",
-        "template": "common/templates/email/zh/noMailAvailable.ejs"
-      },
-      "autoPdfError": {
-        "subject": "本地测试：自动导出PDF程序出现异常",
-        "template": "common/templates/email/en/autoPdfError.ejs"
-      },
-      "datacheckNotice": {
-        "subject": "本地测试：【{0}】设备数据完整性检测异常",
-        "template": "common/templates/email/zh/datacheckNotice.ejs",
-        "emails": ["kiki.zhang@dewav.com"]
-      }
-    },
     "pdf": {
       "pdfLang": 1,
       "pdfLine": 72,
@@ -83,39 +12,6 @@
     },
     "excel": {
       "urlPrefix": "http://localhost:8090"
-    }
-  },
-  "log": {
-    "appenders": {
-      "xcLogFile": {
-        "type": "dateFile",
-        "filename": "./logs",
-        "alwaysIncludePattern": true,
-        "pattern": "yyyy-MM-dd.log",
-        "encoding": "utf-8",
-        "maxLogSize": 10,
-        "compress": true,
-        "daysToKeep": 2,
-        "backups": 1,
-        "keepFileExt": true
-      },
-      "xcLogConsole": {
-        "type": "console"
-      }
-    },
-    "categories": {
-      "default": {
-        "appenders": ["xcLogFile"],
-        "level": "ALL"
-      },
-      "xcLogFile": {
-        "appenders": ["xcLogFile"],
-        "level": "ALL"
-      },
-      "xcLogConsole": {
-        "appenders": ["xcLogConsole"],
-        "level": "ALL"
-      }
     }
   }
 }

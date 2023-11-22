@@ -1,6 +1,6 @@
 'use strict';
 
-import { paint } from '../../guoshu';
+import { paint } from '../index';
 
 const drawPdf = function (pdf, info, monitors) {
   return paint(pdf, info, monitors);

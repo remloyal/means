@@ -10,10 +10,11 @@ import { ipcRenderer } from 'electron';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
+import { useNavigate } from 'react-router-dom';
 
 const Left: React.FC = () => {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [resizeData, setResizeData] = useRecoilState(resize);
@@ -43,6 +44,10 @@ const Left: React.FC = () => {
     });
 
     window.eventBus.on('friggaDevice:out', (...datas) => {
+      console.log(window.location.href.includes('deploy'));
+      if (window.location.href.includes('deploy')) {
+        navigate('/');
+      }
       setDeviceMent(false);
       setDevice(null);
     });
@@ -133,7 +138,7 @@ const Left: React.FC = () => {
         <div className="image">
           <img src={disconnect} alt="" />
           {/* <span>报警</span> */}
-          <img src={alarmPng}  className='image-alarm'/>
+          <img src={alarmPng} className="image-alarm" />
         </div>
         <Descriptions
           items={items}

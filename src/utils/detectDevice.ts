@@ -119,10 +119,11 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
           operation.drive = csvData[0];
           await operation.setCsvData(csvData[1]);
           operation.csvName = csvData[2];
-          operation.record.stopMode = csvData[3];
+          operation.record.stopMode = csvData[3].split(' ')[0];
         }
         const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
         operation.database = data;
+        console.log(operation);
         window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
       });
     } catch (error) {

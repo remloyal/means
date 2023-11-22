@@ -113,7 +113,7 @@ class DeviceInstance {
             clearInterval(interval); //清除定时器
             resolve(key != undefined ? this.record[key] : this.record);
           }
-        }, 200);
+        }, 1000);
       } catch (error) {
         console.log('error', error);
         reject({});

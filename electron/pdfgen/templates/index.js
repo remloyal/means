@@ -111,12 +111,12 @@ const drawPdf = function (pdf, info, monitors) {
     globalInfo,
   });
   _log.info('====【2】==== printHeadInfo ok');
-  //* 画Device Configuration
+  //* 画Device Information
   printDeviceInfo(pdf, { deviceInfo, pdfInfo, globalInfo });
   _log.info('====【3】==== printDeviceInfo ok');
-  //* 画Order Information
+  //* 画Device Configuration
   printOrderInfo(pdf, { deviceInfo, pdfInfo, globalInfo });
-  _log.info('====【4】==== printOrderInfo ok');
+  _log.info('====【4】==== printDeviceConfiguration ok');
   //* 画Logging Summary
   printLoggingSummary(pdf, {
     sensorInfo,
@@ -261,7 +261,6 @@ const initSensorInfo = (globalInfo, info, monitors) => {
   switch (sensorsSelected.length) {
     case 1:
     case 2:
-    case 3:
       // 必须有一个温度类型的sensor，不管是temp还是subTemp
       if (sensorsSelected.includes(SENSORS.TEMP)) {
         sensorCnt += 1;
@@ -303,17 +302,17 @@ const initSensorInfo = (globalInfo, info, monitors) => {
         const { min, max } = alert || {};
         let showInfo = alert.type === type;
         // sensor为humi时，阈值(0,0),不绘制任何相关信息,仅限果蔬
-        if (
-          // pdf (0,0)不绘制相关信息
-          // TEMPLATE_NAME === PDF_TEMPLATE_NAME.SHENGSHENG &&
-          alertStrategy === ALERT_STRATEGY_TYPE.GUOSHU &&
-          min !== undefined &&
-          max !== undefined &&
-          type === SENSORS.HUMI &&
-          alert.type === SENSORS.HUMI
-        ) {
-          showInfo = !(min === max && min === 0);
-        }
+        // if (
+        //   // pdf (0,0)不绘制相关信息
+        //   // TEMPLATE_NAME === PDF_TEMPLATE_NAME.SHENGSHENG &&
+        //   alertStrategy === ALERT_STRATEGY_TYPE.GUOSHU &&
+        //   min !== undefined &&
+        //   max !== undefined &&
+        //   type === SENSORS.HUMI &&
+        //   alert.type === SENSORS.HUMI
+        // ) {
+        //   showInfo = !(min === max && min === 0);
+        // }
         return showInfo;
       }).length > 0
   );
@@ -382,7 +381,7 @@ const initDeviceInfo = (globalInfo, info, sensorInfo) => {
   const { LANGUAGE = 'en', DATE_FORMAT = 'YY-MM-DD HH:MM:SS' } = globalInfo || {};
   const { customer, product, device, order, filter } = info || {};
   const { dataCount, sensors, datas } = sensorInfo || {};
-  const { unbounded, bounded, unbindType = UNBIND_TYPE.UNKOWN } = order || {};
+  const { unbounded, bounded, unbindType = UNBIND_TYPE.UNKOWN, stopMode } = order || {};
   const {
     forRenewReport = false,
     startTime: startTimeFromWeb,
@@ -488,6 +487,7 @@ const initDeviceInfo = (globalInfo, info, sensorInfo) => {
       read > 1 ? `${read} ${text('PDF_MINS', LANGUAGE)}` : `${read} ${text('PDF_MIN', LANGUAGE)}`,
     readVal: read,
     stopMode: UNBIND_TYPE_MAP_NAME[unbindType](LANGUAGE),
+    deviceStopMode: stopMode,
   };
 };
 
@@ -1187,7 +1187,7 @@ const printHeadInfo = (
     dateFormat,
     paddingTop: { TOP_POS_NOTE },
   } = pdfInfo || {};
-  const { fileCreatedTime, timeZone } = deviceInfo || {};
+  const { fileCreatedTime, timeZone, deviceStopMode } = deviceInfo || {};
   const { dataCount, sensors = [] } = sensorInfo || {};
   const { isAlarm = false, alarmCount = {} } = summaryInfo || {};
   const {
@@ -1274,6 +1274,7 @@ const printHeadInfo = (
     globalInfo,
     pdfInfo,
     paddingConfigs,
+    deviceStopMode,
   });
 
   //! #################################################################
@@ -1489,6 +1490,7 @@ const drawHeadDataSummay = (
     globalInfo,
     pdfInfo,
     paddingConfigs,
+    deviceStopMode,
   }
 ) => {
   const { LANGUAGE = 'en' } = globalInfo || {};
@@ -1501,7 +1503,7 @@ const drawHeadDataSummay = (
   // Temp low Alarm:   0
   // label部分最大delta值
   let labelDeltaXMax = 0;
-  const ONE_STEP = 4; // 模糊计算，一个字符占5个宽度
+  const ONE_STEP = LANGUAGE == 'zh' ? 8 : 4; // 模糊计算，一个字符占5个宽度
   // 数据部分最大delta值
   let dataDeltaXMax = 0;
   /**
@@ -1648,11 +1650,23 @@ const drawHeadDataSummay = (
   posY += deltaY;
   textBreak(pdf, deltaXs['dataCount'].label, posX, posY);
   textBreak(pdf, dataCount, pageRightPos - deltaXs['dataCount'].delta, posY);
+
+  const stopMode = {
+    label: text('PDF_STOP_MODE', LANGUAGE),
+    delta: stepLength(dataCount, {
+      fontSize: FONT_SIZE_SMALL,
+      startPos: 'right',
+    }),
+  };
+  posY += deltaY;
+  textBreak(pdf, stopMode.label, posX, posY);
+  textBreak(pdf, deviceStopMode, pageRightPos - stopMode.delta, posY);
+  
   return { startX: posX };
 };
 
 /**
- //* 绘制 Device Configuration
+ //* 绘制 Device Information
  * @param {pdfKit} pdf 
  * @param {object} deviceInfo 
  */
@@ -1671,7 +1685,7 @@ const printDeviceInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs 
   pdf
     .fontSize(FONT_SIZE_TITLE)
     .fillColor(pdfLogoColor)
-    .text(text('PDF_DEVICE_CONFIG', LANGUAGE), labelLeftStartX, posY);
+    .text(text('PDF_DEVICE_INFO', LANGUAGE), labelLeftStartX, posY);
   // 画线
   posY += DELTA_Y_LABEL_LINE;
   drawLine(pdf, [labelLeftStartX, posY], [PDF_A4_WIDTH / 2 - 10, posY]);
@@ -1697,7 +1711,7 @@ const printDeviceInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs 
 };
 
 /**
- //* 绘制 Order Information
+ //* 绘制 Device Configuration
  * @param {pdfKit} pdf 
  * @param {object} deviceInfo 
  */
@@ -1709,14 +1723,15 @@ const printOrderInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs }
     paddingTop: { TOP_POS_ORDER },
     row_delta: { FIRST_ROW_DELTA, ROW_DELTA },
   } = pdfInfo || {};
-  const { companyName, shipmentId, startRecordTime, endRecordTime } = deviceInfo || {};
+  const { companyName, shipmentId, startRecordTime, endRecordTime, startDelayTime, read } =
+    deviceInfo || {};
   const { topDelta = 0 } = paddingConfigs || {};
 
   let posY = TOP_POS_ORDER + topDelta;
   pdf
     .fontSize(FONT_SIZE_TITLE)
     .fillColor(pdfLogoColor)
-    .text(text('PDF_ORDER_INFO', LANGUAGE), labelRightStartX, posY);
+    .text(text('PDF_DEVICE_CONFIG', LANGUAGE), labelRightStartX, posY);
   // 画线
   posY += DELTA_Y_LABEL_LINE;
   drawLine(pdf, [labelRightStartX, posY], [PAGE_RIGHT_POS(), posY]);
@@ -1725,33 +1740,34 @@ const printOrderInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs }
   pdf
     .fontSize(FONT_SIZE_SMALL)
     .fillColor(DEFAULT_FONT_COLOR)
-    .text(text('PDF_COMPANY_NAME', LANGUAGE), labelRightStartX, posY);
-  if (checkContainChinese(companyName)) {
-    pdf.font(getFont('zh')).text(companyName, valueRightStartX, posY);
+    .text(text('PDF_DEVICE_START_DELAY', LANGUAGE), labelRightStartX, posY);
+  if (checkContainChinese(read)) {
+    pdf.font(getFont('zh')).text(read, valueRightStartX, posY);
   } else {
-    pdf.text(companyName, valueRightStartX, posY);
+    pdf.text(startDelayTime, valueRightStartX, posY);
   }
 
   posY += ROW_DELTA;
-  pdf.font(getFont(LANGUAGE)).text(text('PDF_SHIPMENT_ID', LANGUAGE), labelRightStartX, posY);
-  if (checkContainChinese(shipmentId)) {
-    pdf.font(getFont('zh')).text(shipmentId, valueRightStartX, posY);
-  } else {
-    pdf.text(shipmentId, valueRightStartX, posY, {
-      width: PDF_A4_WIDTH - valueRightStartX - PAGE_LEFT_POS(),
-      lineBreak: false,
-      lineGap: -2.5,
-      // height: ROW_DELTA,
-      ellipsis: true,
-    });
-  }
+  pdf.font(getFont(LANGUAGE)).text(text('PDF_DEVICE_LOG', LANGUAGE), labelRightStartX, posY);
+  pdf.text(read, valueRightStartX, posY);
+  // if (checkContainChinese(shipmentId)) {
+  //   pdf.font(getFont('zh')).text(shipmentId, valueRightStartX, posY);
+  // } else {
+  //   pdf.text(shipmentId, valueRightStartX, posY, {
+  //     width: PDF_A4_WIDTH - valueRightStartX - PAGE_LEFT_POS(),
+  //     lineBreak: false,
+  //     lineGap: -2.5,
+  //     // height: ROW_DELTA,
+  //     ellipsis: true,
+  //   });
+  // }
 
   posY += ROW_DELTA;
-  pdf.font(getFont(LANGUAGE)).text(text('PDF_START_TIME', LANGUAGE), labelRightStartX, posY);
+  pdf.font(getFont(LANGUAGE)).text(text('PDF_DEVICE_START_TIME', LANGUAGE), labelRightStartX, posY);
   pdf.text(startRecordTime, valueRightStartX, posY);
 
   posY += ROW_DELTA;
-  pdf.text(text('PDF_END_TIME', LANGUAGE), labelRightStartX, posY);
+  pdf.text(text('PDF_DEVICE_END_TIME', LANGUAGE), labelRightStartX, posY);
   pdf.text(endRecordTime, valueRightStartX, posY);
 };
 
@@ -1760,7 +1776,7 @@ const printLoggingLessThreeSummay = (
   { sensorInfo, globalInfo, pdfInfo, summaryInfo, deviceInfo, posY, loggingSummaryConfigs }
 ) => {
   const { LANGUAGE = 'en', UNIT } = globalInfo || {};
-  const { sensors = [], thresholds = {} } = sensorInfo || {};
+  const { sensors = [], thresholds = {}, dataCount = 0 } = sensorInfo || {};
   const {
     layoutParams: { labelLeftStartX, valueLeftStartX, labelRightStartX, valueRightStartX },
     row_delta: { ROW_DELTA },
@@ -1820,11 +1836,11 @@ const printLoggingLessThreeSummay = (
   pdf
     .fontSize(FONT_SIZE_SMALL)
     .fillColor(DEFAULT_FONT_COLOR)
-    .text(text('PDF_START_DELAY', LANGUAGE), labelRightStartX, posY, {
+    .text(text('PDF_DEVICE_DATA_POINT', LANGUAGE), labelRightStartX, posY, {
       width: valueRightStartX - labelRightStartX,
       lineGap: -2,
     });
-  pdf.text(startDelayTime, valueRightStartX, posY);
+  pdf.text(dataCount, valueRightStartX, posY);
 
   //* 最高温 最低温
   // 一组（一行）数据
@@ -1866,30 +1882,6 @@ const printLoggingLessThreeSummay = (
         posY,
         { lineBreak: false }
       );
-
-      // 一组（一行）数据
-      if (showMkt) {
-        posY += ROW_DELTA;
-        pdf.text(averageLabel, labelLeftStartX, posY);
-        pdf.text(
-          averages[type] === NOVALUE
-            ? NOVALUE
-            : `${_util.formatSensorValue(type)(averages[type], 1)}${unitTemp}`,
-          valueLeftStartX,
-          posY
-        );
-        pdf.text(mktLabel, labelRightStartX, posY, {
-          width: valueRightStartX - labelRightStartX,
-          lineGap: -2,
-        });
-        pdf.text(
-          mkts[type] === NOVALUE
-            ? NOVALUE
-            : `${_util.formatSensorValue(type)(mkts[type], 1)}${unitTemp}`,
-          valueRightStartX,
-          posY
-        );
-      }
     } else if (type === SENSORS.HUMI) {
       // 一组（一行）数据
       posY += ROW_DELTA;
@@ -1939,39 +1931,40 @@ const printLoggingLessThreeSummay = (
         posY,
         { lineBreak: false }
       );
-
-      // 一组（一行）数据
-      if (showMkt) {
-        posY += ROW_DELTA;
-        pdf.text(text('PDF_AVERAGE', LANGUAGE), labelLeftStartX, posY);
-        pdf.text(
-          averages[type] === NOVALUE
-            ? NOVALUE
-            : `${_util.formatSensorValue(type)(averages[type], 1)}${unitTemp}`,
-          valueLeftStartX,
-          posY
-        );
-        pdf.text(text('PDF_MKT', LANGUAGE), labelRightStartX, posY, {
-          width: valueRightStartX - labelRightStartX,
-          lineGap: -2,
-        });
-        pdf.text(
-          mkts[type] === NOVALUE
-            ? NOVALUE
-            : `${_util.formatSensorValue(type)(mkts[type], 1)}${unitTemp}`,
-          valueRightStartX,
-          posY
-        );
-      }
     }
   });
 
   // 一组（一行）数据
-  posY += ROW_DELTA;
-  pdf.text(text('PDF_REPORT_INTERVAL', LANGUAGE), labelLeftStartX, posY);
-  pdf.text(report, valueLeftStartX, posY);
-  pdf.text(text('PDF_RECORD_INTERVAL', LANGUAGE), labelRightStartX, posY);
-  pdf.text(read, valueRightStartX, posY);
+  if (showMkt) {
+    posY += ROW_DELTA;
+    pdf.text(text('PDF_MKT', LANGUAGE), labelLeftStartX, posY);
+    pdf.text(
+      mkts['temp'] === NOVALUE
+        ? NOVALUE
+        : `${_util.formatSensorValue('temp')(mkts['temp'], 1)}${unitTemp}`,
+      valueLeftStartX,
+      posY
+    );
+    pdf.text(text('PDF_AVERAGE', LANGUAGE), labelRightStartX, posY, {
+      width: valueRightStartX - labelRightStartX,
+      lineGap: -2,
+    });
+    pdf.text(
+      averages['temp'] === NOVALUE
+        ? NOVALUE
+        : `${_util.formatSensorValue('temp')(averages['temp'], 1)}${unitTemp}`,
+
+      valueRightStartX,
+      posY
+    );
+  }
+
+  // 一组（一行）数据
+  // posY += ROW_DELTA;
+  // pdf.text(text('PDF_REPORT_INTERVAL', LANGUAGE), labelLeftStartX, posY);
+  // pdf.text(report, valueLeftStartX, posY);
+  // pdf.text(text('PDF_RECORD_INTERVAL', LANGUAGE), labelRightStartX, posY);
+  // pdf.text(read, valueRightStartX, posY);
 };
 
 const printLoggingThreeSummay = (

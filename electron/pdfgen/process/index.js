@@ -22,7 +22,7 @@ import * as _util from '../unitl';
 import * as _common from '../gloable/common';
 import _log from '../log';
 import dayjs from 'dayjs';
-import createPdf from '../templates/frigga/guoshu/index';
+import createPdf from '../templates/frigga/index';
 
 const { CODES_COMMON } = RESPONSE_CODES;
 

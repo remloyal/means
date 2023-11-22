@@ -9,11 +9,10 @@ const pdfData = (data, monitors) => {
     info: {
       filter: {
         generateType: 1,
-        archiveFolder: 'WEB/2022-12-13',
         needInfo: false,
         needBtPrintnfo: false,
         needFilePath: false,
-        downloadHost: 'http://localhost:8090',
+        downloadHost: '',
         sensors: param.data,
         pdfTimeInterval: 0,
         startTime: param.startTime,
@@ -31,7 +30,7 @@ const pdfData = (data, monitors) => {
         pdfMktShow: 1,
         pdfNameType: 2,
         pdfTemplateId: 0,
-        pdfWebsite: 'http://172.16.22.82',
+        pdfWebsite: '',
         referenceModel: '',
         alerts: [
           { type: 'temp', labelIndex: 0 },
@@ -42,6 +41,7 @@ const pdfData = (data, monitors) => {
         bounded: bounded,
         unbounded: bounded,
         unbindType: 3,
+        stopMode: record.stopMode,
       },
       device: {
         terNo: record.deviceType,
@@ -60,7 +60,7 @@ const pdfData = (data, monitors) => {
           predicatedStart: param.endTime,
           projectId: '',
           recipient: '',
-          startDelayTime: record.tempPeriod,
+          startDelayTime: parseInt(record.startDelayTime) / 60,
           timeZone: 'Asia/Shanghai',
           to: record.getsn,
           tripId: record.deviceType,
@@ -81,7 +81,7 @@ const pdfData = (data, monitors) => {
               max: record.hightEmp,
             },
           ],
-          read: 5,
+          read: parseInt(record.tempPeriod) / 60,
           report: 10,
         },
       },

@@ -200,11 +200,18 @@ export const  zh = {
   PDF_TEMP2_HIGH_ALARM: '高温2警报：',
   PDF_STOP_MODE: '停止方式：',
 
-  PDF_DEVICE_CONFIG: '设备信息',
+  PDF_DEVICE_INFO: '设备信息',
   PDF_DEVICEID: '设备 ID：',
   PDF_MODEL: '设备型号：',
   PDF_FIRM_VERSION: '固件版本：',
   PDF_HARD_VERSION: '硬件版本：',
+
+  PDF_DEVICE_CONFIG: '设备配置',
+  PDF_DEVICE_START_DELAY: '启动延时：',
+  PDF_DEVICE_LOG: '日志间隔：',
+  PDF_DEVICE_START_TIME: '开始时间：',
+  PDF_DEVICE_END_TIME: '结束时间：',
+  PDF_DEVICE_DATA_POINT: '数据点：',
 
   PDF_ORDER_INFO: '订单信息',
   PDF_COMPANY_NAME: '公司名称：',

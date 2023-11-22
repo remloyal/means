@@ -246,11 +246,18 @@ export const  en = {
   PDF_TEMP2_HIGH_ALARM: 'Temp2 High Alarm:',
   PDF_STOP_MODE: 'Stop Mode:',
 
-  PDF_DEVICE_CONFIG: 'Device Configuration',
+  PDF_DEVICE_INFO: 'Device Information',
   PDF_DEVICEID: 'Device ID:',
   PDF_MODEL: 'Device Model:',
   PDF_FIRM_VERSION: 'Firmware Version:',
   PDF_HARD_VERSION: 'Hardware Version:',
+
+  PDF_DEVICE_CONFIG: 'Device Configuration',
+  PDF_DEVICE_START_DELAY: 'Start delay:',
+  PDF_DEVICE_LOG: 'Log interval:',
+  PDF_DEVICE_START_TIME: 'Start Time:',
+  PDF_DEVICE_END_TIME: 'End time:',
+  PDF_DEVICE_DATA_POINT: 'Data Points:',
 
   PDF_ORDER_INFO: 'Order Information',
   PDF_COMPANY_NAME: 'Company Name:',

@@ -4,12 +4,16 @@ import { createPdf } from '../../pdfgen/pdf';
 
 export const exportDevicePdf = params => {
   return new Promise(async (resolve, reject) => {
-    const dataPath = await selectSavePath();
-    params.filePath = dataPath;
-    const pdfData = await setPdfData(params);
-    const data = createPdf(pdfData.info, pdfData.monitors);
-    // console.log(dataPath);
-    resolve(data);
+    try {
+      const dataPath = await selectSavePath();
+      params.filePath = dataPath;
+      const pdfData = await setPdfData(params);
+      const data = createPdf(pdfData.info, pdfData.monitors);
+      // console.log(dataPath);
+      resolve(data);
+    } catch (error) {
+      resolve(false);
+    }
   });
 };
 
