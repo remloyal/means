@@ -27,6 +27,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { AnalysisPage, AnalysisPageLeft } from './AnalysisPage';
+import { Maximum } from '@/config';
 const { RangePicker } = DatePicker;
 
 const History: React.FC = () => {
@@ -409,9 +410,9 @@ const HistoryLift = () => {
     const [pageState, setPageState] = useRecoilState(analysisState);
 
     const analysisPageState = () => {
-      if (deviceListKey.length > 30) {
+      if (deviceListKey.length > Maximum) {
         Modal.warning({
-          content: t('history.piecesData', { count: 30, select: deviceListKey.length }),
+          content: t('history.piecesData', { count: Maximum, select: deviceListKey.length }),
           centered: true,
         });
         return;

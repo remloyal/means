@@ -28,7 +28,7 @@ const HistoryRight = () => {
   return (
     <>
       <Button style={{ width: '100%' }} onClick={toback}>
-      {t('home.goBack')}
+        {t('home.goBack')}
       </Button>
     </>
   );

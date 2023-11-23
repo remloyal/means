@@ -82,3 +82,10 @@ export const parseCSVData = (csvString): TimeType[] => {
   }
   return data;
 };
+
+export const timeDiff = (startTime, endTime) => {
+  const start = dayjs(startTime);
+  const end = dayjs(endTime);
+  const diffInMinutes = end.diff(start, 'minutes');
+  return diffInMinutes;
+};

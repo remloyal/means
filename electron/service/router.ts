@@ -1,8 +1,16 @@
 import { ipcMain } from 'electron';
 import { Device } from './model';
 import { findMinMax } from '../unitls/tool';
-import { deleteDevice, handleDeviceData, queryDevice, queryHistoryDevice, queryHistoryDeviceList, updateDevice } from './controllers/device';
+import {
+  deleteDevice,
+  handleDeviceData,
+  queryDevice,
+  queryHistoryDevice,
+  queryHistoryDeviceList,
+  updateDevice,
+} from './controllers/device';
 import { exportDevicePdf } from './controllers/exportDevice';
+import { exportHistory } from './controllers/exportHistory';
 
 ipcMain.handle('createDevice', (event, params) => {
   return new Promise(async (resolve, reject) => {
@@ -19,7 +27,7 @@ ipcMain.handle('queryDevice', (event, params) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!params) {
-        const data = await Device.findAll();
+        const data = (await Device.findAll()).reverse();
         const todo = data.map(item => item.toJSON());
         resolve(todo);
       } else {
@@ -54,14 +62,13 @@ ipcMain.handle('deleteDevice', (event, params) => {
   });
 });
 
-
 ipcMain.handle('queryHistoryDevice', (event, params) => {
   return new Promise((resolve, reject) => {
     try {
       if (params instanceof Array) {
         const data = queryHistoryDeviceList(params);
         resolve(data);
-      }else{
+      } else {
         const data = queryHistoryDevice(params);
         resolve(data);
       }
@@ -76,6 +83,18 @@ ipcMain.handle('exportDevice', (event, params) => {
   return new Promise((resolve, reject) => {
     try {
       const data = exportDevicePdf(params);
+      resolve(data);
+    } catch (error) {
+      resolve(false);
+    }
+  });
+});
+
+// 导出历史分析
+ipcMain.handle('exportHistory', (event, params) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const data = exportHistory(params);
       resolve(data);
     } catch (error) {
       resolve(false);

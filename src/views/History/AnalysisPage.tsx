@@ -1,30 +1,38 @@
 import { ShareChart, createFoldLine, createSeries } from '@/components/echarts/DisplayCharts';
-import { analysisState, deviceSelectKey, resize } from '@/stores';
+import { analysisState, deviceSelectKey, exportExcelTime, resize } from '@/stores';
 import { color16 } from '@/utils/time';
-import { Button, Table, TableProps } from 'antd';
+import { Button, Modal, Spin, Table, TableProps, message } from 'antd';
 import { ipcRenderer } from 'electron';
-import { useEffect, useRef, useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
+
+let exportState = false;
 
 export const AnalysisPage = () => {
   const [deviceListKey, setDeviceListKey] = useRecoilState(deviceSelectKey);
   const graph = useRef(null);
   const [option, setOption] = useState({});
   const [data, setData] = useState([]);
+  // 存储当前 key
+  const [currentKey, setCurrentKey] = useState([]);
+
   useEffect(() => {
     initData();
   }, []);
   const initData = async () => {
     const todo = await ipcRenderer.invoke('queryHistoryDevice', deviceListKey);
     setConfig(todo);
+    setCurrentKey(deviceListKey);
   };
 
   const setConfig = record => {
     const seriesList: any = [];
     for (let index = 0; index < record.length; index++) {
       const element = record[index];
-      element.color = color16();
+      if (!element.color) {
+        element.color = color16();
+      }
       const series = getConfig(element.csvData, element.gentsn, element.color);
       seriesList.push(series);
     }
@@ -44,13 +52,48 @@ export const AnalysisPage = () => {
   const ondelete = item => {
     const record: any[] = [...data];
     const filtrate = record.filter(res => res.id !== item.id);
+    const keys = currentKey.filter(res => res !== item.id);
     setConfig(filtrate);
+    setCurrentKey(keys);
   };
-
+  const childRef = createRef<any>();
+  const [exportTime, setExportTime] = useRecoilState(exportExcelTime);
+  const [messageApi, contextHolder] = message.useMessage();
+  const exportExcel = async () => {
+    if (exportState) return;
+    exportState = true;
+    const imgBaseData = await childRef.current.exportImage();
+    const todo = await ipcRenderer.invoke('exportHistory', { key: currentKey, img: imgBaseData });
+    if (todo) {
+      messageApi.open({
+        type: 'success',
+        content: 'This is a success message',
+      });
+      exportState = false;
+      console.log(todo);
+    } else {
+      messageApi.open({
+        type: 'error',
+        content: 'This is a error message',
+      });
+    }
+    messageApi.destroy();
+  };
+  useEffect(() => {
+    if (exportTime) {
+      exportExcel();
+    }
+  }, [exportTime]);
   return (
     <>
       <div className="summary-graph" ref={graph} style={{ height: '450px' }}>
-        <ShareChart option={option} parent={graph} style={{ zIndex: 20 }} hight={450}></ShareChart>
+        <ShareChart
+          option={option}
+          parent={graph}
+          style={{ zIndex: 20 }}
+          hight={450}
+          ref={childRef}
+        ></ShareChart>
       </div>
       <AnalysisTable data={data} ondelete={ondelete} />
     </>
@@ -220,12 +263,22 @@ export const AnalysisTable = ({ data, ondelete }) => {
 export const AnalysisPageLeft = () => {
   const { t } = useTranslation();
   const [pageState, setPageState] = useRecoilState(analysisState);
+  const [exportTime, setExportTime] = useRecoilState(exportExcelTime);
   const handleClick = () => {
     setPageState(true);
+    setExportTime('');
+  };
+  const exportExcel = async () => {
+    setExportTime(new Date().getTime().toString());
   };
   return (
-    <Button onClick={handleClick} style={{ width: '100%' }}>
-      {t('home.goBack')}
-    </Button>
+    <>
+      <Button onClick={handleClick} style={{ width: '100%' }}>
+        {t('home.goBack')}
+      </Button>
+      <Button style={{ width: '100%', marginTop: '10px' }} onClick={exportExcel}>
+        导出Excel
+      </Button>
+    </>
   );
 };

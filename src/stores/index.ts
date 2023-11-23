@@ -76,3 +76,8 @@ export const analysisList = atom<any[]>({
   key: 'analysisList',
   default: [],
 });
+
+export const exportExcelTime = atom<string>({
+  key: 'exportExcelTime',
+  default: '',
+});

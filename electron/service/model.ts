@@ -40,7 +40,13 @@ export const Device = database.define(
       },
     },
     dataStorage_type: { type: STRING, allowNull: false },
-    otherData: { type: STRING, allowNull: true },
+    otherData: {
+      type: STRING,
+      allowNull: true,
+      get() {
+        return JSON.parse(this.getDataValue('otherData'));
+      },
+    },
     notes: { type: STRING, allowNull: true },
     createdAt: {
       type: DATE,

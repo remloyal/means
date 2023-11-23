@@ -29,6 +29,7 @@
     "drivelist": "^11.1.0",
     "echarts": "^5.4.3",
     "electron-updater": "^6.1.4",
+    "exceljs": "^4.4.0",
     "i18next": "^23.6.0",
     "i18next-browser-languagedetector": "^7.1.0",
     "log4js": "^6.9.1",
