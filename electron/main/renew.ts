@@ -6,11 +6,12 @@ import log from '../pdfgen/log';
 import { createWindow, preload } from './index';
 import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl } from '../unitls/unitls';
+import { listenUpdater } from './update';
 
 const baseUrl = path.resolve('./') + '/resources/';
 var AdmZip = require('adm-zip');
 let mainWindow: BrowserWindow | null = null;
-
+let win: BrowserWindow | null = null;
 // 缓存名称
 const cachePath = baseUrl + 'app_old.asar';
 // 更新解压缩路径
@@ -18,7 +19,7 @@ const updatePath = baseUrl + 'update';
 let renewtimer: NodeJS.Timeout | null = null;
 const createTimer = () => {
   renewtimer = setInterval(function () {
-    CheckForUpdates();
+    CheckForUpdates(win!);
     // clearInterval(renewtimer!);
   }, 1800000);
 };
@@ -27,16 +28,18 @@ createTimer();
 /**
  * 检测
  */
-export const CheckForUpdates = () => {
+export const CheckForUpdates = (winData: Electron.BrowserWindow) => {
+  win = winData;
   return new Promise(async (resolve, reject) => {
     // 判断是否开发环境
-    if (!app.isPackaged) {
-    resolve(false);
-    return;
-    }
-
+    // if (!app.isPackaged) {
+    // resolve(false);
+    // return;
+    // }
+    // console.log('检测更新')
     // 获取远程配置
     const remoteConfiguration = (await axios.get(getUrl())).data;
+
     const { data } = remoteConfiguration;
     /**
      * app.getVersion() 返回开发中的 Electron 版本号
@@ -76,11 +79,9 @@ export const downLoad = async (deploy?) => {
     /**
      * app.zip包含 update.asar 和 app-update.yml
      */
-
     // 创建一个可以写入的流，
-    mainWindow?.webContents.downloadURL(
-      deploy.downloadUrl || 'http://127.0.0.1:3000/files/app.zip'
-    );
+    const url = deploy.downloadUrl || 'http://127.0.0.1:3000/files/app.zip';    
+    mainWindow?.webContents.downloadURL(url);
     mainWindow?.webContents.session.on('will-download', (e, item) => {
       const filePath = path.join(updatePath, item.getFilename());
       let value = 0;
@@ -208,7 +209,7 @@ async function _unzip(zipPath, topath?) {
   });
 }
 
-const createRenew = (data?) => {
+const createRenew = (data?, callback?) => {
   if (mainWindow) return;
   const width = 400;
   const height = 350;
@@ -256,8 +257,16 @@ const createRenew = (data?) => {
     newWindow = null;
     log.info('更新窗口退出');
   });
+  if (callback) {
+    callback(mainWindow);
+  }
   ipcMain.handle('startUpdate', (event, params) => {
-    downLoad(data);
+    if (data.updateType == 1) {
+      listenUpdater(mainWindow!, data);
+      // 强制更新，全量升级
+    } else {
+      downLoad(data);
+    }
   });
 
   ipcMain.on('openMain', function () {
@@ -305,6 +314,14 @@ const renewMac = () => {
       fs.copyFileSync(updatePath + '/app-update.yml', baseUrl + 'app-update.yml');
     }
     log.info('mac 增量更新成功');
+    if (!app.isPackaged) {
+      win?.webContents.reload();
+      mainWindow?.destroy()
+      mainWindow = null;
+    } else {
+      app.relaunch();
+      app.exit();
+    }
   } catch (error) {
     fs.copyFileSync(cachePath, baseUrl + 'app.asar');
     log.error('mac 增量更新失败', error);

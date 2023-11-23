@@ -1,7 +1,6 @@
 import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { release } from 'node:os';
 import { join } from 'node:path';
-import { update } from './update';
 import { deviceInit } from './device';
 import '../service/router';
 import './renew';
@@ -74,6 +73,7 @@ export async function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
     win?.webContents.send('deviceOnload', new Date().toLocaleString());
+    CheckForUpdates(win!);
     // CheckForUpdates();
   });
   win.on('resize', () => {
@@ -113,9 +113,7 @@ export async function createWindow() {
 
   // Apply electron-updater
   deviceInit(win);
-  // update(win);
   // downLoad();
-  CheckForUpdates();
 }
 
 app.whenReady().then(createWindow);

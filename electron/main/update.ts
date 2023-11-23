@@ -1,73 +1,68 @@
-import { app, ipcMain } from 'electron'
-import {
-  type ProgressInfo,
-  type UpdateDownloadedEvent,
-  autoUpdater
-} from 'electron-updater'
+import { app, ipcMain } from 'electron';
+import { autoUpdater } from 'electron-updater';
+import log from '../pdfgen/log';
+import path from 'path';
+// 开发模式调试
+if (!app.isPackaged) {
+  Object.defineProperty(app, 'isPackaged', {
+    get() {
+      return true;
+    },
+  });
+  // 开发测试文件更新路径
+  autoUpdater.updateConfigPath = path.join(process.cwd(), '/resources/app-update.yml');
+}
 
-export function update(win: Electron.BrowserWindow) {
+/**
+ * 初始化更新模块
+ * @param {*} win
+ */
+export const listenUpdater = (win: Electron.BrowserWindow, data) => {
+  autoUpdater.autoDownload = false; // 手动指定下载
+  autoUpdater.disableWebInstaller = false;
+  let url = data.downloadUrl || 'http://localhost:3000/files'; //更改为版本库地址,测试时可以在本地跑一个web服务
+  autoUpdater.setFeedURL(url); // 更新包的地址
 
-  // When set to false, the update download will be triggered through the API
-  autoUpdater.autoDownload = false
-  autoUpdater.disableWebInstaller = false
-  autoUpdater.allowDowngrade = false
+  //异常捕获回调
+  autoUpdater.on('error', function (error) {
+    log.error('autoUpdater error==>', error);
+    win.webContents.send('updateFail', JSON.stringify(error));
+  });
 
-  // start check
-  autoUpdater.on('checking-for-update', function () { })
-  // update available
-  autoUpdater.on('update-available', (arg) => {
-    win.webContents.send('update-can-available', { update: true, version: app.getVersion(), newVersion: arg?.version })
-  })
-  // update not available
-  autoUpdater.on('update-not-available', (arg) => {
-    win.webContents.send('update-can-available', { update: false, version: app.getVersion(), newVersion: arg?.version })
-  })
+  // 检查更新中
+  autoUpdater.on('checking-for-update', function () {
+    //event.sender.send("msgUpdater", '检查更新中')
+    log.info('msgUpdater', '检查更新中');
+  });
 
-  // Checking for updates
-  ipcMain.handle('check-update', async () => {
-    if (!app.isPackaged) {
-      const error = new Error('The update feature is only available after the package.')
-      return { message: error.message, error }
-    }
+  // 检测到有新版本更新
+  autoUpdater.on('update-available', function (info) {
+    log.info(JSON.stringify(info));
+    autoUpdater.downloadUpdate();
+    win.webContents.send('update-available', JSON.stringify(info));
+  });
 
-    try {
-      return await autoUpdater.checkForUpdatesAndNotify()
-    } catch (error) {
-      return { message: 'Network error', error }
-    }
-  })
+  // 暂无新版本可更新
+  autoUpdater.on('update-not-available', function (info) {
+    log.info(JSON.stringify(info));
+    win.webContents.send('update-not-available', JSON.stringify(info));
+  });
 
-  // Start downloading and feedback on progress
-  ipcMain.handle('start-download', (event) => {
-    startDownload(
-      (error, progressInfo) => {
-        if (error) {
-          // feedback download error message
-          event.sender.send('update-error', { message: error.message, error })
-        } else {
-          // feedback update progress message
-          event.sender.send('download-progress', progressInfo)
-        }
-      },
-      () => {
-        // feedback update downloaded message
-        event.sender.send('update-downloaded')
-      }
-    )
-  })
+  // 更新下载进度事件
+  autoUpdater.on('download-progress', function (progressObj) {
+    log.info('download-progress', JSON.stringify(progressObj));
+    win.webContents.send('updateProgressing', Math.ceil(progressObj.percent));
+  });
 
+  // 下载完成,退出且重新安装
+  autoUpdater.on('update-downloaded', function () {
+    log.info('下载完成,正在重新安装');
+    win.webContents.send('updateDownloaded');
+  });
   // Install now
   ipcMain.handle('quit-and-install', () => {
-    autoUpdater.quitAndInstall(false, true)
-  })
-}
-
-function startDownload(
-  callback: (error: Error | null, info: ProgressInfo | null) => void,
-  complete: (event: UpdateDownloadedEvent) => void,
-) {
-  autoUpdater.on('download-progress', info => callback(null, info))
-  autoUpdater.on('error', error => callback(error, null))
-  autoUpdater.on('update-downloaded', complete)
-  autoUpdater.downloadUpdate()
-}
+    autoUpdater.quitAndInstall(); //退出且重新安装
+    // autoUpdater.quitAndInstall(false, true);
+  });
+  autoUpdater.checkForUpdates();
+};

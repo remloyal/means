@@ -31,11 +31,10 @@
   },
   "extraResources":{
     "from": "resources/static",
-    "to": "./static"
+    "to": "static"
   },
   "publish": {
     "provider": "generic",
-    "channel": "latest",
-    "url": "https://github.com/electron-vite/electron-vite-react/releases/download/v0.9.9/"
+    "url": "http://localhost:3000/files"
   }
 }

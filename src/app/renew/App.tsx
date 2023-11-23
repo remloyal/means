@@ -14,6 +14,7 @@ const App = () => {
     old: '0.0.0',
   });
   const [content, setContent] = useState<any>(null);
+  const [updateType, setUpdateType] = useState(0);
   useEffect(() => {
     ipcRenderer.on('version', async (event, data) => {
       console.log(data);
@@ -21,14 +22,16 @@ const App = () => {
         old: data.old,
         new: data.new,
       });
+      setUpdateType(data.updateType);
       setContent(data.data.content);
     });
     ipcRenderer.on('updateProgressing', async (event, data) => {
       setPercent(data);
-      if (data == 100) {
+      if (data == 100 && updateType == 0) {
         showModal();
       }
     });
+
     ipcRenderer.on('updateFail', async (event, data) => {
       setTimeout(() => {
         setState(false);
@@ -45,14 +48,26 @@ const App = () => {
       console.log(data);
       i18n.changeLanguage(data);
     });
+
+    //更新已下载
+    ipcRenderer.on('updateDownloaded', (event, data) => {
+      const installModal = Modal.info({
+        title: t('renew.applyUpdate'),
+        content: <div>退出并安装程序</div>,
+        onOk() {
+          ipcRenderer.invoke('quit-and-install');
+          installModal.destroy();
+        },
+      });
+    });
   }, []);
+
   const [state, setState] = useState(false);
   const startUpdating = () => {
     setState(true);
     ipcRenderer.invoke('startUpdate');
   };
   const [percent, setPercent] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     if (modalData) return;
     modalData = Modal.info({
@@ -65,8 +80,13 @@ const App = () => {
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
-    ipcRenderer.invoke('restartNow');
+    if (updateType == 0) {
+      ipcRenderer.invoke('restartNow');
+    }
+    if (updateType == 1) {
+      // 全量更新错误，重新检查下载
+      ipcRenderer.invoke('startUpdate');
+    }
   };
   return (
     <div className="renew">
