@@ -4,7 +4,7 @@ import { exec, execSync } from 'child_process';
 import fs from 'fs';
 import dayjs from 'dayjs';
 import { cryptMd5 } from './encryption';
-import { base_url } from '../config';
+import { base_url, dynamicConfig } from '../config';
 //   项目根路径/resources/{资源}
 export const filePath = (route: string) => {
   const pathroute = path.join(process.cwd(), '/resources', route);
@@ -71,8 +71,10 @@ function deleteFile(path) {
 }
 
 export function getUrl() {
+  console.log(dynamicConfig);
+
   const localTimestamp = dayjs().valueOf().toString();
   const hash = cryptMd5(localTimestamp);
-  const url = `${base_url}cmsapi/tools/check/${localTimestamp}/${hash}?lan=1&type=1&ver=1.0.1&env=1&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
+  const url = `${base_url}cmsapi/tools/check/${localTimestamp}/${hash}?lan=${dynamicConfig.lan}&type=1&ver=${dynamicConfig.ver}&env=${dynamicConfig.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
   return url;
 }

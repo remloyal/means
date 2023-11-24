@@ -5,6 +5,7 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew } from './renew';
+import { dynamicConfig } from '../config';
 
 // The built directory structure
 //
@@ -32,7 +33,7 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
   process.exit(0);
 }
-
+dynamicConfig.ver = app.getVersion();
 // Remove electron security warnings
 // This warning only shows in development mode
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
@@ -168,4 +169,12 @@ ipcMain.on('window-reset', function () {
 
 ipcMain.handle('restartNow', () => {
   quitRenew();
+});
+
+ipcMain.handle('lang', (_, data) => {
+  const lang = {
+    en_US: 1,
+    zh_CN: 2,
+  };
+  dynamicConfig.lan = lang[data] || 1;
 });

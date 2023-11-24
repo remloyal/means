@@ -6,3 +6,9 @@ const UrlList = {
 };
 
 export const base_url = UrlList['test_url'];
+
+export const dynamicConfig = {
+  ver: '1.0.0',
+  lan: 1,
+  env: 1,
+};
