@@ -124,7 +124,7 @@ export const queryHistoryDevice = async params => {
     const data = fs.readFileSync(file.toJSON().path);
     const decryptText = decrypt(data.toString());
     const todo = parseCSVData(decryptText);
-    const deviceData = JSON.parse(params.otherData);
+    const deviceData = params.otherData;
     deviceData.csvData = todo;
     return deviceData;
   } catch (error) {
