@@ -2,14 +2,18 @@ import { filePath } from '../../unitls/unitls';
 import { queryHistoryDeviceList } from './device';
 import { selectSavePath } from './exportDevice';
 import Excel, { BorderStyle, Borders } from 'exceljs';
-import fs from 'fs';
 import log from '../../pdfgen/log';
 import dayjs from 'dayjs';
 import { timeDiff } from '../../unitls/tool';
-const excelPath = filePath('/file/excel/');
+import { text } from '../../pdfgen/gloable/language';
 
 export const exportHistory = async params => {
   const deviceList = await queryHistoryDeviceList(params.key);
+  const excelPath = await selectSavePath();
+  params.excelPath = excelPath;
+  if (!params.lang) {
+    params.lang = 'zh';
+  }
   try {
     createExcel(params, deviceList);
   } catch (error) {
@@ -19,11 +23,6 @@ export const exportHistory = async params => {
 };
 
 const createExcel = async (params, deviceList) => {
-  if (!fs.existsSync(excelPath)) {
-    fs.mkdirSync(excelPath);
-  }
-  const newPath = excelPath + 'test.xlsx';
-
   const workbook = new Excel.Workbook();
   workbook.created = new Date();
   workbook.modified = new Date();
@@ -31,20 +30,21 @@ const createExcel = async (params, deviceList) => {
   imgSheet(workbook, { params });
   log.info('====【1】==== 创建图片表');
 
-  infoSheet(workbook, { data: deviceList });
+  infoSheet(workbook, { params, data: deviceList });
   log.info('====【2】==== 创建设备信息表');
 
-  dataListSheet(workbook, { data: deviceList });
+  dataListSheet(workbook, { params, data: deviceList });
   log.info('====【3】==== 创建数据表');
 
-  const newpath = excelPath + dayjs().format('YYYYMMDDHHmmss') + '.xlsx';
+  const newpath = params.excelPath + '/frigga_' + dayjs().format('YYYYMMDDHHmmss') + '.xlsx';
   workbook.xlsx.writeFile(newpath);
   log.info('====【4】==== 创建Excel,路径：', newpath);
 };
 
 // 第一页 图片
 const imgSheet = (workbook: Excel.Workbook, { params }) => {
-  const worksheet = workbook.addWorksheet('数据图表', {
+  const { lang } = params;
+  const worksheet = workbook.addWorksheet(text('EXCEL_DEVICE_CHART', lang), {
     views: [{ showGridLines: false }],
   });
   const imageId1 = workbook.addImage({
@@ -55,31 +55,32 @@ const imgSheet = (workbook: Excel.Workbook, { params }) => {
 };
 
 // 第二页 设备信息
-const infoSheet = (workbook: Excel.Workbook, { data }) => {
-  const worksheet = workbook.addWorksheet('设备信息', {
-    views: [{ showGridLines: false }]
+const infoSheet = (workbook: Excel.Workbook, { params, data }) => {
+  const { lang } = params;
+  const worksheet = workbook.addWorksheet(text('EXCEL_DEVICE_INFO', lang), {
+    views: [{ showGridLines: false }],
   });
-  const title = ['设备'];
+  const title = [text('EXCEL_DEVICE', lang)];
   const titleRow = worksheet.addRow(title);
   worksheet.mergeCells(1, 1, 1, 3);
   worksheet.mergeCells(1, 4, 1, 14);
   setRowStyle(worksheet, titleRow.cellCount, titleRow.number);
-  worksheet.getCell(titleRow.number, 6).value = '概述';
+  worksheet.getCell(titleRow.number, 6).value = text('EXCEL_DEVICE_OVER', lang);
   const tab = [
-    '数据名称',
-    '设备',
-    '报警状态',
-    '最高值',
-    '最低值',
+    text('EXCEL_DEVICE_NAME', lang),
+    text('EXCEL_DEVICE', lang),
+    text('EXCEL_DEVICE_STATUS', lang),
+    text('EXCEL_DEVICE_MAX', lang),
+    text('EXCEL_DEVICE_MIN', lang),
     'MKT',
-    '固件版本',
-    '记录间隔',
-    '记录开始',
-    '记录结束',
-    '数据点数',
-    '记录时长',
-    '行程编号',
-    '行程备注',
+    text('EXCEL_DEVICE_VERSION', lang),
+    text('EXCEL_DEVICE_INTERVAL', lang),
+    text('EXCEL_DEVICE_START', lang),
+    text('EXCEL_DEVICE_END', lang),
+    text('EXCEL_DEVICE_POINTS', lang),
+    text('EXCEL_DEVICE_DURATION', lang),
+    text('EXCEL_DEVICE_NUMBER', lang),
+    text('EXCEL_DEVICE_NOTES', lang),
   ];
   const tabRow = worksheet.addRow(tab);
   setRowStyle(worksheet, tabRow.cellCount, tabRow.number);
@@ -123,8 +124,9 @@ const infoSheet = (workbook: Excel.Workbook, { data }) => {
 };
 
 // 第三页
-const dataListSheet = (workbook: Excel.Workbook, { data }) => {
-  const worksheet = workbook.addWorksheet('数据列表', {
+const dataListSheet = (workbook: Excel.Workbook, { params, data }) => {
+  const { lang } = params;
+  const worksheet = workbook.addWorksheet(text('EXCEL_DEVICE_LIST', lang), {
     // properties: { tabColor: { argb: '#FFFFFF' } },
     views: [{ showGridLines: false }],
   });
@@ -152,7 +154,7 @@ const dataListSheet = (workbook: Excel.Workbook, { data }) => {
     }
     nameList[0].push(res.dataName, '');
     nameList[1].push(res.gentsn, '');
-    tableList.push('时间', 'T(°C)');
+    tableList.push(text('EXCEL_DEVICE_TIME', lang), 'T(°C)');
     arrange++;
   });
   worksheet.addRows(nameList);
@@ -165,7 +167,20 @@ const dataListSheet = (workbook: Excel.Workbook, { data }) => {
   }
 
   worksheet.addRows(rowList);
-  selfAdaption(worksheet);
+
+  const rowCount = worksheet.getRow(4);
+  const height = rowList.length + 4;
+  for (let i = 3; i <= height; i++) {
+    for (let j = 1; j < rowCount.cellCount + 1; j++) {
+      const dobCol = worksheet.getCell(i, j);
+      dobCol.border = borderStyle;
+      var columnLength = dobCol.value ? dobCol.value.toString().length : 10;
+      dobCol.alignment = { vertical: 'middle', horizontal: 'center' };
+      const column = worksheet.getColumn(j);
+      column.width = columnLength * 1.3;
+    }
+  }
+
   worksheet.mergeCells('A1:A2');
   //   处理第一、二行样式
   [1, 2].forEach(item => {
@@ -180,6 +195,7 @@ const dataListSheet = (workbook: Excel.Workbook, { data }) => {
       dobCol.border = borderStyle;
     }
   });
+  selfAdaption(worksheet);
 };
 
 const fillStyle = {

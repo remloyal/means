@@ -12,7 +12,8 @@
     "dateFormat": "日期格式",
     "timeFormat": "时间格式",
     "systemLanguage": "系统语言",
-    "restartNow":"必须重启以使新的设置生效，是否立即重启？"
+    "restartNow":"必须重启以使新的设置生效，是否立即重启？",
+    "example":"示例"
   },
   "left": {
     "equipmentModel": "设备型号",
@@ -64,7 +65,9 @@
     "exportAs":"导出为",
     "language":"语言",
     "cancellation":"取消",
-    "exportFailed":"导出失败"
+    "exportFailed":"导出失败",
+    "exportSuccess":"导出成功",
+    "processing":"处理中"
   },
   "deploy": {
     "basicParameters": "基本参数",

@@ -12,7 +12,8 @@
     "dateFormat": "Date Format",
     "timeFormat": "Time Format",
     "systemLanguage": "System Language",
-    "restartNow": "You must restart for the new settings to take effect. Do you want to restart now?"
+    "restartNow": "You must restart for the new settings to take effect. Do you want to restart now?",
+    "example":"Example"
   },
   "left": {
     "equipmentModel": "Equipment Model",
@@ -64,7 +65,9 @@
     "exportAs": "Export As",
     "language": "Language",
     "cancellation": "Cancellation",
-    "exportFailed": "Export failed"
+    "exportFailed": "Export Failed",
+    "exportSuccess":"Export Success",
+    "processing":"Processing"
   },
   "deploy": {
     "basicParameters": "Basic parameters",

@@ -120,7 +120,7 @@ const BasicSetting = () => {
           options={options}
         />
         <span style={{ marginLeft: '20px' }}>
-          示例
+          {t('header.example')}
           <span style={{ marginLeft: '20px' }}>{time}</span>
         </span>
       </>
@@ -141,7 +141,7 @@ const BasicSetting = () => {
           options={[{ value: 'HH:mm:ss', label: 'HH:mm:ss' }]}
         />
         <span style={{ marginLeft: '20px' }}>
-          示例
+          {t('header.example')}
           <TimeComponent />
         </span>
       </div>

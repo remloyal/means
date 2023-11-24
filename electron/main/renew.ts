@@ -37,8 +37,16 @@ export const CheckForUpdates = (winData: Electron.BrowserWindow) => {
     // return;
     // }
     // console.log('检测更新')
+    let remoteConfiguration;
     // 获取远程配置
-    const remoteConfiguration = (await axios.get(getUrl())).data;
+    try {
+      remoteConfiguration = (await axios.get(getUrl())).data;
+      console.log(remoteConfiguration);
+      
+    } catch (error) {
+      log.error('获取远程配置失败', error);
+      return;
+    }
 
     const { data } = remoteConfiguration;
     /**
@@ -80,7 +88,7 @@ export const downLoad = async (deploy?) => {
      * app.zip包含 update.asar 和 app-update.yml
      */
     // 创建一个可以写入的流，
-    const url = deploy.downloadUrl || 'http://127.0.0.1:3000/files/app.zip';    
+    const url = deploy.downloadUrl || 'http://127.0.0.1:3000/files/app.zip';
     mainWindow?.webContents.downloadURL(url);
     mainWindow?.webContents.session.on('will-download', (e, item) => {
       const filePath = path.join(updatePath, item.getFilename());
@@ -316,7 +324,7 @@ const renewMac = () => {
     log.info('mac 增量更新成功');
     if (!app.isPackaged) {
       win?.webContents.reload();
-      mainWindow?.destroy()
+      mainWindow?.destroy();
       mainWindow = null;
     } else {
       app.relaunch();

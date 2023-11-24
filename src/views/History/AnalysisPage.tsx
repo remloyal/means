@@ -1,4 +1,5 @@
 import { ShareChart, createFoldLine, createSeries } from '@/components/echarts/DisplayCharts';
+import { lang } from '@/config';
 import { analysisState, deviceSelectKey, exportExcelTime, resize } from '@/stores';
 import { color16 } from '@/utils/time';
 import { Button, Modal, Spin, Table, TableProps, message } from 'antd';
@@ -10,6 +11,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 let exportState = false;
 
 export const AnalysisPage = () => {
+  const { t } = useTranslation();
   const [deviceListKey, setDeviceListKey] = useRecoilState(deviceSelectKey);
   const graph = useRef(null);
   const [option, setOption] = useState({});
@@ -58,32 +60,36 @@ export const AnalysisPage = () => {
   };
   const childRef = createRef<any>();
   const [exportTime, setExportTime] = useRecoilState(exportExcelTime);
-  const [messageApi, contextHolder] = message.useMessage();
   const exportExcel = async () => {
     if (exportState) return;
     exportState = true;
     const imgBaseData = await childRef.current.exportImage();
-    const todo = await ipcRenderer.invoke('exportHistory', { key: currentKey, img: imgBaseData });
+    const language = lang[localStorage.getItem('language') || 'zh_CN'] || 'zh';
+    const todo = await ipcRenderer.invoke('exportHistory', {
+      key: currentKey,
+      img: imgBaseData,
+      lang: language,
+    });
     if (todo) {
-      messageApi.open({
-        type: 'success',
-        content: 'This is a success message',
-      });
       exportState = false;
       console.log(todo);
+      message.success(t('home.exportSuccess'));
     } else {
-      messageApi.open({
-        type: 'error',
-        content: 'This is a error message',
-      });
+      message.error(t('home.exportFailed'));
     }
-    messageApi.destroy();
+    setTimeout(() => {
+      setModalOpen(false);
+    }, 1000);
   };
   useEffect(() => {
     if (exportTime) {
+      setModalOpen(true);
       exportExcel();
     }
   }, [exportTime]);
+
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <>
       <div className="summary-graph" ref={graph} style={{ height: '450px' }}>
@@ -96,6 +102,24 @@ export const AnalysisPage = () => {
         ></ShareChart>
       </div>
       <AnalysisTable data={data} ondelete={ondelete} />
+      <Modal
+        centered
+        open={modalOpen}
+        width={200}
+        closeIcon={null}
+        footer={null}
+        maskClosable={false}
+      >
+        <div
+          style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <div style={{ height: 100, width: 100 }}>
+            <Spin size="large" tip={t('home.processing') + '...'} style={{ height: 100 }}>
+              <div className="content" />
+            </Spin>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };
@@ -277,7 +301,7 @@ export const AnalysisPageLeft = () => {
         {t('home.goBack')}
       </Button>
       <Button style={{ width: '100%', marginTop: '10px' }} onClick={exportExcel}>
-        导出Excel
+        {t('home.exportData')}
       </Button>
     </>
   );
