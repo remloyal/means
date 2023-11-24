@@ -26,7 +26,7 @@ export const listenUpdater = (win: Electron.BrowserWindow, data) => {
   //异常捕获回调
   autoUpdater.on('error', function (error) {
     log.error('autoUpdater error==>', error);
-    win.webContents.send('updateFail', JSON.stringify(error));
+    win.webContents.send('automaticUpdateFail', JSON.stringify(error));
   });
 
   // 检查更新中

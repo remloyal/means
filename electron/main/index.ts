@@ -4,8 +4,10 @@ import { join } from 'node:path';
 import { deviceInit } from './device';
 import '../service/router';
 import './renew';
-import { CheckForUpdates, quitRenew } from './renew';
+import { CheckForUpdates, quitRenew, mainWindow } from './renew';
 import { dynamicConfig } from '../config';
+import { IsOnlineService, isOnline } from '../unitls/request';
+import log from '../pdfgen/log';
 
 // The built directory structure
 //
@@ -74,7 +76,6 @@ export async function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
     win?.webContents.send('deviceOnload', new Date().toLocaleString());
-    CheckForUpdates(win!);
     // CheckForUpdates();
   });
   win.on('resize', () => {
@@ -112,12 +113,45 @@ export async function createWindow() {
     }
   });
 
+  win.on('close', () => {
+    // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
+    win?.removeAllListeners();
+    win = null;
+  });
+
   // Apply electron-updater
   deviceInit(win);
+  CheckForUpdates(win);
   // downLoad();
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+  const state = await isOnline();
+  if (state) {
+    createWindow();
+  } else {
+    dialog.showErrorBox(
+      'Network connection failed',
+      'Please check your network connection or try again later!'
+    );
+    log.error('Network connection failed');
+    app.quit();
+  }
+  const online = new IsOnlineService();
+  online.on('status', res => {
+    console.log(res);
+    if (res == false) {
+      win?.close();
+      mainWindow?.close();
+      log.error('Network connection failed');
+      dialog.showErrorBox(
+        'Network connection failed',
+        'Please check your network connection or try again later!'
+      );
+      app.quit();
+    }
+  });
+});
 
 app.on('window-all-closed', () => {
   win = null;

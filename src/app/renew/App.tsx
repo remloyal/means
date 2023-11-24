@@ -12,6 +12,7 @@ const App = () => {
   const [version, setVersion] = useState({
     new: '0.0.0',
     old: '0.0.0',
+    forceUpdate: 0,
   });
   const [content, setContent] = useState<any>(null);
   const [updateType, setUpdateType] = useState(0);
@@ -19,8 +20,10 @@ const App = () => {
     ipcRenderer.on('version', async (event, data) => {
       console.log(data);
       setVersion({
+        ...version,
         old: data.old,
         new: data.new,
+        forceUpdate: data.forceUpdate || 0,
       });
       setUpdateType(data.updateType);
       setContent(data.data.content);
@@ -39,10 +42,21 @@ const App = () => {
         Modal.info({
           content: <div>{t('renew.updateAgain')}</div>,
           onOk() {
-            handleOk();
+            // handleOk();
           },
         });
       }, 1000);
+    });
+
+    ipcRenderer.on('automaticUpdateFail', async (event, data) => {
+      setState(false);
+      Modal.destroyAll();
+      Modal.info({
+        content: <div>{t('renew.updateAgain')}</div>,
+        onOk() {
+          startUpdating();
+        },
+      });
     });
     ipcRenderer.on('language', async (event, data) => {
       console.log(data);
@@ -81,13 +95,17 @@ const App = () => {
 
   const handleOk = () => {
     if (updateType == 0) {
-      ipcRenderer.invoke('restartNow');
+      ipcRenderer.invoke('startUpdate');
     }
     if (updateType == 1) {
       // 全量更新错误，重新检查下载
       ipcRenderer.invoke('startUpdate');
     }
   };
+  const cancelUpdating = () =>{
+    // 关闭窗口
+    ipcRenderer.invoke('cancelUpdate');
+  }
   return (
     <div className="renew">
       <div>
@@ -108,9 +126,16 @@ const App = () => {
         ''
       )}
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={startUpdating} disabled={state}>
+        <Button onClick={startUpdating} disabled={state} type="primary">
           {t('renew.startUpdating')}
         </Button>
+        {version.forceUpdate == 0 ? (
+          <Button onClick={ cancelUpdating} disabled={state} style={{ marginLeft: '20px' }}>
+            {t('home.cancellation')}
+          </Button>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

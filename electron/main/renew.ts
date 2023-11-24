@@ -10,7 +10,7 @@ import { listenUpdater } from './update';
 
 const baseUrl = path.resolve('./') + '/resources/';
 var AdmZip = require('adm-zip');
-let mainWindow: BrowserWindow | null = null;
+export let mainWindow: BrowserWindow | null = null;
 let win: BrowserWindow | null = null;
 // 缓存名称
 const cachePath = baseUrl + 'app_old.asar';
@@ -19,7 +19,7 @@ const updatePath = baseUrl + 'update';
 let renewtimer: NodeJS.Timeout | null = null;
 const createTimer = () => {
   renewtimer = setInterval(function () {
-    CheckForUpdates(win!);
+    CheckForUpdates(win);
     // clearInterval(renewtimer!);
   }, 1800000);
 };
@@ -28,7 +28,7 @@ createTimer();
 /**
  * 检测
  */
-export const CheckForUpdates = (winData: Electron.BrowserWindow) => {
+export const CheckForUpdates = (winData: Electron.BrowserWindow | null) => {
   win = winData;
   return new Promise(async (resolve, reject) => {
     // 判断是否开发环境
@@ -42,7 +42,6 @@ export const CheckForUpdates = (winData: Electron.BrowserWindow) => {
     try {
       remoteConfiguration = (await axios.get(getUrl())).data;
       console.log(remoteConfiguration);
-      
     } catch (error) {
       log.error('获取远程配置失败', error);
       return;
@@ -268,9 +267,13 @@ const createRenew = (data?, callback?) => {
   if (callback) {
     callback(mainWindow);
   }
+
   ipcMain.handle('startUpdate', (event, params) => {
     if (data.updateType == 1) {
       listenUpdater(mainWindow!, data);
+      setTimeout(() => {
+        win?.close();
+      }, 5000);
       // 强制更新，全量升级
     } else {
       downLoad(data);
@@ -279,6 +282,11 @@ const createRenew = (data?, callback?) => {
 
   ipcMain.on('openMain', function () {
     createWindow();
+  });
+
+  ipcMain.handle('cancelUpdate', function () {
+    newWindow?.close();
+    newWindow = null;
   });
 };
 
