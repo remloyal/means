@@ -412,7 +412,7 @@ const initDeviceInfo = (globalInfo, info, sensorInfo) => {
   return {
     terNo,
     model: referenceModel || model,
-    firmwareVersion: (firmwareVersion && `V0.${firmwareVersion.split('.')[1]}`) || 'V0.01',
+    firmwareVersion: firmwareVersion,
     hardwareVersion: hardwareVersion || 'DW_V02',
     companyName,
     fileCreatedTime: _util.pdfShowTime(

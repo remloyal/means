@@ -46,7 +46,7 @@ const pdfData = (data, monitors) => {
       device: {
         terNo: record.deviceType,
         usage: 1,
-        firmwareVersion: 'V01',
+        firmwareVersion: record.firmwareVersion,
         model: record.getsn,
         params: {
           assetId: '',

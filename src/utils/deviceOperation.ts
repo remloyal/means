@@ -135,7 +135,8 @@ class DeviceInstance {
     const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
     this.record.maximumValue = max;
     this.record.minimumValue = min;
-    this.record.timeZone = convertTZ(this.record.time)
+    this.record.timeZone = convertTZ(this.record.time);
+    this.record.firmwareVersion = 'V1.02';
   }
 }
 

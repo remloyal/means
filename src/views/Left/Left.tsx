@@ -2,7 +2,7 @@ import { MainLeft } from '@/components/main';
 import { equipment, deviceState, resize, historyDevice } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { splitStringTime } from '@/utils/time';
-import disconnect from '@assets/MainForm/DeviceImage/disconnect.png';
+import disconnect from '@/assets/img/disconnect.png';
 import alarmPng from '@/assets/img/报警.png';
 import { Button, Descriptions, DescriptionsProps, Modal } from 'antd';
 import dayjs from 'dayjs';
@@ -11,6 +11,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
+
+import M2H from '@/assets/img/M2H.png';
+import M1H from '@/assets/img/M2E.png';
+import M2D from '@/assets/img/M2D.png';
+const DeviceImg = {
+  M2H: M2H,
+  M1H: M1H,
+  M2D: M2D,
+};
 
 const Left: React.FC = () => {
   const { t } = useTranslation();
@@ -136,7 +145,13 @@ const Left: React.FC = () => {
     <MainLeft>
       <div className="left">
         <div className="image">
-          <img src={disconnect} alt="" />
+          {device != null ? (
+            <div className="image-device">
+              <img src={DeviceImg[device?.record.deviceType || 'M2H']} alt="" />
+            </div>
+          ) : (
+            <div className="disconnect"><img src={disconnect} alt="" /></div>
+          )}
           {/* <span>报警</span> */}
           <img src={alarmPng} className="image-alarm" />
         </div>

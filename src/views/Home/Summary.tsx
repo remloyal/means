@@ -277,6 +277,19 @@ const SummaryRight: React.FC = () => {
     0: '\u2103',
     1: '\u2109',
   };
+  const setSensor = () => {
+    const sensorType = {
+      M2H: (
+        <div>
+          {t('home.temperature')}、{t('home.humidity')}
+        </div>
+      ),
+      M2D: <div>{t('home.temperature')}</div>,
+      M2E: <div>{t('home.humidity')}</div>,
+    };
+    return device?.record.deviceType ? sensorType[device?.record.deviceType] : '---';
+  };
+  
   const items: DescriptionsProps['items'] = [
     {
       label: t('home.startMode'),
@@ -296,7 +309,7 @@ const SummaryRight: React.FC = () => {
     },
     {
       label: t('home.sensorType'),
-      children: device != null ? device?.record.sensorType : '---',
+      children: device != null ? setSensor() : '---',
     },
     {
       label: t('home.startDelay'),

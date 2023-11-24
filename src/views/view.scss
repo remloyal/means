@@ -102,13 +102,24 @@
     margin-top: 10px;
     position: relative;
 
-    img {
+    .disconnect {
       width: calc(18vw - 20px);
+      height: calc(15vw - 20px);
+      text-align: center;
+      img {
+        width: calc(15vw - 20px);
+        height: calc(15vw - 20px);
+      }
+    }
+    .image-device {
+      width: calc(18vw - 20px);
+      height: calc(15vw - 20px);
+      text-align: center;
     }
 
     .image-alarm {
       width: 24px;
-      // height: 24px;
+      height: 24px;
       position: absolute;
       right: 0;
       top: -8px;
