@@ -281,7 +281,7 @@ export const  en = {
   PDF_LOWEST_TEMP1: 'Lowest Temperature1:',
   PDF_HIGHEST_TEMP2: 'Highest Temperature2:',
   PDF_LOWEST_TEMP2: 'Lowest Temperature2:',
-  PDF_AVERAGE: 'Average:',
+  PDF_AVERAGE: 'Average Temperature:',
   PDF_AVERAGE_TEMP1: 'Average Temperature1:',
   PDF_AVERAGE_TEMP2: 'Average Temperature2:',
   PDF_HUMI_AVERAGE: 'AVG-Humi:',

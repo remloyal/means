@@ -174,7 +174,7 @@ export const PDF_INFO = {
           }
           break;
         case SENSORS.HUMI:
-          units = '%RH';
+          units = 'RH';
           break;
         default:
           units = '';

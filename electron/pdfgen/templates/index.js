@@ -212,7 +212,7 @@ const initGlobalInfo = info => {
     pdfTemplateId = 0, // pdf模板id号
   } = product || {};
   const templateName = PDF_TEMPLATE[pdfTemplateId];
-  let dateFormat = 'YY-MM-DD HH:mm:ss'; // 整体时间格式
+  let dateFormat = 'DD-MM-YY HH:mm:ss'; // 整体时间格式
   // chart x轴坐标值
   let dateWithYearFormat = 'YY.MM.DD';
   let dateNoYearFormat = 'MM.DD';
@@ -3079,22 +3079,22 @@ const printTableHead = (pdf, { pdfInfo, sensorInfo, deviceInfo, pageIndex = 0, g
         : (pageIndex + 1) * onePageDataContains - 1
     ];
   const posY = 5;
-  pdf.fontSize(FONT_SIZE_SMALL).text(
-    `${text('PDF_FROM', LANGUAGE)} ${_common.formatDate(fromTime, timeZone, DATE_FORMAT)}   ${text(
-      'PDF_TO',
-      LANGUAGE
-    )} ${_common.formatDate(toTime, timeZone, DATE_FORMAT)}`,
-    // sensors.length < 3 ? PAGE_LEFT_POS() : 2,
-    PAGE_LEFT_POS(),
-    posY
-  );
+  // pdf.fontSize(FONT_SIZE_SMALL).text(
+  //   `${text('PDF_FROM', LANGUAGE)} ${_common.formatDate(fromTime, timeZone, DATE_FORMAT)}   ${text(
+  //     'PDF_TO',
+  //     LANGUAGE
+  //   )} ${_common.formatDate(toTime, timeZone, DATE_FORMAT)}`,
+  //   // sensors.length < 3 ? PAGE_LEFT_POS() : 2,
+  //   PAGE_LEFT_POS(),
+  //   posY
+  // );
 
-  pdf.text(`${text('PDF_FILE_CREATED', LANGUAGE)}${fileCreatedTime}`, 0, posY, {
-    lineBreak: false,
-    // width: sensors.length < 3 ? PAGE_RIGHT_POS() : PDF_A4_WIDTH - 2,
-    width: PAGE_RIGHT_POS(),
-    align: 'right',
-  });
+  // pdf.text(`${text('PDF_FILE_CREATED', LANGUAGE)}${fileCreatedTime}`, 0, posY, {
+  //   lineBreak: false,
+  //   // width: sensors.length < 3 ? PAGE_RIGHT_POS() : PDF_A4_WIDTH - 2,
+  //   width: PAGE_RIGHT_POS(),
+  //   align: 'right',
+  // });
 };
 
 /**
@@ -3162,7 +3162,7 @@ const printTableData = (
     markAlert = false,
   }
 ) => {
-  const { DATE_FORMAT = 'YY-MM-DD HH:mm:ss', UNIT } = globalInfo || {};
+  const { DATE_FORMAT = 'DD-MM-YY HH:mm:ss', UNIT } = globalInfo || {};
   const {
     dataTableParams: {
       pageLeftPos, // 表格左侧离页面左侧的距离
