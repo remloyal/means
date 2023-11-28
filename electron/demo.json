@@ -1,0 +1,123 @@
+{
+  "info": {
+    "filter": {
+      "generateType": 1,
+      "archiveFolder": "WEB/2022-12-13",
+      "needInfo": false,
+      "needBtPrintnfo": false,
+      "needFilePath": false,
+      "downloadHost": "http://localhost:8090",
+      "sensors": ["temp","humi"],
+      "pdfTimeInterval": 0,
+      "startTime": "2022-12-11T17:57:27.000Z",
+      "endTime": "2022-12-11T17:57:27.000Z",
+      "checkCompleteness": false,
+      "unit": "cels"
+    },
+    "product": {
+      "alertStrategy": 1,
+      "hardwareVersion": "DW_V02",
+      "pdfChartType": 1,
+      "pdfLanguage": "zh",
+      "pdfLogoColor": "",
+      "pdfLogoText": "",
+      "pdfMktShow": 1,
+      "pdfNameType": 2,
+      "pdfTemplateId": 0,
+      "pdfWebsite": "http://172.16.22.82",
+      "referenceModel": "",
+      "alerts": [
+        { "type": "temp", "labelIndex": 0 },
+        { "type": "subTemp", "labelIndex": 0 },
+        { "type": "humi", "labelIndex": 0 },
+        { "type": "subHumi", "labelIndex": 0 }
+      ]
+    },
+    "order": {
+      "bounded": "2022-11-12T10:22:40.000Z",
+      "unbounded": "2022-11-12T10:22:40.000Z",
+      "unbindType": 3
+    },
+    "device": {
+      "terNo": "KIKI0001",
+      "usage": 1,
+      "firmwareVersion": "V01",
+      "model": "T7100",
+      "params": {
+        "assetId": "",
+        "content": "adfadf",
+        "dc": "",
+        "freighter": "AAAA",
+        "from": "66",
+        "pdfLanguage": "zh",
+        "personal": "44",
+        "predicatedEnd": "2020-01-15T02:15:00.000Z",
+        "predicatedStart": "2020-01-15T02:15:00.000Z",
+        "projectId": "",
+        "recipient": "",
+        "startDelayTime": 1,
+        "timeZone": "Asia/Damascus",
+        "to": "cd",
+        "tripId": "ab",
+        "vehicle": "",
+        "alerts": [
+          {
+            "type": "humi",
+            "unit": "%",
+            "min": 0,
+            "receiveAlert": true,
+            "max": 80
+          },
+          {
+            "type": "subHumi",
+            "unit": "%",
+            "min": 0,
+            "receiveAlert": true,
+            "max": 100
+          },
+          {
+            "type": "subTemp",
+            "unit": "℃",
+            "min": 0,
+            "receiveAlert": true,
+            "max": 45
+          },
+          {
+            "type": "temp",
+            "unit": "℃",
+            "min": -10,
+            "receiveAlert": true,
+            "max": 50
+          }
+        ],
+        "read": 5,
+        "report": 10
+      }
+    },
+    "customer": { "name": "frigga_kiki" }
+  },
+  "monitors": {
+    "temp": [
+      { "timestamp": 1670781600000, "val": 17.6, "lbstime": 1670781420000 },
+      { "timestamp": 1670782600000, "val": 17.6, "lbstime": 1670782420000 },
+      { "timestamp": 1670783600000, "val": 17.6, "lbstime": 1670783420000 },
+      { "timestamp": 1670784600000, "val": 17.6, "lbstime": 1670784420000 },
+      { "timestamp": 1670785600000, "val": 17.6, "lbstime": 1670785420000 },
+      { "timestamp": 1670786600000, "val": 17.6, "lbstime": 1670786420000 },
+      { "timestamp": 1670787600000, "val": 57.6, "lbstime": 1670787420000 },
+      { "timestamp": 1670788600000, "val": 37.6, "lbstime": 1670788420000 }
+    ],
+    "subTemp": [
+      { "timestamp": 1670781600000, "val": 3276.7, "lbstime": 1670781420000 }
+    ],
+    "humi": [
+      { "timestamp": 1670781600000, "val": 76.7, "lbstime": 1670781420000 },
+      { "timestamp": 1670783600000, "val": 27.6, "lbstime": 1670782420000 },
+      { "timestamp": 1670784600000, "val": 37.6, "lbstime": 1670783420000 },
+      { "timestamp": 1670785600000, "val": 67.6, "lbstime": 1670784420000 },
+      { "timestamp": 1670786600000, "val": 18.6, "lbstime": 1670785420000 },
+      { "timestamp": 1670787600000, "val": 77.6, "lbstime": 1670786420000 },
+      { "timestamp": 1670788600000, "val": 54.6, "lbstime": 1670787420000 }
+    ]
+  }
+}

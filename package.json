@@ -1,0 +1,66 @@
+{
+  "name": "frigga",
+  "version": "1.0.0",
+  "main": "dist-electron/main/index.js",
+  "description": "Electron Vite React boilerplate.",
+  "author": "wade",
+  "license": "MIT",
+  "private": true,
+  "debug": {
+    "env": {
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777/"
+    }
+  },
+  "scripts": {
+    "dev": "chcp 65001 && vite",
+    "build": "tsc && vite build && electron-builder",
+    "build:dir": "tsc && vite build && electron-builder install-app-deps",
+    "preview": "vite preview",
+    "pree2e": "vite build --mode=test",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "adm-zip": "^0.5.10",
+    "antd": "^5.10.2",
+    "axios": "^1.6.2",
+    "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.10",
+    "drivelist": "^11.1.0",
+    "echarts": "^5.4.3",
+    "electron-updater": "^6.1.4",
+    "exceljs": "^4.4.0",
+    "i18next": "^23.6.0",
+    "i18next-browser-languagedetector": "^7.1.0",
+    "log4js": "^6.9.1",
+    "node-hid": "^2.1.2",
+    "pdfjs-dist": "^3.11.174",
+    "pdfkit": "^0.14.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^13.3.1",
+    "react-router-dom": "^6.18.0",
+    "recoil": "^0.7.7",
+    "sequelize": "^6.34.0",
+    "sqlite3": "^5.1.6",
+    "usb": "^2.11.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.3.0",
+    "@playwright/test": "^1.39.0",
+    "@types/react": "^18.2.33",
+    "@types/react-dom": "^18.2.14",
+    "@types/sequelize": "^4.28.18",
+    "@vitejs/plugin-react": "^4.1.0",
+    "electron": "^27.0.2",
+    "electron-builder": "^24.6.4",
+    "sass": "^1.69.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vite-plugin-electron": "^0.14.1",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  }
+}

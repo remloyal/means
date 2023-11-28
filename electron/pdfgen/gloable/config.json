@@ -1,0 +1,17 @@
+{
+  "frigga": {
+    "smsLang": "en",
+    "language": "en",
+    "pdf": {
+      "pdfLang": 1,
+      "pdfLine": 72,
+      "pdfUrlPrefix": "http://localhost:8090"
+    },
+    "csv": {
+      "downloadUrlPrefix": "http://localhost:8090"
+    },
+    "excel": {
+      "urlPrefix": "http://localhost:8090"
+    }
+  }
+}

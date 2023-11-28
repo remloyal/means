@@ -1,0 +1,40 @@
+{
+  "productName": "鼎为数据中心",
+  "appId": "com.leon.frigga",
+  "asar": true,
+  "directories": {
+    "output": "release/${version}"
+  },
+  "files": ["dist-electron", "dist"],
+  "mac": {
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": ["dmg", "zip"]
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "requestedExecutionLevel": "requireAdministrator",
+    "artifactName": "${productName}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
+  },
+  "extraResources":{
+    "from": "resources/static",
+    "to": "static"
+  },
+  "publish": {
+    "provider": "generic",
+    "url": "http://localhost:3000/files"
+  }
+}
