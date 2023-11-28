@@ -127,10 +127,11 @@
   }
 
   .record-operate {
+    width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     button {
-      margin: 10px;
+      margin: 10px 0;
     }
   }
 }

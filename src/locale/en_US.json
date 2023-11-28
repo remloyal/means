@@ -123,7 +123,10 @@
     "dataPoints": "data points",
     "duration": "duration",
     "averageValue": "average value",
-    "piecesData": "Please keep the data within {{count}} items. {{select}} items have been selected, please reselect!"
+    "piecesData": "Please keep the data within {{count}} items. {{select}} items have been selected, please reselect!",
+    "import":"Import",
+    "importSuccess":"Import was successful",
+    "importFailed":"Import failed"
   },
   "device": {
     "initialstate": "Initial state",

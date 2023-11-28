@@ -44,10 +44,10 @@ const pdfData = (data, monitors) => {
         stopMode: record.stopMode,
       },
       device: {
-        terNo: record.deviceType,
+        terNo: record. getsn,
         usage: 1,
         firmwareVersion: record.firmwareVersion,
-        model: record.getsn,
+        model: record.deviceType,
         params: {
           assetId: '',
           content: '',

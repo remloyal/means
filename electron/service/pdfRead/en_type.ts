@@ -1,0 +1,51 @@
+// 应用生成
+const ENTYPE = {
+  title: ['Date', 'Time', '℃', '℉', 'RH'],
+  rule: {
+    time: [/File Created Date: (.*?)Frigga Data Report/, /File Created Date:(.*?)Frigga®/],
+    timeFormat: [/Hour clock,(.*?)Temp Low Alarm/, /Hour clock,(.*?)]Device Configuration/],
+    lowAlarm: [/Temp Low Alarm: (.*?)Temp High Alarm/],
+    highAlarm: [/Temp High Alarm: (.*?)Humi Low Alarm:/, /Temp High Alarm: (.*?)Data Points/],
+    humiLowAlarm: [/Humi Low Alarm: (.*?)Humi High Alarm: /],
+    humiHighAlarm: [/Humi High Alarm: (.*?)Data Points/],
+    dataPoints: [/Data Points: (.*?)Stop Mode/],
+    stopMode: [/Stop Mode: (.*?)Device Information/],
+    deviceID: [/Device ID: (.*?)Device Model/],
+    deviceModel: [/Device Model: (.*?)Firmware Version/],
+    firmwareVersion: [/Firmware Version: (.*?)Hardware Version/],
+    hardwareVersion: [/Hardware Version: (.*?)Device Configuration/],
+    startDelay: [/Start delay: (.*?)Log interval/],
+    logInterval: [/Log interval: (.*?) Start Time/, /Log interval: (.*?)Start Time/],
+    minsStartTime: [/MinsStart Time: (.*?)End time/],
+    endTime: [/End time: (.*?)Logging Summary/],
+    threshold: [/Threshold(.*?)Data Points/],
+    highestTemperature: [/Highest Temperature: (.*?)Lowest Temperature/],
+    lowestTemperature: [/Lowest Temperature: (.*?)Highest Humidity/],
+    highestHumidity: [/Highest Humidity: (.*?)Lowest Humidity/],
+    lowestHumidity: [/Lowest Humidity: (.*?)MKT/],
+    mkt: [/MKT: (.*?)Average Temperature/],
+    average: [/Average Temperature: (.*?)Data Summary/],
+    tempLow: [/Temp-Low (.*?)Temp-High/],
+    tempHigh: [/Temp-High (.*?)Humi-Low/],
+    humiLow: [/Humi-Low (.*?)Humi-High/],
+    humiHigh: [/Humi-High (.*?)Record/],
+  },
+};
+// 设备生成
+const DEVICEENTYPE = {
+  ...ENTYPE,
+  rule: {
+    ...ENTYPE.rule,
+    lowAlarm: [/Temp Low Alarm: (.*?)Temp High Alarm/],
+    highAlarm: [/Temp High Alarm: (.*?)Humi Low Alarm:/],
+    humiLowAlarm: [/Humi Low Alarm: (.*?)Humi High Alarm: /],
+    humiHighAlarm: [/Humi High Alarm: (.*?)Data Points/],
+    stopMode: [/Stop Mode: (.*?)Note:/],
+    hardwareVersion: [/Hardware Version: (.*?)Logging Summary/],
+    startDelay: [/Start Delay: (.*?)Log Interval/],
+    logInterval: [/Log Interval: (.*?) MinsStart Time/],
+    minsStartTime: [/MinsStart Time: (.*?)End Time/],
+    endTime: [/End Time: (.*?)Device Information/],
+  },
+};
+export default { currency: ENTYPE, device: DEVICEENTYPE };

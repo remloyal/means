@@ -59,6 +59,20 @@ function getAverage(arr) {
   return res.toFixed(1);
 }
 
+interface Data {
+  c: number;
+  f: number;
+  humi: number;
+  timeStamp: string;
+}
+export function convertToCSV(data: Data[]): string {
+  let csv = 'timeStamp,c,f,humi\n'; // CSV 文件的头部
+  for (const { c, f, humi, timeStamp } of data) {
+    csv += `${timeStamp},${c},${f},${humi}\n`; // 将每行数据格式化为 CSV 格式的字符串
+  }
+  return csv;
+}
+
 /**
  * 解析 csv 数据
  * @param {String} csvString csv 数据
@@ -89,3 +103,18 @@ export const timeDiff = (startTime, endTime) => {
   const diffInMinutes = end.diff(start, 'minutes');
   return diffInMinutes;
 };
+
+/**
+ * 摄氏 转成 华氏
+ * @param {Number} c
+ */
+export const c2f = c => {
+    return Math.round((c * 1.8 + 32) * 10) / 10;
+  },
+  /**
+   * 华氏 转成 摄氏
+   * @param {Number} f
+   */
+  f2c = f => {
+    return Math.round(((f - 32) / 1.8) * 10) / 10;
+  };

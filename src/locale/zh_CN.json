@@ -123,7 +123,10 @@
     "dataPoints":"数据点数",
     "duration":"时长",
     "averageValue":"平均值",
-    "piecesData":"数据请在{{count}}条以内，已选择{{select}}条，请重新选择！"
+    "piecesData":"数据请在{{count}}条以内，已选择{{select}}条，请重新选择！",
+    "import":"导入",
+    "importSuccess":"导入成功",
+    "importFailed":"导入失败"
   },
   "device":{
     "initialstate":"初始状态",

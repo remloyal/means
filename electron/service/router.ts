@@ -12,6 +12,7 @@ import {
 import { exportDevicePdf } from './controllers/exportDevice';
 import { exportHistory } from './controllers/exportHistory';
 import { importPDF } from './pdfRead/pdfRead';
+import log from '../pdfgen/log';
 
 ipcMain.handle('createDevice', (event, params) => {
   return new Promise(async (resolve, reject) => {
@@ -19,6 +20,7 @@ ipcMain.handle('createDevice', (event, params) => {
       const data = handleDeviceData(params);
       resolve(data);
     } catch (error) {
+      log.error(error);
       reject(false);
     }
   });
@@ -36,6 +38,7 @@ ipcMain.handle('queryDevice', (event, params) => {
         resolve(data);
       }
     } catch (error) {
+      log.error(error);
       reject(false);
     }
   });
@@ -47,6 +50,7 @@ ipcMain.handle('updateDevice', (event, params) => {
       const data = updateDevice(params);
       resolve(data);
     } catch (error) {
+      log.error(error);
       resolve(false);
     }
   });
@@ -58,6 +62,7 @@ ipcMain.handle('deleteDevice', (event, params) => {
       const data = deleteDevice(params);
       resolve(data);
     } catch (error) {
+      log.error(error);
       resolve(false);
     }
   });
@@ -74,6 +79,7 @@ ipcMain.handle('queryHistoryDevice', (event, params) => {
         resolve(data);
       }
     } catch (error) {
+      log.error(error);
       resolve(false);
     }
   });
@@ -86,6 +92,7 @@ ipcMain.handle('exportDevice', (event, params) => {
       const data = exportDevicePdf(params);
       resolve(data);
     } catch (error) {
+      log.error(error);
       resolve(false);
     }
   });
@@ -98,6 +105,7 @@ ipcMain.handle('exportHistory', (event, params) => {
       const data = exportHistory(params);
       resolve(data);
     } catch (error) {
+      log.error(error);
       resolve(false);
     }
   });
@@ -111,6 +119,7 @@ ipcMain.handle('importPDF', (event, params) => {
       const data = importPDF();
       resolve(data);
     } catch (error) {
+      log.error(error);
       resolve(false);
     }
   });

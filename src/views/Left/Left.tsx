@@ -81,11 +81,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.deviceTime'),
-      children: device != null ? setTime(device?.record.time) : '---',
+      children: device != null && device?.record.time != '' ? setTime(device?.record.time) : '---',
     },
     {
       label: t('left.batteryLevel'),
-      children: device != null ? device?.record.mode : '---',
+      children: device != null ? device?.record.batteryLevel : '---',
     },
     {
       label: t('left.DeviceStatus'),
@@ -150,7 +150,9 @@ const Left: React.FC = () => {
               <img src={DeviceImg[device?.record.deviceType || 'M2H']} alt="" />
             </div>
           ) : (
-            <div className="disconnect"><img src={disconnect} alt="" /></div>
+            <div className="disconnect">
+              <img src={disconnect} alt="" />
+            </div>
           )}
           {/* <span>报警</span> */}
           <img src={alarmPng} className="image-alarm" />
@@ -167,21 +169,27 @@ const Left: React.FC = () => {
           size="small"
         />
         <div className="record-operate">
-          <Button type="primary" danger>
+          <Button type="primary" danger style={{ width: '45%' }}>
             {t('left.stopRecording')}
           </Button>
           <Button
-            style={{ backgroundColor: '#3577F1', color: '#fff', border: '1px #3577F1 solid' }}
+            style={{
+              width: '45%',
+              backgroundColor: '#3577F1',
+              color: '#fff',
+              border: '1px #3577F1 solid',
+            }}
           >
             {t('left.reload')}
           </Button>
         </div>
-        <Button
+        {/* 快速重置 */}
+        {/* <Button
           style={{ width: '100%', backgroundColor: '#4DAC53', color: '#fff', border: 0 }}
           onClick={showModal}
         >
           {t('left.quickReset')}
-        </Button>
+        </Button> */}
         <Modal
           open={isModalOpen}
           onOk={handleOk}

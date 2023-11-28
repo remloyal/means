@@ -187,13 +187,15 @@ const HistoryMain = () => {
 
   useEffect(() => {
     getData();
+    getList();
+  }, []);
+  const getList = () => {
     ipcRenderer.on('renewDevice', async (event, data) => {
       if (data && data.length > 0) {
         setDeviceList(data);
       }
     });
-  }, []);
-
+  };
   const getData = async () => {
     const data = await ipcRenderer.invoke('queryDevice');
     setDeviceList(data);
@@ -427,9 +429,10 @@ const HistoryLift = () => {
       const todo = await ipcRenderer.invoke('importPDF');
       console.log(todo);
       if (todo) {
-        message.success('导入成功');
+        queryDevice();
+        message.success(t('history.importSuccess'));
       } else {
-        message.error('导入失败');
+        message.error(t('history.importFailed'));
       }
     };
     return (
@@ -450,7 +453,7 @@ const HistoryLift = () => {
               {t('history.contrastAnalysis')}
             </Button>
             <Button style={{ width: '100%' }} onClick={importPDF}>
-              导入PDF
+              {t('history.import')} PDF
             </Button>
           </Space>
         </div>

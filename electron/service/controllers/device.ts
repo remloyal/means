@@ -1,14 +1,19 @@
 import path from 'path';
 import fs from 'fs';
 import { Device, FileData } from '../model';
-import { findMinMax, parseCSVData } from '../../unitls/tool';
+import { convertToCSV, findMinMax, parseCSVData } from '../../unitls/tool';
 import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import { database } from '../db';
 import { decrypt, encrypt } from '../../unitls/encryption';
+import log from '../../pdfgen/log';
 
 const appPath = path.resolve(process.cwd());
-const dbPath = path.join(appPath, 'resources', 'cache');
+const filePath = path.join(appPath, 'resources', 'cache');
+if (!fs.existsSync(filePath)) {
+  fs.mkdirSync(filePath);
+}
+export const dbPath = path.join(filePath, dayjs().format('YYYY-MM'));
 if (!fs.existsSync(dbPath)) {
   fs.mkdirSync(dbPath);
 }
@@ -47,20 +52,6 @@ export const handleDeviceData = async params => {
   return data.toJSON();
 };
 
-interface Data {
-  c: number;
-  f: number;
-  humi: number;
-  timeStamp: string;
-}
-function convertToCSV(data: Data[]): string {
-  let csv = 'timeStamp,c,f,humi\n'; // CSV 文件的头部
-  for (const { c, f, humi, timeStamp } of data) {
-    csv += `${timeStamp},${c},${f},${humi}\n`; // 将每行数据格式化为 CSV 格式的字符串
-  }
-  return csv;
-}
-
 export const queryDevice = async params => {
   // const data = await Device.findAll({...query});
   const data = await Device.findAll({
@@ -79,9 +70,13 @@ export const queryDevice = async params => {
 export const deleteDevice = async params => {
   const t = await database.transaction();
   const queryParameters: { id: string | number }[] = [];
+  const fileParameters: { deviceId: string | number }[] = [];
   params.forEach(element => {
     queryParameters.push({
       id: element.id,
+    });
+    fileParameters.push({
+      deviceId: element.id,
     });
   });
   try {
@@ -90,9 +85,21 @@ export const deleteDevice = async params => {
         [Op.or]: queryParameters,
       },
     });
+    const file_data = await FileData.findAll({
+      where: {
+        [Op.or]: fileParameters,
+      },
+    });
+    file_data.forEach(item => {
+      const file = item.toJSON();
+      fs.unlinkSync(file.path);
+      item.destroy();
+    });
+
     await t.commit();
     return true;
   } catch (error) {
+    log.error(error);
     await t.rollback();
     return false;
   }
@@ -110,6 +117,7 @@ export const updateDevice = async params => {
     await t.commit();
     return true;
   } catch (error) {
+    log.error(error);
     await t.rollback();
     return false;
   }
@@ -128,6 +136,7 @@ export const queryHistoryDevice = async params => {
     deviceData.csvData = todo;
     return deviceData;
   } catch (error) {
+    log.error(error);
     return false;
   }
 };
@@ -145,6 +154,7 @@ export const queryHistoryDeviceList = async (params: number[]) => {
     }
     return dataList;
   } catch (error) {
+    log.error(error);
     return [];
   }
 };
