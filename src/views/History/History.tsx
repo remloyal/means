@@ -64,12 +64,13 @@ const HistoryMain = () => {
   const { t } = useTranslation();
   const [unit, setUnit] = useState('\u2103');
   const columns: TableProps<RecordType>['columns'] = [
-    // {
-    //   title: t('home.serialNumber'),
-    //   dataIndex: 'id',
-    //   width: 30,
-    //   align: 'center',
-    // },
+    {
+      title: t('home.serialNumber'),
+      dataIndex: 'id',
+      width: 60,
+      align: 'center',
+      render: (text, record, index) => `${index + 1}`,
+    },
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.cloudStorage')}</span>,
       dataIndex: 'cloudStorage',
@@ -101,7 +102,7 @@ const HistoryMain = () => {
     {
       title: <span style={{ fontSize: '12px' }}>{t('history.startTime')}</span>,
       dataIndex: 'startTime',
-      width: 110,
+      width: 180,
       align: 'center',
       render(value) {
         return (
@@ -175,6 +176,7 @@ const HistoryMain = () => {
 
   useEffect(() => {
     setDeviceRecord(deviceList);
+    console.log(deviceList);
   }, [deviceList]);
 
   const getRowClassName = (record, index) => {
@@ -235,8 +237,9 @@ const HistoryMain = () => {
         <Table
           bordered={false}
           virtual
+          size="small"
           columns={columns}
-          scroll={{ x: 100, y: axle }}
+          scroll={{ x: 900, y: axle }}
           rowKey="id"
           dataSource={deviceRecord}
           pagination={false}
@@ -419,6 +422,16 @@ const HistoryLift = () => {
       }
       setPageState(false);
     };
+
+    const importPDF = async () => {
+      const todo = await ipcRenderer.invoke('importPDF');
+      console.log(todo);
+      if (todo) {
+        message.success('导入成功');
+      } else {
+        message.error('导入失败');
+      }
+    };
     return (
       <>
         <div>
@@ -435,6 +448,9 @@ const HistoryLift = () => {
             </Button>
             <Button style={{ width: '100%' }} onClick={analysisPageState} disabled={compareState}>
               {t('history.contrastAnalysis')}
+            </Button>
+            <Button style={{ width: '100%' }} onClick={importPDF}>
+              导入PDF
             </Button>
           </Space>
         </div>

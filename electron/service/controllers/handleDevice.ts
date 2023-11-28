@@ -108,9 +108,9 @@ const setMonitorData = (data, param) => {
   for (let index = 0; index < data.length; index++) {
     const item = data[index];
     const time = dayjs(item.timeStamp).valueOf();
-    tempData.push({ timestamp: time, val: item.c, lbstime: time });
-    humiData.push({ timestamp: time, val: item.humi, lbstime: time });
-    tempDataF.push({ timestamp: time, val: item.humi, lbstime: time });
+    tempData.push({ timestamp: time, val: parseFloat(item.c), lbstime: time });
+    humiData.push({ timestamp: time, val: parseFloat(item.humi), lbstime: time });
+    tempDataF.push({ timestamp: time, val: parseFloat(item.humi), lbstime: time });
   }
   if (param.data.includes('temp')) {
     record['temp'] = tempData;

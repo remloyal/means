@@ -11,6 +11,7 @@ import {
 } from './controllers/device';
 import { exportDevicePdf } from './controllers/exportDevice';
 import { exportHistory } from './controllers/exportHistory';
+import { importPDF } from './pdfRead/pdfRead';
 
 ipcMain.handle('createDevice', (event, params) => {
   return new Promise(async (resolve, reject) => {
@@ -101,3 +102,17 @@ ipcMain.handle('exportHistory', (event, params) => {
     }
   });
 });
+
+
+// 导入历史分析
+ipcMain.handle('importPDF', (event, params) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const data = importPDF();
+      resolve(data);
+    } catch (error) {
+      resolve(false);
+    }
+  });
+});
+

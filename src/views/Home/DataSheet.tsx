@@ -84,6 +84,7 @@ const DataSheet = () => {
       <Table
         bordered={false}
         virtual
+        size='small'
         columns={columns}
         scroll={{ x: 100, y: axle || 500 }}
         rowKey="id"

@@ -68,8 +68,8 @@ export const parseCSVData = (csvString): TimeType[] => {
   const lines = csvString.split('\n');
   const data: TimeType[] = [];
 
-  // 我们从第3行开始处理，因为前几行包含元数据或标题。
-  for (let i = 2; i < lines.length; i++) {
+  // 我们从第2行开始处理，因为前几行包含元数据或标题。
+  for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue; // 跳过空行
     const fields = line.split(',');

@@ -138,23 +138,23 @@ export const AnalysisTable = ({ data, ondelete }) => {
   const { t } = useTranslation();
   const columns: TableProps<RecordType>['columns'] = [
     {
-      title: <span className="span_10">{t('home.serialNumber')}</span>,
+      title: <span className="span_12">{t('home.serialNumber')}</span>,
       dataIndex: 'id',
       width: 30,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_10">{index + 1}</span>;
+        return <span className="span_12">{index + 1}</span>;
       },
     },
     {
-      title: <span className="span_10">{t('history.operate')}</span>,
+      title: <span className="span_12">{t('history.operate')}</span>,
       dataIndex: 'operate',
       width: 30,
       align: 'center',
       render(value: any, record: any, index: number) {
         return (
           <span
-            className="span_10"
+            className="span_12"
             style={{ color: '#0000FF', cursor: 'pointer' }}
             onClick={() => ondelete(record)}
           >
@@ -164,7 +164,7 @@ export const AnalysisTable = ({ data, ondelete }) => {
       },
     },
     {
-      title: <span className="span_10">{t('history.identify')}</span>,
+      title: <span className="span_12">{t('history.identify')}</span>,
       dataIndex: 'identifying',
       width: 30,
       align: 'center',
@@ -184,63 +184,63 @@ export const AnalysisTable = ({ data, ondelete }) => {
       },
     },
     {
-      title: <span className="span_10">{t('history.recordName')}</span>,
+      title: <span className="span_12">{t('history.recordName')}</span>,
       dataIndex: 'dataName',
       width: 80,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_10">{value}</span>;
+        return <span className="span_12">{value}</span>;
       },
     },
     {
-      title: <span className="span_10">{t('history.recordNumber')}</span>,
+      title: <span className="span_12">{t('history.recordNumber')}</span>,
       dataIndex: 'dataName',
       width: 80,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_10">{value}</span>;
+        return <span className="span_12">{value}</span>;
       },
     },
     {
-      title: <span className="span_10">{t('history.dataPoints')}</span>,
+      title: <span className="span_12">{t('history.dataPoints')}</span>,
       dataIndex: 'dataCount',
       width: 30,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_10">{value}</span>;
+        return <span className="span_12">{value}</span>;
       },
     },
     {
-      title: <span className="span_10">{t('history.duration')}</span>,
+      title: <span className="span_12">{t('history.duration')}</span>,
       dataIndex: 'cloudStorage',
       width: 40,
       align: 'center',
     },
     {
-      title: <span className="span_10">{`${t('left.maximumValue')}(\u2103)`}</span>,
+      title: <span className="span_12">{`${t('left.maximumValue')}(\u2103)`}</span>,
       dataIndex: 'max',
       width: 30,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_10">{record.temperature.max}</span>;
+        return <span className="span_12">{record.temperature.max}</span>;
       },
     },
     {
-      title: <span className="span_10">{`${t('left.minimumValue')}(\u2103)`}</span>,
+      title: <span className="span_12">{`${t('left.minimumValue')}(\u2103)`}</span>,
       dataIndex: 'min',
       width: 30,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_10">{record.temperature.min}</span>;
+        return <span className="span_12">{record.temperature.min}</span>;
       },
     },
     {
-      title: <span className="span_10">{`${t('history.averageValue')}(\u2103)`}</span>,
+      title: <span className="span_12">{`${t('history.averageValue')}(\u2103)`}</span>,
       dataIndex: 'average',
       width: 30,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_10">{record.temperature.average}</span>;
+        return <span className="span_12">{record.temperature.average}</span>;
       },
     },
   ];
@@ -273,8 +273,9 @@ export const AnalysisTable = ({ data, ondelete }) => {
       <Table
         bordered
         virtual
+        size='small'
         columns={columns}
-        scroll={{ x: 100, y: axle }}
+        scroll={{ x: 1000, y: axle }}
         rowKey="id"
         dataSource={deviceRecord}
         pagination={false}

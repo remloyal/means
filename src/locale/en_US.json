@@ -53,7 +53,7 @@
     "lowTemperatureAlarm": "Low temperature alarm",
     "runLengthCoding": "Run Length Coding",
     "journeyDescription": "Journey Description",
-    "serialNumber": "Number",
+    "serialNumber": "Order",
     "time": "Time",
     "temperature": "temperature",
     "humidity": "humidity",

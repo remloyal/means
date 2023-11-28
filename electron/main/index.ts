@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog, Menu } from 'electron';
 import { release } from 'node:os';
 import { join } from 'node:path';
 import { deviceInit } from './device';
@@ -118,7 +118,8 @@ export async function createWindow() {
     win?.removeAllListeners();
     win = null;
   });
-
+  const menu = Menu.buildFromTemplate([])
+  Menu.setApplicationMenu(menu)
   // Apply electron-updater
   deviceInit(win);
   CheckForUpdates(win);
