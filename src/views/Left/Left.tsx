@@ -196,7 +196,16 @@ const Left: React.FC = () => {
             </div>
           )}
           {/* <span>报警</span> */}
-          <img src={alarmPng} className="image-alarm" />
+          <img
+            src={alarmPng}
+            className={
+              device == null
+                ? 'image-alarm'
+                : device?.database.alarm == 1
+                ? 'image-alarm image-alarm-red'
+                : 'image-alarm image-alarm-blue'
+            }
+          />
         </div>
         <Descriptions
           items={items}

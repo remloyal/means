@@ -43,6 +43,7 @@ const handlePdf = async params => {
     humidity: JSON.stringify(result.humi),
     dataStorage_type: 0,
     otherData: JSON.stringify(other_data),
+    alarm: result.c.max > record.highHumi ? 1 : 0,
   });
   //   保存数据源
   //   const jsonData = JSON.stringify(todo, null, 2);
@@ -67,8 +68,8 @@ const setFormatData = async data => {
     `YYYY-MM-DD HH:mm:ss`
   );
 
-  const startDelay = parseInt(data.startDelay.replace('Min', '').replace('Mins', '') || 0);
-  const logInterval = parseInt(data.logInterval.replace('Min', '').replace('Mins', '') || 0);
+  const startDelay = parseInt(data.startDelay.trim().replace('Min', '').replace('Mins', '').replace('-', '') || 0);
+  const logInterval = parseInt(data.logInterval.trim().replace('Min', '').replace('Mins', '') || 0);
   return {
     result,
     record: {
