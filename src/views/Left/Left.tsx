@@ -63,6 +63,9 @@ const Left: React.FC = () => {
     ipcRenderer.on('resizeEvent', (event, data) => {
       setResizeData(data);
     });
+    ipcRenderer.on('hidError', (event, err) => {
+      alert(t('left.errotText'));
+    });
   }, []);
 
   const setTime = data => {

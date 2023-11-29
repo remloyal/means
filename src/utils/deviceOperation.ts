@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { instructRead, instructSetup } from './deviceType';
 import { convertTZ } from './time';
+import { ipcRenderer } from 'electron';
 
 const HID = require('node-hid');
 export const createDeviceInstance = (deviceInfo): DeviceInstance => {
@@ -32,33 +33,20 @@ class DeviceInstance {
       this.init(deviceInfo);
     }
   }
-  public initialize() {
-    this.device = new HID.HID(this.deviceInfo?.path);
-    this.device.on('data', res => {
-      const todo = Uint8ArrayToString(res);
-      console.log(todo);
-      try {
-        const record = this.record;
-        this.record = Object.assign({}, record, {
-          [this.operate!.key.toString()]: this.operate?.getData(todo),
-        });
-        this.repeatOperation();
-      } catch (error) {
-        console.log(error);
-        this.repeatOperation();
-      }
-    });
-    this.device.on('error', err => {
-      console.error('Device error:  ', err);
-      if (this.currentTimes >= this.repetitions) {
-        this.currentTimes = 0;
-        this.record[this.operate!.key.toString()] = null;
-        this.repeatOperation();
-      } else {
-        this.currentTimes++;
-        this.write(this.operate!);
-      }
-    });
+
+  public initialize(data) {
+    try {
+      console.log(data);
+      const { key, value } = data;
+      const record = this.record;
+      this.record = Object.assign({}, record, {
+        [key]: this.operate?.getData(value),
+      });
+      this.repeatOperation();
+    } catch (error) {
+      console.log(error);
+      this.repeatOperation();
+    }
   }
   public repeatOperation() {
     try {
@@ -88,22 +76,23 @@ class DeviceInstance {
     this.write(this.actionList[0]);
     return this;
   }
-  write(item: OperateTypeItem) {
+  async write(item: OperateTypeItem) {
     if (this.isComplete) {
       const actionList = [...this.actionList];
       actionList.push(item);
       this.actionList = actionList;
     }
     this.isComplete = false;
-    if (!this.device) {
-      this.initialize();
-    }
     var index = this.actionList.findIndex(res => res.name === item.name);
     this.actionList.splice(index, 1);
     this.operate = item;
     const todo = item.order(item.param);
-    const dataee = stringToUint8Array(todo);
-    this.device.write(dataee);
+    const data = await ipcRenderer.invoke('hidWrite', {
+      path: this.deviceInfo?.path,
+      value: todo,
+      key: item.key,
+    });
+    this.initialize(data);
   }
   getData(key?: string) {
     return new Promise(async (resolve, reject) => {
@@ -120,8 +109,9 @@ class DeviceInstance {
       }
     }).catch(err => console.log('err', err));
   }
-  public close() {
-    this.device.close();
+  public async close() {
+    await ipcRenderer.invoke('hidClose', { path: '', value: '' });
+    // this.device.close();
     this.device = null;
   }
   setCsvData(csvData: TimeType[]) {

@@ -6,7 +6,7 @@ export const language = atom({
   default: 'zh_CN',
 });
 
-export const equipment = atom<DeviceInstanceType | null>({
+export const equipment = atom<any>({
   key: 'device',
   default: null,
 });
