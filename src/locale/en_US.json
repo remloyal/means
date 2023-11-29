@@ -29,7 +29,8 @@
     "stopRecording": "Stop Recording",
     "reload": "Reload",
     "quickReset": "Quick Reset",
-    "clearText": "Are you sure you want to clear the data and reset the device?"
+    "clearText": "Are you sure you want to clear the data and reset the device?",
+    "errotText":"Device reading error, please reinsert the device!"
   },
   "home": {
     "graph": "Graph",

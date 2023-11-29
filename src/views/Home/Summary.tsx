@@ -19,7 +19,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MainBody, MainRight } from '@/components/main';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { equipment, historyDevice, language } from '@/stores';
+import { equipment, historyDevice, language, typePower } from '@/stores';
 import DataSheet from './DataSheet';
 import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
@@ -118,6 +118,7 @@ const SummaryGraph: React.FC = () => {
 
   const { t } = useTranslation();
   const tongue = useRecoilValue(language);
+  const power = useRecoilValue(typePower);
 
   useEffect(() => {
     setChat();
@@ -126,7 +127,7 @@ const SummaryGraph: React.FC = () => {
   useEffect(() => {
     const chat = foldLine(dateList, valueList, line, humiList, [
       t('home.temperature'),
-      t('home.humidity'),
+      power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);
   }, [tongue]);
@@ -183,7 +184,7 @@ const SummaryGraph: React.FC = () => {
   const setChatOption = (key = 1) => {
     const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
       t('home.temperature'),
-      t('home.humidity'),
+      power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);
   };
@@ -289,7 +290,7 @@ const SummaryRight: React.FC = () => {
     };
     return device?.record.deviceType ? sensorType[device?.record.deviceType] : '---';
   };
-  
+
   const items: DescriptionsProps['items'] = [
     {
       label: t('home.startMode'),

@@ -6,7 +6,7 @@ export const language = atom({
   default: 'zh_CN',
 });
 
-export const equipment = atom<DeviceInstanceType | null>({
+export const equipment = atom<any>({
   key: 'device',
   default: null,
 });
@@ -80,4 +80,10 @@ export const analysisList = atom<any[]>({
 export const exportExcelTime = atom<string>({
   key: 'exportExcelTime',
   default: '',
+});
+
+// 设备显示权限，对应AT字段
+export const typePower = atom<string[]>({
+  key: 'typePower',
+  default: [],
 });

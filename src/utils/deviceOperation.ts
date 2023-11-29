@@ -1,10 +1,22 @@
 import dayjs from 'dayjs';
-import { instructRead, instructSetup } from './deviceType';
+import { deviceType, DeviceTypeAT } from './deviceType';
 import { convertTZ } from './time';
+import { ipcRenderer } from 'electron';
 
 const HID = require('node-hid');
-export const createDeviceInstance = (deviceInfo): DeviceInstance => {
-  deviceExample?.init(deviceInfo);
+
+export let instructRead;
+export let instructSetup;
+export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {
+  deviceExample.deviceInfo = deviceInfo;
+  deviceExample.record = {};
+  const { key, value } = await deviceExample.getType(deviceType);
+  console.log('deviceExample =======>', key, value);
+  const type = DeviceTypeAT[value];
+  instructRead = type.read;
+  instructSetup = type.setup;
+  await deviceExample?.init(deviceInfo);
+  window.eventBus.emit('typePower', [...Object.keys(instructRead), ...Object.keys(instructSetup)]);
   return deviceExample;
 };
 
@@ -21,44 +33,29 @@ class DeviceInstance {
   csvName: string = '';
   drive: any = null;
   param: string | number = '';
-  private repetitions: number = 3;
-  private currentTimes: number = 0;
   constructor(deviceInfo?: DeviceType) {
-    const operate = [...Object.keys(instructSetup)];
-    operate.forEach(item => {
-      this.record[item] = null;
-    });
-    if (deviceInfo) {
-      this.init(deviceInfo);
-    }
+    // const operate = [...Object.keys(instructSetup)];
+    // operate.forEach(item => {
+    //   this.record[item] = null;
+    // });
+    // if (deviceInfo) {
+    //   this.init(deviceInfo);
+    // }
   }
-  public initialize() {
-    this.device = new HID.HID(this.deviceInfo?.path);
-    this.device.on('data', res => {
-      const todo = Uint8ArrayToString(res);
-      console.log(todo);
-      try {
-        const record = this.record;
-        this.record = Object.assign({}, record, {
-          [this.operate!.key.toString()]: this.operate?.getData(todo),
-        });
-        this.repeatOperation();
-      } catch (error) {
-        console.log(error);
-        this.repeatOperation();
-      }
-    });
-    this.device.on('error', err => {
-      console.error('Device error:  ', err);
-      if (this.currentTimes >= this.repetitions) {
-        this.currentTimes = 0;
-        this.record[this.operate!.key.toString()] = null;
-        this.repeatOperation();
-      } else {
-        this.currentTimes++;
-        this.write(this.operate!);
-      }
-    });
+
+  public initialize(data) {
+    try {
+      console.log(data);
+      const { key, value } = data;
+      const record = this.record;
+      this.record = Object.assign({}, record, {
+        [key]: this.operate?.getData(value),
+      });
+      this.repeatOperation();
+    } catch (error) {
+      console.log(error);
+      this.repeatOperation();
+    }
   }
   public repeatOperation() {
     try {
@@ -67,16 +64,12 @@ class DeviceInstance {
       } else {
         this.operate = null;
         this.isComplete = true;
-        this.param = '';
-        this.currentTimes = 0;
         this.actionList = [];
         this.close();
       }
     } catch (error) {
       this.operate = null;
       this.isComplete = true;
-      this.param = '';
-      this.currentTimes = 0;
       this.actionList = [];
       this.close();
     }
@@ -88,22 +81,32 @@ class DeviceInstance {
     this.write(this.actionList[0]);
     return this;
   }
-  write(item: OperateTypeItem) {
+  async write(item: OperateTypeItem) {
     if (this.isComplete) {
       const actionList = [...this.actionList];
       actionList.push(item);
       this.actionList = actionList;
     }
     this.isComplete = false;
-    if (!this.device) {
-      this.initialize();
-    }
     var index = this.actionList.findIndex(res => res.name === item.name);
     this.actionList.splice(index, 1);
     this.operate = item;
     const todo = item.order(item.param);
-    const dataee = stringToUint8Array(todo);
-    this.device.write(dataee);
+    const data = await ipcRenderer.invoke('hidWrite', {
+      path: this.deviceInfo?.path,
+      value: todo,
+      key: item.key,
+    });
+    this.initialize(data);
+  }
+  async getType(item) {
+    const todo = item.order(item.param);
+    const data = await ipcRenderer.invoke('hidWrite', {
+      path: this.deviceInfo?.path,
+      value: todo,
+      key: item.key,
+    });
+    return data;
   }
   getData(key?: string) {
     return new Promise(async (resolve, reject) => {
@@ -120,8 +123,9 @@ class DeviceInstance {
       }
     }).catch(err => console.log('err', err));
   }
-  public close() {
-    this.device.close();
+  public async close() {
+    await ipcRenderer.invoke('hidClose', { path: '', value: '' });
+    // this.device.close();
     this.device = null;
   }
   setCsvData(csvData: TimeType[]) {
@@ -175,22 +179,6 @@ function findMinMax(arr, start, end) {
   const minVal = Math.min(leftResult.min, rightResult.min);
 
   return { max: maxVal, min: minVal };
-}
-
-// 深度复制类的实例，包括属性和方法
-export function deepCloneObject(obj) {
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-
-  const cloned = Array.isArray(obj) ? [] : {};
-  for (let key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      cloned[key] = deepCloneObject(obj[key]);
-    }
-  }
-
-  return cloned;
 }
 
 export let deviceExample: DeviceInstance = new DeviceInstance();

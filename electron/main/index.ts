@@ -8,7 +8,7 @@ import { CheckForUpdates, quitRenew, mainWindow } from './renew';
 import { dynamicConfig } from '../config';
 import { IsOnlineService, isOnline } from '../unitls/request';
 import log from '../pdfgen/log';
-
+import { initGidThread } from '../service/deviceHid/deviceHid';
 // The built directory structure
 //
 // ├─┬ dist-electron
@@ -118,12 +118,13 @@ export async function createWindow() {
     win?.removeAllListeners();
     win = null;
   });
-  const menu = Menu.buildFromTemplate([])
-  Menu.setApplicationMenu(menu)
+  const menu = Menu.buildFromTemplate([]);
+  Menu.setApplicationMenu(menu);
   // Apply electron-updater
   deviceInit(win);
   CheckForUpdates(win);
   // downLoad();
+  initGidThread(win)
 }
 
 app.whenReady().then(async () => {

@@ -88,7 +88,7 @@ const parseCSVData = csvString => {
       timeStamp,
       c: celsius,
       f: temperature,
-      humi,
+      humi: humi || 0,
     });
   }
 
@@ -113,7 +113,7 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
   const friggaDevices = getFriggaDevice(newDevices);
   if (friggaDevices.length > 0) {
     try {
-      let operation = createDeviceInstance(friggaDevices[0]);
+      let operation = await createDeviceInstance(friggaDevices[0]);
       operation.getData().then(async res => {
         if (csvData.length > 0) {
           operation.drive = csvData[0];

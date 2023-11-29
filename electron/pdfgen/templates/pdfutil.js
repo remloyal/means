@@ -513,7 +513,7 @@ const calcuteSummary = ({
       }
       // 计算平均值
       sum += m.val;
-      
+
       if (highest) {
         if (m.val > highest.val) {
           highest.val = m.val;
