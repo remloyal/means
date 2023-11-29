@@ -35,6 +35,7 @@ export const handleDeviceData = async params => {
     humidity: JSON.stringify(result.humi),
     dataStorage_type: 0,
     otherData: JSON.stringify(other_data),
+    alarm: result.c.max > record.highHumi ? 1 : 0,
   });
 
   //   保存数据源
@@ -134,6 +135,7 @@ export const queryHistoryDevice = async params => {
     const todo = parseCSVData(decryptText);
     const deviceData = params.otherData;
     deviceData.csvData = todo;
+    deviceData.database = params
     return deviceData;
   } catch (error) {
     log.error(error);

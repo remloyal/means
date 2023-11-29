@@ -124,6 +124,15 @@
       right: 0;
       top: -8px;
     }
+    .image-alarm-red {
+      transform: translateY(-50px);
+      filter: drop-shadow(#FF0000 0 50px);
+    }
+
+    .image-alarm-blue {
+      transform: translateY(-50px);
+      filter: drop-shadow(#0100FC 0 50px);
+    }
   }
 
   .record-operate {
