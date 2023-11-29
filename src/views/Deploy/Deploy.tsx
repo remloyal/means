@@ -13,7 +13,7 @@ import {
 } from './DeviceOperate';
 import { ipcRenderer } from 'electron';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { deviceConfigParam } from '@/stores';
+import { deviceConfigParam, typePower } from '@/stores';
 import { TimeZone } from './Timezone';
 
 const Deploy: React.FC = () => {
@@ -68,11 +68,22 @@ const DeployMain: React.FC = () => {
 
 // 基本操作
 const DeployBasic = ({ state }: { state: boolean }) => {
-  const data = [TempPeriodDom, TimeZone, StartModeDom, HightEmpDom, LowEmpDom, StartDelayDom,HightHumiDom ,LowHumiDom];
+  const power = useRecoilValue(typePower);
+  const data = [
+    TempPeriodDom,
+    TimeZone,
+    StartModeDom,
+    HightEmpDom,
+    LowEmpDom,
+    StartDelayDom,
+    power.includes('setHighHumi') ? HightHumiDom : null,
+    power.includes('setLowHumi') ? LowHumiDom : null,
+  ];
   return (
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>
         {data.map(Item => {
+          if (!Item) return <></>;
           return <Item state={state} key={Item.name} />;
         })}
       </Row>

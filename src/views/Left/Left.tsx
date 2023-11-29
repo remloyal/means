@@ -1,5 +1,5 @@
 import { MainLeft } from '@/components/main';
-import { equipment, deviceState, resize, historyDevice } from '@/stores';
+import { equipment, deviceState, resize, historyDevice, typePower } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { splitStringTime } from '@/utils/time';
 import disconnect from '@/assets/img/disconnect.png';
@@ -28,6 +28,8 @@ const Left: React.FC = () => {
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [resizeData, setResizeData] = useRecoilState(resize);
   const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
+
+  const [power, setPower] = useRecoilState(typePower);
   // 设备状态
   // 0: 初始状态，1：工厂模式，2：静默状态，3：延迟状态，4：记录状态、5：停止状态、6：暂停状态
   const DeviceStatus = {
@@ -66,11 +68,42 @@ const Left: React.FC = () => {
     ipcRenderer.on('hidError', (event, err) => {
       alert(t('left.errotText'));
     });
+
+    window.eventBus.on('typePower', res => {
+      setPower(res);
+    });
   }, []);
 
-  const setTime = data => {
-    const time = splitStringTime(data);
-    return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
+  const Time = ({ data }) => {
+    const [deviceTime, setDeviceTime] = useState('');
+    useEffect(() => {
+      if (data) {
+        const time = splitStringTime(data);
+        const present = dayjs(time).format(
+          `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+        );
+        setDeviceTime(present);
+      }
+    }, []);
+    let terval;
+    useEffect(() => {
+      if (deviceTime) {
+        terval = setInterval(() => {
+          const present = dayjs(deviceTime).valueOf();
+          setDeviceTime(
+            dayjs(present + 1000).format(
+              `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+            )
+          );
+        }, 1000);
+        return () => {
+          terval && clearInterval(terval);
+          terval = null;
+        };
+      }
+    }, [deviceTime]);
+    // return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
+    return <span>{deviceTime}</span>;
   };
 
   const items: DescriptionsProps['items'] = [
@@ -84,7 +117,12 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.deviceTime'),
-      children: device != null && device?.record.time != '' ? setTime(device?.record.time) : '---',
+      children:
+        device != null && device?.record.time != '' ? (
+          <Time data={device?.record.time}></Time>
+        ) : (
+          '---'
+        ),
     },
     {
       label: t('left.batteryLevel'),

@@ -81,3 +81,9 @@ export const exportExcelTime = atom<string>({
   key: 'exportExcelTime',
   default: '',
 });
+
+// 设备显示权限，对应AT字段
+export const typePower = atom<string[]>({
+  key: 'typePower',
+  default: [],
+});

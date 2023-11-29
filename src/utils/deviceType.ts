@@ -1,6 +1,3 @@
-import dayjs from 'dayjs';
-import { splitStringTime } from './time';
-
 export const instructRead: OperateType<OperateTypeItem> = {
   deviceType: {
     key: 'deviceType',
@@ -104,23 +101,6 @@ export const instructRead: OperateType<OperateTypeItem> = {
     key: 'lowtEmp',
     name: '读取温度阈值下限',
     order: () => 'AT+GETLOWTEMP:',
-    getData: data => {
-      return parseInt(data.split(':')[1]);
-    },
-  },
-
-  highHumi: {
-    key: 'highHumi',
-    name: '读取湿度阈值上限',
-    order: () => 'AT+GETHIGHHUMI:',
-    getData: data => {
-      return parseInt(data.split(':')[1]);
-    },
-  },
-  lowHumi: {
-    key: 'lowHumi',
-    name: '读取湿度阈值下限',
-    order: () => 'AT+GETLOWHUMI:',
     getData: data => {
       return parseInt(data.split(':')[1]);
     },
@@ -235,22 +215,6 @@ export const instructSetup: OperateType<OperateTypeItem> = {
       return data;
     },
   },
-  setHighHumi: {
-    key: 'setHighHumi',
-    name: '设置湿度阈值上限：',
-    order: str => `AT+SETHIGHHUMI:${str}`,
-    getData: data => {
-      return data;
-    },
-  },
-  setLowHumi: {
-    key: 'setLowHumi',
-    name: '设置湿度阈值下限',
-    order: str => `AT+SETLOWHUMI:${str}`,
-    getData: data => {
-      return data;
-    },
-  },
   setKeyStopEnableset: {
     key: 'setKeyStopEnableset',
     name: '设置按键停止',
@@ -293,4 +257,55 @@ export const instructSetup: OperateType<OperateTypeItem> = {
       return data;
     },
   },
+};
+
+export const deviceType = {
+  key: 'deviceType',
+  name: '获取设备型号',
+  order: () => 'AT+GETDEVTYPE:',
+  getData: data => data,
+};
+
+const humi = {
+  highHumi: {
+    key: 'highHumi',
+    name: '读取湿度阈值上限',
+    order: () => 'AT+GETHIGHHUMI:',
+    getData: data => {
+      return parseInt(data.split(':')[1]);
+    },
+  },
+  lowHumi: {
+    key: 'lowHumi',
+    name: '读取湿度阈值下限',
+    order: () => 'AT+GETLOWHUMI:',
+    getData: data => {
+      return parseInt(data.split(':')[1]);
+    },
+  },
+};
+const humiSet = {
+  setHighHumi: {
+    key: 'setHighHumi',
+    name: '设置湿度阈值上限：',
+    order: str => `AT+SETHIGHHUMI:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+  setLowHumi: {
+    key: 'setLowHumi',
+    name: '设置湿度阈值下限',
+    order: str => `AT+SETLOWHUMI:${str}`,
+    getData: data => {
+      return data;
+    },
+  },
+};
+
+export const DeviceTypeAT = {
+  M2H: { read: { ...instructRead, ...humi }, setup: { ...instructSetup, ...humiSet } },
+  M1H: { read: { ...instructRead, ...humi }, setup: { ...instructSetup, ...humiSet } },
+  M2D: { read: instructRead, setup: instructSetup },
+  M2E: { read: instructRead, setup: instructSetup },
 };

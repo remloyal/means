@@ -1,11 +1,22 @@
 import dayjs from 'dayjs';
-import { instructRead, instructSetup } from './deviceType';
+import { deviceType, DeviceTypeAT } from './deviceType';
 import { convertTZ } from './time';
 import { ipcRenderer } from 'electron';
 
 const HID = require('node-hid');
-export const createDeviceInstance = (deviceInfo): DeviceInstance => {
-  deviceExample?.init(deviceInfo);
+
+export let instructRead;
+export let instructSetup;
+export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {
+  deviceExample.deviceInfo = deviceInfo;
+  deviceExample.record = {};
+  const { key, value } = await deviceExample.getType(deviceType);
+  console.log('deviceExample =======>', key, value);
+  const type = DeviceTypeAT[value];
+  instructRead = type.read;
+  instructSetup = type.setup;
+  await deviceExample?.init(deviceInfo);
+  window.eventBus.emit('typePower', [...Object.keys(instructRead), ...Object.keys(instructSetup)]);
   return deviceExample;
 };
 
@@ -22,16 +33,14 @@ class DeviceInstance {
   csvName: string = '';
   drive: any = null;
   param: string | number = '';
-  private repetitions: number = 3;
-  private currentTimes: number = 0;
   constructor(deviceInfo?: DeviceType) {
-    const operate = [...Object.keys(instructSetup)];
-    operate.forEach(item => {
-      this.record[item] = null;
-    });
-    if (deviceInfo) {
-      this.init(deviceInfo);
-    }
+    // const operate = [...Object.keys(instructSetup)];
+    // operate.forEach(item => {
+    //   this.record[item] = null;
+    // });
+    // if (deviceInfo) {
+    //   this.init(deviceInfo);
+    // }
   }
 
   public initialize(data) {
@@ -55,16 +64,12 @@ class DeviceInstance {
       } else {
         this.operate = null;
         this.isComplete = true;
-        this.param = '';
-        this.currentTimes = 0;
         this.actionList = [];
         this.close();
       }
     } catch (error) {
       this.operate = null;
       this.isComplete = true;
-      this.param = '';
-      this.currentTimes = 0;
       this.actionList = [];
       this.close();
     }
@@ -93,6 +98,15 @@ class DeviceInstance {
       key: item.key,
     });
     this.initialize(data);
+  }
+  async getType(item) {
+    const todo = item.order(item.param);
+    const data = await ipcRenderer.invoke('hidWrite', {
+      path: this.deviceInfo?.path,
+      value: todo,
+      key: item.key,
+    });
+    return data;
   }
   getData(key?: string) {
     return new Promise(async (resolve, reject) => {
@@ -165,22 +179,6 @@ function findMinMax(arr, start, end) {
   const minVal = Math.min(leftResult.min, rightResult.min);
 
   return { max: maxVal, min: minVal };
-}
-
-// 深度复制类的实例，包括属性和方法
-export function deepCloneObject(obj) {
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-
-  const cloned = Array.isArray(obj) ? [] : {};
-  for (let key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      cloned[key] = deepCloneObject(obj[key]);
-    }
-  }
-
-  return cloned;
 }
 
 export let deviceExample: DeviceInstance = new DeviceInstance();

@@ -176,7 +176,7 @@ const HistoryMain = () => {
 
   useEffect(() => {
     setDeviceRecord(deviceList);
-    console.log(deviceList);
+    // console.log(deviceList);
   }, [deviceList]);
 
   const getRowClassName = (record, index) => {
