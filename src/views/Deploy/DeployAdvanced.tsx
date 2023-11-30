@@ -1,11 +1,11 @@
-import { equipment, typePower } from '@/stores';
+import { deviceConfigParam, equipment, typePower } from '@/stores';
 import { Col, Input, Radio, Row, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { useTranslation } from 'react-i18next';
 
-const WIDTH = 220
+const WIDTH = 220;
 
 // 高级参数
 export const DeployAdvanced = ({ state }: { state: boolean }) => {
@@ -21,7 +21,7 @@ export const DeployAdvanced = ({ state }: { state: boolean }) => {
     DeviceSwitch,
     DeviceKeyStopDom,
     TemporaryPdfDom,
-    RepetitionPrimingDom
+    RepetitionPrimingDom,
   ];
   return (
     <div style={{ padding: '0 20px' }}>
@@ -46,17 +46,35 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
   const { t } = useTranslation();
   const [startMode, setStartMode] = useState(0);
   const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
   const handleChange = value => {
     setStartMode(value);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        multidUnit: value,
+      };
+    });
   };
 
   useEffect(() => {
-    const multidUnit = device?.record.multidUnit;
-    if (multidUnit) {
-      setStartMode(parseInt(multidUnit));
-    }
+    init();
+    window.eventBus.on('deviceConfig', deviceData => {
+      setStartMode(deviceData.multidUnit || startMode);
+    });
   }, []);
+
+  const init = async () => {
+    const multidUnit = device?.record.multidUnit;
+    setStartMode(parseInt(multidUnit));
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        multidUnit: multidUnit,
+      };
+    });
+  };
 
   const setTempPeriod = async () => {
     // console.log(startMode, device?.record.multidUnit);
@@ -171,17 +189,34 @@ export const ScreenOffTimeDom = ({ state }: { state: boolean }) => {
   const { t } = useTranslation();
   const [startMode, setStartMode] = useState(5);
   const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
   const handleChange = value => {
     setStartMode(value);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        multIdSleepTime: value,
+      };
+    });
   };
 
   useEffect(() => {
-    const multIdSleepTime = device?.record.multIdSleepTime;
-    if (multIdSleepTime) {
-      setStartMode(parseInt(multIdSleepTime));
-    }
+    init();
+    window.eventBus.on('deviceConfig', deviceData => {
+      setStartMode(deviceData.multIdSleepTime || startMode);
+    });
   }, []);
+  const init = async () => {
+    const multIdSleepTime = device?.record.multIdSleepTime;
+    setStartMode(parseInt(multIdSleepTime));
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        multIdSleepTime: multIdSleepTime,
+      };
+    });
+  };
 
   const setMultidSleepTime = async () => {
     if (startMode != device?.record.multIdSleepTime) {
@@ -310,16 +345,38 @@ const DeviceKeyStopDom = ({ state }: { state: boolean }) => {
   const [startValue, setStartValue] = useState(0);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+
   const handleChange = e => {
     setStartValue(e);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        keyStopEnableget: e,
+      };
+    });
   };
 
   useEffect(() => {
+    init();
+    window.eventBus.on('deviceConfig', deviceData => {
+      setStartValue(deviceData.multidUnit || startValue);
+    });
+  }, []);
+
+  const init = async () => {
     const value = device?.record.keyStopEnableget;
     if (value) {
       setStartValue(parseInt(value));
     }
-  }, []);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        keyStopEnableget: value,
+      };
+    });
+  };
+
   const setOperation = async () => {
     if (startValue != device?.record.keyStopEnableget) {
       await deviceOperate.setKeyStopEnableset(startValue);
@@ -349,7 +406,7 @@ const DeviceKeyStopDom = ({ state }: { state: boolean }) => {
 const TemporaryPdfDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     if (state) {
-    //   setOperation();
+      //   setOperation();
     }
   }, [state]);
   const [startValue, setStartValue] = useState(0);
@@ -393,46 +450,46 @@ const TemporaryPdfDom = ({ state }: { state: boolean }) => {
 
 // 重复启动
 const RepetitionPrimingDom = ({ state }: { state: boolean }) => {
-    useEffect(() => {
-      if (state) {
+  useEffect(() => {
+    if (state) {
       //   setOperation();
-      }
-    }, [state]);
-    const [startValue, setStartValue] = useState(0);
-    const { t } = useTranslation();
-    const [device, setDevice] = useRecoilState(equipment);
-    const handleChange = e => {
-      setStartValue(e);
-    };
-  
-    useEffect(() => {
-      // const value = device?.record.keyStopEnableget;
-      // if (value) {
-      //   setStartValue(parseInt(value));
-      // }
-    }, []);
-    const setOperation = async () => {
-      if (startValue != device?.record.keyStopEnableget) {
-        await deviceOperate.setKeyStopEnableset(startValue);
-      }
-    };
-    return (
-      <Col span={8}>
-        <div style={{ padding: '10px 0' }}>{t('home.repetitionPriming')}</div>
-        <div className="deploy-select">
-          <Select
-            size="small"
-            disabled
-            defaultValue={0}
-            value={startValue}
-            style={{ width: WIDTH }}
-            onChange={handleChange}
-            options={[
-              { label: t('deploy.prohibit'), value: 0 },
-              { label: t('deploy.allow'), value: 1 },
-            ]}
-          />
-        </div>
-      </Col>
-    );
+    }
+  }, [state]);
+  const [startValue, setStartValue] = useState(0);
+  const { t } = useTranslation();
+  const [device, setDevice] = useRecoilState(equipment);
+  const handleChange = e => {
+    setStartValue(e);
   };
+
+  useEffect(() => {
+    // const value = device?.record.keyStopEnableget;
+    // if (value) {
+    //   setStartValue(parseInt(value));
+    // }
+  }, []);
+  const setOperation = async () => {
+    if (startValue != device?.record.keyStopEnableget) {
+      await deviceOperate.setKeyStopEnableset(startValue);
+    }
+  };
+  return (
+    <Col span={8}>
+      <div style={{ padding: '10px 0' }}>{t('home.repetitionPriming')}</div>
+      <div className="deploy-select">
+        <Select
+          size="small"
+          disabled
+          defaultValue={0}
+          value={startValue}
+          style={{ width: WIDTH }}
+          onChange={handleChange}
+          options={[
+            { label: t('deploy.prohibit'), value: 0 },
+            { label: t('deploy.allow'), value: 1 },
+          ]}
+        />
+      </div>
+    </Col>
+  );
+};

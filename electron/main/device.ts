@@ -56,7 +56,7 @@ export const deviceInit = async (browserWindow: BrowserWindow) => {
 
 ipcMain.on('export-config', (event, data) => {
   dialog
-    .showSaveDialog({
+    .showSaveDialog(win!, {
       title: '保存文件', // 对话框标题
       // defaultPath: '/path/to/default/folder', // 默认保存路径
       buttonLabel: '保存', // 自定义保存按钮的文本
@@ -79,7 +79,7 @@ ipcMain.on('export-config', (event, data) => {
 
 ipcMain.on('select-config', (event, data) => {
   dialog
-    .showOpenDialog({
+    .showOpenDialog(win!,{
       title: '选择配置文件', // 对话框的标题
       defaultPath: 'config.dewav', // 默认的文件名字
       filters: [{ name: 'DEWAV', extensions: ['dewav'] }],
@@ -109,7 +109,7 @@ ipcMain.on('select-config', (event, data) => {
 
 ipcMain.on('export-jpg', (event, data) => {
   dialog
-    .showSaveDialog({
+    .showSaveDialog(win!,{
       title: '保存为图片', // 对话框标题
       // defaultPath: '/path/to/default/folder', // 默认保存路径
       // buttonLabel: '保存', // 自定义保存按钮的文本
