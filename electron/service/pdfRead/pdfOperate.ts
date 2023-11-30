@@ -63,7 +63,7 @@ export const importPDFFile = async (filePath: string) => {
   let csvData: any = [];
   for (let index = 1; index < list.length; index++) {
     const element = list[index];
-    const todo = await readData(element, deviceInstance);
+    const todo = await readData(element, deviceInstance, `${index + 1}/${list.length}`);
     csvData.push(...todo);
   }
   deviceInstance.csvData = csvData;
@@ -110,7 +110,7 @@ const readFirst = (text, type) => {
   return todo;
 };
 
-const readData = async (text, todo) => {
+const readData = async (text, todo, pageFooting) => {
   let size = 2;
   let key = '';
   let unit = '°C';
@@ -128,7 +128,7 @@ const readData = async (text, todo) => {
     key = 'RH';
   }
   text.replace(`wwww.friggatech.com`, '');
-  let data = text.replace(`wwww.friggatech.com`, '').slice(text.lastIndexOf(key) + 2, -3);
+  let data = text.replace(`wwww.friggatech.com`, '').replace(pageFooting, '').trim();
   data = await formatText(data);
   var chunkedData = splitData(data, size, unit, todo);
   return chunkedData;
@@ -168,12 +168,27 @@ function splitData(data, size, unit, todo) {
 }
 
 function formatText(text) {
-  const rule = ['wwww.friggatech.com', '日期', '时间', '℃', '期', '…', ' '];
+  const rule = [
+    'www.friggatech.com',
+    'Date',
+    'Time',
+    'RH',
+    '%RH',
+    '日期',
+    '时间',
+    '°C',
+    '°F',
+    '℃',
+    '℉',
+    '期',
+    '…',
+    ' ',
+  ];
   let character = text;
   rule.forEach(item => {
     character = character.replaceAll(item, '');
   });
-  return character;
+  return character.trim();
 }
 
 // 温湿度 阈值
@@ -182,7 +197,13 @@ function getThreshold(data, type) {
   if (!data) {
     return { hightEmp: 0, lowtEmp: 0, highHumi: 0, lowHumi: 0 };
   }
-  const text = type == 'currency' ? data.split('：')[1].trim() : data.split(':')[1].trim();
+  // const text = type == 'currency' ? data.split('：')[1].trim() : data.split(':')[1].trim();
+  let text = '';
+  try {
+    text = data.split('：')[1].trim();
+  } catch (error) {
+    text = data.split(':')[1].trim();
+  }
   // 温度、湿度
   if (
     (text.includes('℃') || text.includes('°C')) &&
