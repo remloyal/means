@@ -7,14 +7,15 @@ const HID = require('node-hid');
 
 export let instructRead;
 export let instructSetup;
+export let DeviceAttribute;
 export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {
   deviceExample.deviceInfo = deviceInfo;
   deviceExample.record = {};
   const { key, value } = await deviceExample.getType(deviceType);
   console.log('deviceExample =======>', key, value);
-  const type = DeviceTypeAT[value];
-  instructRead = type.read;
-  instructSetup = type.setup;
+  DeviceAttribute = DeviceTypeAT[value];
+  instructRead = DeviceAttribute.read;
+  instructSetup = DeviceAttribute.setup;
   await deviceExample?.init(deviceInfo);
   window.eventBus.emit('typePower', [...Object.keys(instructRead), ...Object.keys(instructSetup)]);
   return deviceExample;
@@ -199,7 +200,7 @@ const updateDevice = () => {
 const setOperateDevice = (item: OperateTypeItem, queryData?: OperateTypeItem) => {
   return new Promise(async (resolve, reject) => {
     try {
-      deviceExample.write(item);
+      await deviceExample.write(item);
       deviceExample.getData(item.key).then(res => {
         if (queryData) {
           deviceExample.write(queryData);
@@ -281,6 +282,34 @@ export const deviceOperate = {
     const tempPeriod = instructSetup.setDevreStore;
     const data = await setOperateDevice(tempPeriod);
     deviceExample.init(deviceExample.deviceInfo!);
+    return data;
+  },
+  /** 设置温度单位*/
+  setMultidUnit: async value => {
+    const tempPeriod = instructSetup.setMultidUnit;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.multidUnit);
+    return data;
+  },
+  /** 设置灭屏时间*/
+  setMultidSleepTime: async value => {
+    const tempPeriod = instructSetup.setMultidSleepTime;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.multIdSleepTime);
+    return data;
+  },
+  /** 设置PDF密码*/
+  setPdfPwd: async value => {
+    const tempPeriod = instructSetup.setPdfPwd;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.pdfPwd);
+    return data;
+  },
+  /** 设置PDF密码*/
+  setKeyStopEnableset: async value => {
+    const tempPeriod = instructSetup.setKeyStopEnableset;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.keyStopEnableget);
     return data;
   },
 };

@@ -148,14 +148,14 @@ const Left: React.FC = () => {
       label: t('left.maximumValue'),
       children:
         device != null
-          ? device?.record.maximumValue + MultidUnit[device?.record.multidUnit]
+          ? device?.record.maximumValue + MultidUnit[0]
           : '---',
     },
     {
       label: t('left.minimumValue'),
       children:
         device != null
-          ? device?.record.minimumValue + MultidUnit[device?.record.multidUnit]
+          ? device?.record.minimumValue + MultidUnit[0]
           : '---',
     },
   ];

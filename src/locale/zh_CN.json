@@ -84,7 +84,14 @@
     "heatUpperLimit": "温度阈值上限",
     "heatLowerLimit": "温度阈值下限",
     "humiUpperLimit": "湿度阈值上限",
-    "humiLowerLimit": "湿度阈值下限"
+    "humiLowerLimit": "湿度阈值下限",
+    "tempUnit":"温度单位",
+    "deviceName":"设备名称",
+    "setPassword":"设置密码",
+    "functionSwitch":"功能开关",
+    "buttonStop":"按键停止",
+    "prohibit":"禁止",
+    "allow":"允许"
   },
   "history": {
     "cloudStorage": "云端存储",
@@ -150,5 +157,10 @@
     "downloadProgress":"下载进度",
     "startUpdating":"开始更新",
     "updateAgain":"更新发生错误，请重试或请联系管理员！"
+  },
+  "language":{
+    "chinese":"中文",
+    "english":"英文"
+
   }
 }

@@ -50,7 +50,7 @@ const createThread = () => {
 
 export const initGidThread = win => {
   mainWindow = win;
-  //   createThread();
+  createThread();
 };
 
 ipcMain.handle('hidWrite', async (event, params: HidEventData) => {
