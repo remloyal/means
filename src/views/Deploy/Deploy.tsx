@@ -15,6 +15,7 @@ import { ipcRenderer } from 'electron';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceConfigParam, typePower } from '@/stores';
 import { TimeZone } from './Timezone';
+import { DeployAdvanced } from './DeployAdvanced';
 
 const Deploy: React.FC = () => {
   return (
@@ -40,11 +41,11 @@ const DeployMain: React.FC = () => {
       label: t('deploy.basicParameters'),
       children: <DeployBasic state={isUpdate} />,
     },
-    // {
-    //   key: '2',
-    //   label: t('deploy.advancedParameters'),
-    //   children: <DeployAdvanced state={isUpdate} />,
-    // },
+    {
+      key: '2',
+      label: t('deploy.advancedParameters'),
+      children: <DeployAdvanced state={isUpdate} />,
+    },
     // {
     //   key: '3',
     //   label: t('deploy.multipleAlarmSettings'),
@@ -89,16 +90,6 @@ const DeployBasic = ({ state }: { state: boolean }) => {
       </Row>
     </div>
   );
-};
-
-// 高级参数
-const DeployAdvanced = ({ state }: { state: boolean }) => {
-  useEffect(() => {
-    if (state) {
-      console.log('DeployAdvanced 更新...');
-    }
-  }, [state]);
-  return <div>DeployAdvanced</div>;
 };
 
 // 多参数设置

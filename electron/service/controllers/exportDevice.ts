@@ -1,6 +1,7 @@
 import { dialog } from 'electron';
 import { setPdfData } from './handleDevice';
 import { createPdf } from '../../pdfgen/pdf';
+import { win } from '../../main/index';
 
 export const exportDevicePdf = params => {
   return new Promise(async (resolve, reject) => {
@@ -21,7 +22,7 @@ export const exportDevicePdf = params => {
 export const selectSavePath = () => {
   return new Promise((resolve, reject) => {
     dialog
-      .showOpenDialog({
+      .showOpenDialog(win!, {
         properties: ['openDirectory', 'createDirectory'],
       })
       .then(result => {

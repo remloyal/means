@@ -41,7 +41,7 @@ dynamicConfig.ver = app.getVersion();
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-let win: BrowserWindow | null = null;
+export let win: BrowserWindow | null = null;
 const WIDTH = 1440;
 const HEIGHT = 900;
 // Here, you can also use other preload
@@ -99,7 +99,7 @@ export async function createWindow() {
   });
   win.webContents.on('render-process-gone', async (e, killed) => {
     console.log('----crashed----', e, killed, arguments);
-    let result = await dialog.showMessageBox({
+    let result = await dialog.showMessageBox(win!, {
       type: 'error',
       title: '应用程序崩溃',
       message: '当前程序发生异常，是否要重新加载应用程序?',
@@ -124,7 +124,7 @@ export async function createWindow() {
   deviceInit(win);
   CheckForUpdates(win);
   // downLoad();
-  initGidThread(win)
+  initGidThread(win);
 }
 
 app.whenReady().then(async () => {
@@ -213,4 +213,14 @@ ipcMain.handle('lang', (_, data) => {
     zh_CN: 2,
   };
   dynamicConfig.lan = lang[data] || 1;
+});
+
+ipcMain.handle('getVersion', async (_, data) => {
+  return await app.getVersion();
+});
+
+ipcMain.handle('open-url', (event, url) => {
+  console.log(url);
+
+  shell.openExternal(url);
 });

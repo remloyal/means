@@ -63,7 +63,7 @@ const parseCSVData = csvString => {
   for (let i = 3; i < lines.length; i++) {
     const line: string = lines[i].trim();
     if (!line) continue; // 跳过空行
-    if (line.indexOf('Output') != -1) continue; //结束语句
+    if (line.indexOf('Output') != -1) break; //结束语句    
     const fields = line.split(',');
 
     const date = fields[0];
@@ -100,7 +100,7 @@ ipcRenderer.on('deviceOnload', async (event, data) => {
   previousDrives = await drivelist.list();
 });
 
-ipcRenderer.on('deviceInsertion', async (event, data) => {
+ipcRenderer.on('deviceInsertion', async (event, data) => {  
   const currentDevices = HID.devices();
   const drives = await drivelist.list();
   const newDrives = drives.filter(d => !previousDrives.some(pd => pd.device === d.device));

@@ -10,7 +10,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取温度单位',
     order: () => 'AT+GETMULTID:UNIT:',
     getData: data => {
-      return data.split(':')[1];
+      return parseInt(data.split(':')[1]);
     },
   },
   multIdBootMode: {
@@ -34,7 +34,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取灭屏时间',
     order: () => 'AT+GETMULTID:SLEEPTIME:',
     getData: data => {
-      return data.split(':')[1];
+      return parseInt(data.split(':')[1]);
     },
   },
 
@@ -119,7 +119,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取按键停止状态',
     order: () => 'AT+KEYSTOPENABLEGET:',
     getData: data => {
-      return data.split(':')[1];
+      return parseInt(data.replaceAll(';', '').split(':')[1]);
     },
   },
   pdfPwd: {
@@ -127,7 +127,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取PDF密码',
     order: () => 'AT+GETPDFPWD:',
     getData: data => {
-      return data;
+      return data.replaceAll(';', '').split(':')[1];
     },
   },
 };

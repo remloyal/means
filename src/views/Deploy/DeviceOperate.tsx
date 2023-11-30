@@ -163,6 +163,7 @@ export const StartModeDom = ({ state }: { state: boolean }) => {
           value={startMode}
           style={{ width: 120 }}
           onChange={handleChange}
+          size="small"
           options={[
             { label: t('deploy.buttonStart'), value: 0 },
             { label: t('deploy.timingOn'), value: 1 },
@@ -400,11 +401,11 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   const init = () => {
     const multidUnit = device?.record.multidUnit;
     const lowtEmp = device?.record.lowtEmp;
-    if (parseInt(multidUnit) == 0) {
-      setUnit('\u2103');
-    } else {
-      setUnit('\u2109');
-    }
+    // if (parseInt(multidUnit) == 0) {
+    //   setUnit('\u2103');
+    // } else {
+    //   setUnit('\u2109');
+    // }
     setEmp(lowtEmp);
     setDeviceConfig(item => {
       return {
@@ -535,7 +536,7 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
 
   return (
     <Col span={8}>
-      <div style={{ padding: '10px 0' }}>{t('deploy.humiUpperLimit')}</div>
+      <div style={{ padding: '10px 0' }}>{t('deploy.humiLowerLimit')}</div>
       <div className="deploy-select">
         <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
         <span className="deploy-span">RH</span>

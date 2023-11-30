@@ -12,6 +12,7 @@ import { dbPath } from '../controllers/device';
 import { importPDFFile } from './pdfOperate';
 dayjs.extend(customParseFormat);
 import log from '../../pdfgen/log';
+import { win } from '../../main/index';
 
 export const importPDF = async () => {
   const filePath: string | boolean = await openFile();
@@ -68,7 +69,9 @@ const setFormatData = async data => {
     `YYYY-MM-DD HH:mm:ss`
   );
 
-  const startDelay = parseInt(data.startDelay.trim().replace('Min', '').replace('Mins', '').replace('-', '') || 0);
+  const startDelay = parseInt(
+    data.startDelay.trim().replace('Min', '').replace('Mins', '').replace('-', '') || 0
+  );
   const logInterval = parseInt(data.logInterval.trim().replace('Min', '').replace('Mins', '') || 0);
   return {
     result,
@@ -128,7 +131,7 @@ const setFormatData = async data => {
 const openFile = (): Promise<string | boolean> => {
   return new Promise((resolve, reject) => {
     dialog
-      .showOpenDialog({
+      .showOpenDialog(win!, {
         properties: ['openFile'],
         filters: [
           {

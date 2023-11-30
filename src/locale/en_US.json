@@ -13,7 +13,9 @@
     "timeFormat": "Time Format",
     "systemLanguage": "System Language",
     "restartNow": "You must restart for the new settings to take effect. Do you want to restart now?",
-    "example":"Example"
+    "example":"Example",
+    "version":"Version",
+    "dingwei": "Dingwei Data Center"
   },
   "left": {
     "equipmentModel": "Equipment Model",
@@ -84,7 +86,14 @@
     "heatUpperLimit": "Upper limit of temperature threshold",
     "heatLowerLimit": "Lower limit of temperature threshold",
     "humiUpperLimit": "Upper limit of humidity threshold",
-    "humiLowerLimit": "Lower limit of humidity threshold"
+    "humiLowerLimit": "Lower limit of humidity threshold",
+    "tempUnit":"Temperature unit",
+    "deviceName":"Device Name",
+    "setPassword":"Set Password",
+    "functionSwitch":"Function Switch",
+    "buttonStop":"Button stop",
+    "prohibit":"Prohibit",
+    "allow":"Allow"
   },
   "history": {
     "cloudStorage": "cloud storage",
@@ -150,5 +159,9 @@
     "downloadProgress":"Download progress",
     "startUpdating":"Start updating",
     "updateAgain":"An error occurred during the update. Please try again or contact the administrator!"
+  },
+  "language":{
+    "chinese":"Chinese",
+    "english":"English"
   }
 }

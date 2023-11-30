@@ -339,12 +339,12 @@ const SummaryRight: React.FC = () => {
     {
       label: t('home.highTemperatureAlarm'),
       children:
-        device != null ? device?.record.hightEmp + MultidUnit[device?.record.multidUnit] : '---',
+        device != null ? device?.record.hightEmp + MultidUnit[0] : '---',
     },
     {
       label: t('home.lowTemperatureAlarm'),
       children:
-        device != null ? device?.record.lowtEmp + MultidUnit[device?.record.multidUnit] : '---',
+        device != null ? device?.record.lowtEmp + MultidUnit[0] : '---',
     },
     {
       label: t('home.runLengthCoding'),
