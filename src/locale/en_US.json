@@ -13,7 +13,9 @@
     "timeFormat": "Time Format",
     "systemLanguage": "System Language",
     "restartNow": "You must restart for the new settings to take effect. Do you want to restart now?",
-    "example":"Example"
+    "example":"Example",
+    "version":"Version",
+    "dingwei": "Dingwei Data Center"
   },
   "left": {
     "equipmentModel": "Equipment Model",

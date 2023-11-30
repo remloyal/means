@@ -6,8 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import { deviceState, deviceTime, equipment, historyDevice, isFirstPage } from '@/stores';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceExample } from '@/utils/deviceOperation';
-
+import brand from '@/assets/brand.png';
 import * as ImgMenu from './ImgMenu';
+import { ipcRenderer } from 'electron';
 
 export const Menu: React.FC = () => {
   const navigate = useNavigate();
@@ -74,7 +75,9 @@ export const Menu: React.FC = () => {
     },
     {
       name: 'header.about',
-      clock: () => {},
+      clock: () => {
+        setAboutState(true);
+      },
       icon: () => <ImgMenu.AboutImg />,
     },
   ];
@@ -121,6 +124,8 @@ export const Menu: React.FC = () => {
     }
   }, [device]);
 
+  //关于
+  const [aboutState, setAboutState] = useState(false);
   return (
     <>
       {menuConfig.map((item, index) => {
@@ -137,6 +142,19 @@ export const Menu: React.FC = () => {
       >
         <Preferences />
       </Modal>
+      <Modal
+        title={t('header.about')}
+        open={aboutState}
+        footer={null}
+        maskClosable={false}
+        width={400}
+        onOk={() => setAboutState(false)}
+        onCancel={() => setAboutState(false)}
+        destroyOnClose={true}
+        centered
+      >
+        <About />
+      </Modal>
     </>
   );
 };
@@ -149,6 +167,37 @@ export const MenuItem = (props: MenuConfig, index, key?) => {
         <props.icon />
       </div>
       <div>{t(props.name)}</div>
+    </div>
+  );
+};
+
+const About = () => {
+  const { t } = useTranslation();
+  const [vesion, setVersion] = useState('1.0.0');
+  useEffect(() => {
+    getVersion();
+  }, []);
+  const getVersion = async () => {
+    const value = await ipcRenderer.invoke('getVersion');
+    setVersion(value);
+  };
+  return (
+    <div style={{ textAlign: 'center', padding: '20px' }}>
+      <img src={brand} style={{ width: '250px' }} />
+      <div>{t('header.dingwei')}</div>
+      <div>
+        {t('header.version')} V{vesion}
+      </div>
+      <div>
+        {/* <span style={{ marginRight: '6px' }}>官网</span> */}
+        <a
+          onClick={url => {
+            ipcRenderer.invoke('open-url', 'https://www.friggatech.com');
+          }}
+        >
+          www.friggatech.com
+        </a>
+      </div>
     </div>
   );
 };

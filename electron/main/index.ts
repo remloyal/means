@@ -124,7 +124,7 @@ export async function createWindow() {
   deviceInit(win);
   CheckForUpdates(win);
   // downLoad();
-  initGidThread(win)
+  initGidThread(win);
 }
 
 app.whenReady().then(async () => {
@@ -213,4 +213,14 @@ ipcMain.handle('lang', (_, data) => {
     zh_CN: 2,
   };
   dynamicConfig.lan = lang[data] || 1;
+});
+
+ipcMain.handle('getVersion', async (_, data) => {
+  return await app.getVersion();
+});
+
+ipcMain.handle('open-url', (event, url) => {
+  console.log(url);
+
+  shell.openExternal(url);
 });

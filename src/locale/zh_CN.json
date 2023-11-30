@@ -13,7 +13,9 @@
     "timeFormat": "时间格式",
     "systemLanguage": "系统语言",
     "restartNow":"必须重启以使新的设置生效，是否立即重启？",
-    "example":"示例"
+    "example":"示例",
+    "version":"版本",
+    "dingwei":"鼎为数据中心"
   },
   "left": {
     "equipmentModel": "设备型号",
