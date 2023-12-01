@@ -75,7 +75,6 @@ export async function createWindow() {
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
-    win?.webContents.send('deviceOnload', new Date().toLocaleString());
     // CheckForUpdates();
   });
   win.on('resize', () => {

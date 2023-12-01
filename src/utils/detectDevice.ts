@@ -1,32 +1,15 @@
-const HID = require('node-hid');
-const drivelist = require('drivelist');
 const fs = require('fs');
 const path = require('path');
 import { ipcRenderer, ipcMain } from 'electron';
 import { createDeviceInstance } from './deviceOperation';
 import dayjs from 'dayjs';
 
-let previousDevices: any[] = [];
-let previousDrives: any[] = [];
-
-const getFriggaDevice = devices => {
-  const VERSION_ID = 10473; // 1003
-  const PRODUCT_ID = 631; // 517
-  return devices.filter(
-    device =>
-      device.vendorId &&
-      device.productId &&
-      device.vendorId === VERSION_ID &&
-      device.productId === PRODUCT_ID
-  );
-};
-
 /**
  * 从新增的磁盘中读取 .csv 文件
  * @param {*} drive 磁盘
  */
 const readCSVFilesFromDrive = async drive => {
-  const drivePath = drive.mountpoints[0].path;
+  const drivePath = drive.drivePath;
   const files = fs.readdirSync(drivePath);
   const csvFiles = files.filter(file => file.endsWith('.csv'));
   let dataParsed: TimeType[] = [];
@@ -41,10 +24,6 @@ const readCSVFilesFromDrive = async drive => {
     const { data: todo, stopMode: mode } = parseCSVData(data);
     dataParsed = todo;
     stopMode = mode;
-    // console.log(`解析后得到的数据：`)
-    // console.log(dataParsed);
-    // window.eventBus.emit('friggaDevice:in', dataParsed);
-    window.eventBus.emit('friggaDeviceCsv', [drive, dataParsed]);
   }
   return [drive, dataParsed, csvName, stopMode];
 };
@@ -63,7 +42,7 @@ const parseCSVData = csvString => {
   for (let i = 3; i < lines.length; i++) {
     const line: string = lines[i].trim();
     if (!line) continue; // 跳过空行
-    if (line.indexOf('Output') != -1) break; //结束语句    
+    if (line.indexOf('Output') != -1) break; //结束语句
     const fields = line.split(',');
 
     const date = fields[0];
@@ -95,25 +74,21 @@ const parseCSVData = csvString => {
   return { data, stopMode: stopMode[1] };
 };
 
-ipcRenderer.on('deviceOnload', async (event, data) => {
-  previousDevices = await HID.devices();
-  previousDrives = await drivelist.list();
+export let usbData;
+ipcRenderer.on('deviceInsertion', async (event, data) => {
+  console.log('deviceInsertion==>', data);
+  if (usbData) return;
+  loadUsbData(data);
 });
 
-ipcRenderer.on('deviceInsertion', async (event, data) => {  
-  const currentDevices = HID.devices();
-  const drives = await drivelist.list();
-  const newDrives = drives.filter(d => !previousDrives.some(pd => pd.device === d.device));
-  let csvData = <any>[];
-  for (const newDrive of newDrives) {
-    csvData = await readCSVFilesFromDrive(newDrive);
-  }
-
-  const newDevices = currentDevices.filter(d => !previousDevices.some(pd => pd.path === d.path));
-  const friggaDevices = getFriggaDevice(newDevices);
-  if (friggaDevices.length > 0) {
+export const loadUsbData = async data => {
+  // 获取csv数据
+  window.eventBus.emit('loading');
+  usbData = data;
+  let csvData = await readCSVFilesFromDrive(data);
+  if (data) {
     try {
-      let operation = await createDeviceInstance(friggaDevices[0]);
+      let operation = await createDeviceInstance(data);
       operation.getData().then(async res => {
         if (csvData.length > 0) {
           operation.drive = csvData[0];
@@ -125,19 +100,18 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
         operation.database = data;
         console.log(operation);
         window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
+        window.eventBus.emit('loadingCompleted');
       });
     } catch (error) {
       console.log(error);
     }
   }
-  previousDevices = currentDevices;
-  previousDrives = drives;
-});
+};
 
 ipcRenderer.on('deviceRemoval', async (event, data) => {
-  previousDevices = await HID.devices();
-  previousDrives = await drivelist.list();
-  if (data) {
+  console.log('deviceRemoval==>', data);
+  if (data.name == usbData.name) {
+    usbData = null;
     window.eventBus.emit('friggaDevice:out');
   }
 });

@@ -1,6 +1,7 @@
 import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import { decrypt, encrypt } from '../unitls/encryption';
 import { WebUSB, usb, findByIds } from 'usb';
+import { filterUsbList } from '../service/deviceHid/deviceHid';
 const path = require('path');
 const fs = require('fs');
 
@@ -10,48 +11,29 @@ const PRODUCT_ID = 631; // 517
 
 try {
   usb.on('attach', async function (device) {
-    if (
-      device.deviceDescriptor.idProduct === PRODUCT_ID &&
-      device.deviceDescriptor.idVendor === VERSION_ID
-    ) {
-      win?.webContents.send('deviceInsertion', device);
-    }
+    const data = await filterUsbList();
+    console.log('attach==>', data);
+    win?.webContents.send('deviceInsertion', data);
   });
 
-  usb.on('detach', function (device) {
-    // console.log('监听到 usb 设备拔出：', device);
-    if (
-      device.deviceDescriptor.idProduct === PRODUCT_ID &&
-      device.deviceDescriptor.idVendor === VERSION_ID
-    ) {
-      win?.webContents.send('deviceRemoval', device);
-    } else {
-      win?.webContents.send('deviceRemoval', false);
-    }
+  usb.on('detach', async function (device) {
+    const data = await filterUsbList();
+    console.log('detach ==>', data);
+    win?.webContents.send('deviceRemoval', data);
+    return data;
   });
+  
 } catch (error) {
   console.log(error);
 }
 
 export const deviceInit = async (browserWindow: BrowserWindow) => {
   win = browserWindow;
-  const customWebUSB = new WebUSB({
-    // Bypass cheking for authorised devices
-    allowAllDevices: true,
-  });
-  const devices = await customWebUSB.getDevices();
-  for (const device of devices) {
-    if (device.vendorId === VERSION_ID && device.productId === PRODUCT_ID) {
-      // console.log(device); // WebUSB device
-      setTimeout(() => {
-        win?.webContents.send('deviceInsertion', device);
-      }, 5000);
-    }
-  }
   win.webContents.on('select-bluetooth-device', (event, deviceList, callback) => {
     event.preventDefault();
     console.log('deviceList', deviceList);
   });
+  // filterUsbList();
 };
 
 ipcMain.on('export-config', (event, data) => {
@@ -79,7 +61,7 @@ ipcMain.on('export-config', (event, data) => {
 
 ipcMain.on('select-config', (event, data) => {
   dialog
-    .showOpenDialog(win!,{
+    .showOpenDialog(win!, {
       title: '选择配置文件', // 对话框的标题
       defaultPath: 'config.dewav', // 默认的文件名字
       filters: [{ name: 'DEWAV', extensions: ['dewav'] }],
@@ -109,7 +91,7 @@ ipcMain.on('select-config', (event, data) => {
 
 ipcMain.on('export-jpg', (event, data) => {
   dialog
-    .showSaveDialog(win!,{
+    .showSaveDialog(win!, {
       title: '保存为图片', // 对话框标题
       // defaultPath: '/path/to/default/folder', // 默认保存路径
       // buttonLabel: '保存', // 自定义保存按钮的文本

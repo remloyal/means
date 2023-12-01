@@ -13,8 +13,8 @@
     "timeFormat": "Time Format",
     "systemLanguage": "System Language",
     "restartNow": "You must restart for the new settings to take effect. Do you want to restart now?",
-    "example":"Example",
-    "version":"Version",
+    "example": "Example",
+    "version": "Version",
     "dingwei": "Dingwei Data Center"
   },
   "left": {
@@ -28,11 +28,12 @@
     "lastRecordedTime": "Last Recorded time",
     "maximumValue": "Max",
     "minimumValue": "Min",
-    "stopRecording": "Stop Recording",
+    "stopRecording": "Stop Record",
     "reload": "Reload",
     "quickReset": "Quick Reset",
     "clearText": "Are you sure you want to clear the data and reset the device?",
-    "errotText":"Device reading error, please reinsert the device!"
+    "errotText": "Device reading error, please reinsert the device!",
+    "reading": "Data Reading"
   },
   "home": {
     "graph": "Graph",
@@ -69,8 +70,8 @@
     "language": "Language",
     "cancellation": "Cancellation",
     "exportFailed": "Export Failed",
-    "exportSuccess":"Export Success",
-    "processing":"Processing"
+    "exportSuccess": "Export Success",
+    "processing": "Processing"
   },
   "deploy": {
     "basicParameters": "Basic parameters",
@@ -87,13 +88,13 @@
     "heatLowerLimit": "Lower limit of temperature threshold",
     "humiUpperLimit": "Upper limit of humidity threshold",
     "humiLowerLimit": "Lower limit of humidity threshold",
-    "tempUnit":"Temperature unit",
-    "deviceName":"Device Name",
-    "setPassword":"Set Password",
-    "functionSwitch":"Function Switch",
-    "buttonStop":"Button stop",
-    "prohibit":"Prohibit",
-    "allow":"Allow"
+    "tempUnit": "Temperature unit",
+    "deviceName": "Device Name",
+    "setPassword": "Set Password",
+    "functionSwitch": "Function Switch",
+    "buttonStop": "Button stop",
+    "prohibit": "Prohibit",
+    "allow": "Allow"
   },
   "history": {
     "cloudStorage": "cloud storage",
@@ -134,9 +135,9 @@
     "duration": "duration",
     "averageValue": "average value",
     "piecesData": "Please keep the data within {{count}} items. {{select}} items have been selected, please reselect!",
-    "import":"Import",
-    "importSuccess":"Import was successful",
-    "importFailed":"Import failed"
+    "import": "Import",
+    "importSuccess": "Import was successful",
+    "importFailed": "Import failed"
   },
   "device": {
     "initialstate": "Initial state",
@@ -152,16 +153,16 @@
   },
   "renew": {
     "applyUpdate": "Apply Update",
-    "restartUpdatenow":"Restart update now!",
-    "currentVersion":"current version",
-    "latestVersion":"Latest version",
-    "updat":"UPDATE",
-    "downloadProgress":"Download progress",
-    "startUpdating":"Start updating",
-    "updateAgain":"An error occurred during the update. Please try again or contact the administrator!"
+    "restartUpdatenow": "Restart update now!",
+    "currentVersion": "current version",
+    "latestVersion": "Latest version",
+    "updat": "UPDATE",
+    "downloadProgress": "Download progress",
+    "startUpdating": "Start updating",
+    "updateAgain": "An error occurred during the update. Please try again or contact the administrator!"
   },
-  "language":{
-    "chinese":"Chinese",
-    "english":"English"
+  "language": {
+    "chinese": "Chinese",
+    "english": "English"
   }
 }
