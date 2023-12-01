@@ -4,10 +4,10 @@ import { deviceOperate } from '@/utils/deviceOperation';
 import { splitStringTime } from '@/utils/time';
 import disconnect from '@/assets/img/disconnect.png';
 import alarmPng from '@/assets/img/报警.png';
-import { Button, Descriptions, DescriptionsProps, Modal } from 'antd';
+import { Button, Descriptions, DescriptionsProps, Modal, Spin, message } from 'antd';
 import dayjs from 'dayjs';
 import { ipcRenderer } from 'electron';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import M2H from '@/assets/img/M2H.png';
 import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
+import { loadUsbData, usbData } from '@/utils/detectDevice';
 const DeviceImg = {
   M2H: M2H,
   M1H: M1H,
@@ -28,7 +29,7 @@ const Left: React.FC = () => {
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [resizeData, setResizeData] = useRecoilState(resize);
   const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
-
+  const leftRef = useRef<HTMLDivElement>(null);
   const [power, setPower] = useRecoilState(typePower);
   // 设备状态
   // 0: 初始状态，1：工厂模式，2：静默状态，3：延迟状态，4：记录状态、5：停止状态、6：暂停状态
@@ -48,30 +49,47 @@ const Left: React.FC = () => {
   };
 
   useEffect(() => {
-    window.eventBus.on('friggaDevice:in', deviceData => {
-      if (deviceMent) return;
-      setDevice(deviceData);
-      setDeviceMent(true);
-    });
+    if (leftRef.current) {
+      window.eventBus.on('friggaDevice:in', deviceData => {
+        if (deviceMent) return;
+        setDevice(deviceData);
+        setDeviceMent(true);
+      });
 
-    window.eventBus.on('friggaDevice:out', (...datas) => {
-      console.log(window.location.href.includes('deploy'));
-      if (window.location.href.includes('deploy')) {
-        navigate('/');
-      }
-      setDeviceMent(false);
-      setDevice(null);
-    });
-    ipcRenderer.on('resizeEvent', (event, data) => {
-      setResizeData(data);
-    });
-    ipcRenderer.on('hidError', (event, err) => {
-      alert(t('left.errotText'));
-    });
+      window.eventBus.on('friggaDevice:out', (...datas) => {
+        console.log(window.location.href.includes('deploy'));
+        if (window.location.href.includes('deploy')) {
+          navigate('/');
+        }
+        setDeviceMent(false);
+        setDevice(null);
+      });
+      ipcRenderer.on('resizeEvent', (event, data) => {
+        setResizeData(data);
+      });
+      ipcRenderer.on('hidError', (event, err) => {
+        setLoading(false);
+        alert(t('left.errotText'));
+      });
 
-    window.eventBus.on('typePower', res => {
-      setPower(res);
-    });
+      window.eventBus.on('typePower', res => {
+        setPower(res);
+      });
+      // 加载中
+      window.eventBus.on('loading', res => {
+        setLoading(true);
+        setTimeout(() => {
+          if (loading) {
+            message.error(t('left.errotText'));
+            setLoading(false);
+          }
+        }, 10000);
+      });
+      // 加载完成
+      window.eventBus.on('loadingCompleted', res => {
+        setLoading(false);
+      });
+    }
   }, []);
 
   const Time = ({ data }) => {
@@ -146,17 +164,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.maximumValue'),
-      children:
-        device != null
-          ? device?.record.maximumValue + MultidUnit[0]
-          : '---',
+      children: device != null ? device?.record.maximumValue + MultidUnit[0] : '---',
     },
     {
       label: t('left.minimumValue'),
-      children:
-        device != null
-          ? device?.record.minimumValue + MultidUnit[0]
-          : '---',
+      children: device != null ? device?.record.minimumValue + MultidUnit[0] : '---',
     },
   ];
   const quickReset = () => {
@@ -181,10 +193,13 @@ const Left: React.FC = () => {
       setDevice(deviceHistory);
     }
   }, [deviceHistory]);
-
+  const [loading, setLoading] = useState(false);
+  const reloading = () => {
+    loadUsbData(usbData);
+  };
   return (
     <MainLeft>
-      <div className="left">
+      <div className="left" ref={leftRef}>
         <div className="image">
           {device != null ? (
             <div className="image-device">
@@ -219,7 +234,7 @@ const Left: React.FC = () => {
           size="small"
         />
         <div className="record-operate">
-          <Button type="primary" danger style={{ width: '45%' }}>
+          <Button type="primary" danger style={{ width: '45%' }} disabled>
             {t('left.stopRecording')}
           </Button>
           <Button
@@ -229,6 +244,8 @@ const Left: React.FC = () => {
               color: '#fff',
               border: '1px #3577F1 solid',
             }}
+            disabled={device == null ? true : false}
+            onClick={reloading}
           >
             {t('left.reload')}
           </Button>
@@ -251,8 +268,30 @@ const Left: React.FC = () => {
           <h3>{t('left.clearText')}</h3>
         </Modal>
       </div>
+      <Modal open={loading} centered width={200} closeIcon={null} footer={null}>
+        <div
+          style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <div style={{ height: 100, width: 100 }}>
+            <Spin size="large" tip={t('left.reading') + '...'} style={{ height: 100 }}>
+              <div className="content" />
+            </Spin>
+          </div>
+        </div>
+      </Modal>
     </MainLeft>
   );
 };
+
+const deviceFirst = async () => {
+  const data = await ipcRenderer.invoke('deviceFirst');
+  console.log(data);
+  if (data) {
+    loadUsbData(data);
+  }
+};
+setTimeout(() => {
+  deviceFirst();
+}, 3000);
 
 export default Left;

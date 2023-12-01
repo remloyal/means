@@ -1,4 +1,4 @@
-export default `
+
 
 // hid-process.js
 const HID = require('node-hid');
@@ -42,7 +42,7 @@ function Uint8ArrayToString(fileData) {
   for (var i = 0; i < fileData.length; i++) {
     dataString += String.fromCharCode(fileData[i]);
   }
-  console.log(dataString);return dataString.replace('\u0002', '').replaceAll('\u0000', '');
+  console.log(dataString);
   return dataString.replace('\u0002', '').replaceAll('\u0000', '');
 }
 
@@ -52,4 +52,3 @@ process.parentPort.once('error', err => {
 });
 
 
-`;
