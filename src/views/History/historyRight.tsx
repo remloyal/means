@@ -2,7 +2,7 @@ import { deviceState, deviceTime, equipment, historyDevice, menuKey } from '@/st
 import { Button } from 'antd';
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
-import { deviceExample } from '@/utils/deviceOperation';
+import { deviceExample, setTypePower } from '@/utils/deviceOperation';
 import { useTranslation } from 'react-i18next';
 
 const HistoryRight = () => {
@@ -18,8 +18,10 @@ const HistoryRight = () => {
     // 返回上一页
     if (deviceMent) {
       const data = Object.assign({}, deviceExample);
+      setTypePower(deviceExample.database.type);
       setDevice(data);
     } else {
+      setTypePower();
       setDevice(null);
     }
 

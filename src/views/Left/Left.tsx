@@ -1,6 +1,6 @@
 import { MainLeft } from '@/components/main';
 import { equipment, deviceState, resize, historyDevice, typePower, menuKey } from '@/stores';
-import { deviceOperate } from '@/utils/deviceOperation';
+import { deviceOperate, setTypePower } from '@/utils/deviceOperation';
 import { splitStringTime } from '@/utils/time';
 import disconnect from '@/assets/img/disconnect.png';
 import alarmPng from '@/assets/img/报警.png';
@@ -207,6 +207,7 @@ const Left: React.FC = () => {
 
   useEffect(() => {
     if (deviceHistory) {
+      setTypePower(deviceHistory.database.type);
       setDevice(deviceHistory);
       setHeadKey(0);
       navigate('/');

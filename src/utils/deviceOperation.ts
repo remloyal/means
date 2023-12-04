@@ -3,21 +3,31 @@ import { deviceType, DeviceTypeAT } from './deviceType';
 import { convertTZ } from './time';
 import { ipcRenderer } from 'electron';
 
-const HID = require('node-hid');
-
 export let instructRead;
 export let instructSetup;
 export let DeviceAttribute;
+export const setTypePower = (type?) => {
+  if (type) {
+    DeviceAttribute = DeviceTypeAT[type];
+    instructRead = DeviceAttribute.read;
+    instructSetup = DeviceAttribute.setup;
+    window.eventBus.emit('typePower', [
+      ...Object.keys(instructRead),
+      ...Object.keys(instructSetup),
+    ]);
+  } else {
+    instructRead = [];
+    instructSetup = [];
+    window.eventBus.emit('typePower', []);
+  }
+};
 export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {
   deviceExample.deviceInfo = deviceInfo;
   deviceExample.record = {};
   const { key, value } = await deviceExample.getType(deviceType);
   console.log('deviceExample =======>', key, value);
-  DeviceAttribute = DeviceTypeAT[value];
-  instructRead = DeviceAttribute.read;
-  instructSetup = DeviceAttribute.setup;
+  setTypePower(value);
   await deviceExample?.init(deviceInfo);
-  window.eventBus.emit('typePower', [...Object.keys(instructRead), ...Object.keys(instructSetup)]);
   return deviceExample;
 };
 

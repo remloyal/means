@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 import { ipcRenderer, ipcMain } from 'electron';
-import { createDeviceInstance } from './deviceOperation';
+import { createDeviceInstance, setTypePower } from './deviceOperation';
 import dayjs from 'dayjs';
 
 /**
@@ -113,5 +113,6 @@ ipcRenderer.on('deviceRemoval', async (event, data) => {
   if (data.name == usbData.name) {
     usbData = null;
     window.eventBus.emit('friggaDevice:out');
+    setTypePower();
   }
 });
