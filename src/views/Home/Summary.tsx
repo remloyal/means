@@ -25,6 +25,7 @@ import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
 import HistoryRight from '../History/historyRight';
 import { DataExport } from './DataExport';
+import { c2f } from '@/utils/utils';
 const Summary: React.FC = () => {
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
@@ -119,6 +120,10 @@ const SummaryGraph: React.FC = () => {
   const { t } = useTranslation();
   const tongue = useRecoilValue(language);
   const power = useRecoilValue(typePower);
+  const MultidUnit = {
+    0: '\u2103',
+    1: '\u2109',
+  };
 
   useEffect(() => {
     setChat();
@@ -141,7 +146,7 @@ const SummaryGraph: React.FC = () => {
       const indexList: string[] = [];
       todo.forEach((item, index) => {
         dateLists.push(item.timeStamp);
-        valueLists.push(item.c);
+        valueLists.push(MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? item.f : item.c);
         humiLists.push(item.humi);
         indexList.push(index.toString());
       });
@@ -278,6 +283,15 @@ const SummaryRight: React.FC = () => {
     0: '\u2103',
     1: '\u2109',
   };
+
+  const setTempValue = value => {
+    const unit = MultidUnit[device?.record.multidUnit];
+    if (unit == '\u2109') {
+      return `${c2f(value)} ${unit}`;
+    }
+    return `${value} ${unit}`;
+  };
+
   const setSensor = () => {
     const sensorType = {
       M2H: (
@@ -338,13 +352,11 @@ const SummaryRight: React.FC = () => {
     },
     {
       label: t('home.highTemperatureAlarm'),
-      children:
-        device != null ? device?.record.hightEmp + MultidUnit[0] : '---',
+      children: device != null ? setTempValue(device?.record.hightEmp) : '---',
     },
     {
       label: t('home.lowTemperatureAlarm'),
-      children:
-        device != null ? device?.record.lowtEmp + MultidUnit[0] : '---',
+      children: device != null ? setTempValue(device?.record.lowtEmp) : '---',
     },
     {
       label: t('home.runLengthCoding'),

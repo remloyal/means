@@ -16,6 +16,7 @@ import M2H from '@/assets/img/M2H.png';
 import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
 import { loadUsbData, usbData } from '@/utils/detectDevice';
+import { c2f, f2c } from '@/utils/utils';
 const DeviceImg = {
   M2H: M2H,
   M1H: M1H,
@@ -141,6 +142,14 @@ const Left: React.FC = () => {
     return <span>{deviceTime}</span>;
   };
 
+  const setTempValue = value => {
+    const unit = MultidUnit[device?.record.multidUnit];
+    if (unit == '\u2109') {
+      return `${c2f(value)} ${unit}`;
+    }
+    return `${value} ${unit}`;
+  };
+
   const items: DescriptionsProps['items'] = [
     {
       label: t('left.equipmentModel'),
@@ -181,11 +190,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.maximumValue'),
-      children: device != null ? device?.record.maximumValue + MultidUnit[0] : '---',
+      children: device != null ? setTempValue(device?.record.maximumValue) : '---',
     },
     {
       label: t('left.minimumValue'),
-      children: device != null ? device?.record.minimumValue + MultidUnit[0] : '---',
+      children: device != null ? setTempValue(device?.record.minimumValue) : '---',
     },
   ];
   const quickReset = () => {

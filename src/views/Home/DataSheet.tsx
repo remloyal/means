@@ -14,6 +14,12 @@ interface RecordType {
 
 const DataSheet = () => {
   const { t } = useTranslation();
+  const device = useRecoilValue(equipment);
+  const MultidUnit = {
+    0: '\u2103',
+    1: '\u2109',
+  };
+
   //   const data = useMemo(() => getData(count), [count]);
   const columns: TableProps<RecordType>['columns'] = [
     {
@@ -29,13 +35,13 @@ const DataSheet = () => {
       align: 'center',
     },
     {
-      title: '(\u2103)',
+      title: MultidUnit[device?.record.multidUnit || 0],
       dataIndex: 'heat',
       width: 120,
       align: 'center',
     },
   ];
-  const device = useRecoilValue(equipment);
+
   const [title, setTitle] = useState('');
   const [csvData, setCsvData] = useState<RecordType[]>();
   useEffect(() => {
@@ -56,7 +62,7 @@ const DataSheet = () => {
       const data: RecordType[] = todo.map((item, index) => ({
         id: index + 1,
         time: `${item.timeStamp}`,
-        heat: `${item.c}`,
+        heat: MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? `${item.f}` : `${item.c}`,
       }));
       setCsvData(data);
     } else {
@@ -84,7 +90,7 @@ const DataSheet = () => {
       <Table
         bordered={false}
         virtual
-        size='small'
+        size="small"
         columns={columns}
         scroll={{ x: 100, y: axle || 500 }}
         rowKey="id"
