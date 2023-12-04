@@ -87,3 +87,8 @@ export const typePower = atom<string[]>({
   key: 'typePower',
   default: [],
 });
+
+export const menuKey = atom<number>({
+  key: 'MenuKey',
+  default: 0,
+})

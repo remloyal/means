@@ -55,6 +55,7 @@ const DeployMain: React.FC = () => {
 
   const save = () => {
     setIsUpdate(true);
+    window.eventBus.emit('saving');
     setTimeout(() => {
       setIsUpdate(false);
     }, 1000);

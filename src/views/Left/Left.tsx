@@ -1,5 +1,5 @@
 import { MainLeft } from '@/components/main';
-import { equipment, deviceState, resize, historyDevice, typePower } from '@/stores';
+import { equipment, deviceState, resize, historyDevice, typePower, menuKey } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { splitStringTime } from '@/utils/time';
 import disconnect from '@/assets/img/disconnect.png';
@@ -31,6 +31,7 @@ const Left: React.FC = () => {
   const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
   const leftRef = useRef<HTMLDivElement>(null);
   const [power, setPower] = useRecoilState(typePower);
+  const [headKey, setHeadKey] = useRecoilState(menuKey);
   // 设备状态
   // 0: 初始状态，1：工厂模式，2：静默状态，3：延迟状态，4：记录状态、5：停止状态、6：暂停状态
   const DeviceStatus = {
@@ -54,11 +55,14 @@ const Left: React.FC = () => {
         if (deviceMent) return;
         setDevice(deviceData);
         setDeviceMent(true);
+        navigate('/');
+        setHeadKey(0);
       });
 
       window.eventBus.on('friggaDevice:out', (...datas) => {
         console.log(window.location.href.includes('deploy'));
         if (window.location.href.includes('deploy')) {
+          setHeadKey(0);
           navigate('/');
         }
         setDeviceMent(false);
@@ -88,6 +92,19 @@ const Left: React.FC = () => {
       // 加载完成
       window.eventBus.on('loadingCompleted', res => {
         setLoading(false);
+      });
+
+      window.eventBus.on('updateDevice', deviceData => {
+        setDevice(deviceData);
+        setSaving(false);
+      });
+      window.eventBus.on('saving', res => {
+        setSaving(true);
+        setTimeout(() => {
+          if (saving) {
+            setSaving(false);
+          }
+        }, 10000);
       });
     }
   }, []);
@@ -191,9 +208,12 @@ const Left: React.FC = () => {
   useEffect(() => {
     if (deviceHistory) {
       setDevice(deviceHistory);
+      setHeadKey(0);
+      navigate('/');
     }
   }, [deviceHistory]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const reloading = () => {
     loadUsbData(usbData);
   };
@@ -274,6 +294,17 @@ const Left: React.FC = () => {
         >
           <div style={{ height: 100, width: 100 }}>
             <Spin size="large" tip={t('left.reading') + '...'} style={{ height: 100 }}>
+              <div className="content" />
+            </Spin>
+          </div>
+        </div>
+      </Modal>
+      <Modal open={saving} centered width={200} closeIcon={null} footer={null}>
+        <div
+          style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <div style={{ height: 100, width: 100 }}>
+            <Spin size="large" tip={t('left.saving') + '...'} style={{ height: 100 }}>
               <div className="content" />
             </Spin>
           </div>

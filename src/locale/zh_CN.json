@@ -33,7 +33,8 @@
     "quickReset": "快速重置",
     "clearText": "你确定要清空数据，并重置设备吗？",
     "errotText": "设备读取错误，请重新插入设备！",
-    "reading": "数据读取中"
+    "reading": "数据读取中",
+    "saving": "数据保存中"
   },
   "home": {
     "graph": "曲线图",

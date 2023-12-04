@@ -72,6 +72,10 @@ ipcMain.handle('hidClose', (event, params: HidEventData) => {
   // hidProcess?.kill();
   // hidProcess = null;
   //   console.log(hidProcess);
+  Object.values(timeout).map((e: any) => {
+    e && clearTimeout(e);
+  });
+  timeout = {};
 });
 
 function stringToUint8Array(str): number[] {
@@ -80,7 +84,7 @@ function stringToUint8Array(str): number[] {
   return tmpUint8Array;
 }
 
-let timeout;
+let timeout: any = {};
 const hidWrite = async (params): Promise<{ key: string; value: string } | boolean> => {
   // log.info('hidWrite ===>', JSON.stringify(params));
   if (!hidProcess) {
@@ -98,15 +102,15 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
           //   console.log('收到 hidData:', msg.data);
           resolve(msg.data);
         }
-        clearTimeout(timeout);
-        timeout = null;
+        clearTimeout(timeout[params.key]);
+        timeout[params.key] = null;
       });
-      timeout = setTimeout(() => {
+      timeout[params.key] = setTimeout(() => {
         log.info('子进程读取超时...');
         hidProcess?.kill();
         hidProcess = null;
-        clearTimeout(timeout);
-        timeout = null;
+        timeout[params.key] && clearTimeout(timeout[params.key]);
+        timeout[params.key] = null;
         resolve({ key: params.key, value: '' });
       }, 10000);
     } catch (error) {

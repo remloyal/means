@@ -190,10 +190,15 @@ const isOk = (data: any) => {
   return data == 'OK' ? true : data;
 };
 
+let timeout;
 const updateDevice = () => {
-  setTimeout(() => {
-    window.eventBus.emit('friggaDevice:in', Object.assign({}, deviceExample));
-  }, 1000);
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  timeout = setTimeout(() => {
+    window.eventBus.emit('updateDevice', Object.assign({}, deviceExample));
+  }, 1500);
 };
 
 // 操作父类

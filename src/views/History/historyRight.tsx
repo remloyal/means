@@ -1,4 +1,4 @@
-import { deviceState, deviceTime, equipment, historyDevice } from '@/stores';
+import { deviceState, deviceTime, equipment, historyDevice, menuKey } from '@/stores';
 import { Button } from 'antd';
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ const HistoryRight = () => {
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [deviceStateTime, setDeviceStateTime] = useRecoilState(deviceTime);
+  const [headKey, setHeadKey] = useRecoilState(menuKey);
   const navigate = useNavigate();
   const toback = () => {
     setDeviceHistory(null);
@@ -24,6 +25,7 @@ const HistoryRight = () => {
 
     setDeviceStateTime(Math.random().toString(36).slice(-6));
     navigate(-1);
+    setHeadKey(2);
   };
   return (
     <>

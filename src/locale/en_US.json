@@ -33,7 +33,8 @@
     "quickReset": "Quick Reset",
     "clearText": "Are you sure you want to clear the data and reset the device?",
     "errotText": "Device reading error, please reinsert the device!",
-    "reading": "Data Reading"
+    "reading": "Data Reading",
+    "saving": "Data Saving"
   },
   "home": {
     "graph": "Graph",

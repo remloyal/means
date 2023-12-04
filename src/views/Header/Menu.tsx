@@ -3,7 +3,7 @@ import Preferences from './Preferences';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deviceState, deviceTime, equipment, historyDevice, isFirstPage } from '@/stores';
+import { deviceState, deviceTime, equipment, historyDevice, isFirstPage, menuKey } from '@/stores';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceExample } from '@/utils/deviceOperation';
 import brand from '@/assets/brand.png';
@@ -19,7 +19,7 @@ export const Menu: React.FC = () => {
       name: 'header.summary',
       clock: () => {
         if (device) {
-          setKey(0);
+          setHeadKey(0);
           setFirstPage(true);
           navigate('/');
           if (deviceHistory) {
@@ -33,7 +33,7 @@ export const Menu: React.FC = () => {
       name: 'header.configureDevices',
       clock: () => {
         if (device) {
-          setKey(1);
+          setHeadKey(1);
           setFirstPage(false);
           navigate('deploy');
           if (deviceHistory) {
@@ -47,7 +47,7 @@ export const Menu: React.FC = () => {
       name: 'header.data',
       clock: () => {
         setFirstPage(false);
-        setKey(2);
+        setHeadKey(2);
         navigate('history');
         if (deviceHistory) {
           restitution(2);
@@ -59,7 +59,7 @@ export const Menu: React.FC = () => {
       name: 'header.cfr',
       clock: () => {
         setFirstPage(false);
-        setKey(3);
+        setHeadKey(3);
       },
       icon: () => <ImgMenu.CfrImg />,
     },
@@ -91,13 +91,15 @@ export const Menu: React.FC = () => {
   const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [deviceStateTime, setDeviceStateTime] = useRecoilState(deviceTime);
+  const [headKey, setHeadKey] = useRecoilState(menuKey);
+
   const restitution = (index?) => {
     if (deviceMent) {
       const data = Object.assign({}, deviceExample);
       setDevice(data);
     } else {
       setDevice(null);
-      setKey(2);
+      setHeadKey(2);
       navigate('history');
     }
     setDeviceHistory(null);
@@ -106,24 +108,27 @@ export const Menu: React.FC = () => {
   //   console.log(deviceStateTime);
   //   setKey(2);
   // }, [deviceStateTime]);
-  useEffect(() => {
-    if (deviceHistory) {
-      navigate('/');
-      return;
-    }
-    if (device) {
-      setKey(0);
-      if (!firstPage) {
-        navigate('/');
-      }
-    } else {
-      if (key === 0 || key === 1) {
-        setKey(-1);
-        setFirstPage(false);
-      }
-    }
-  }, [device]);
+  // useEffect(() => {
+  //   if (deviceHistory) {
+  //     navigate('/');
+  //     return;
+  //   }
+  //   if (device) {
+  //     setKey(0);
+  //     if (!firstPage) {
+  //       navigate('/');
+  //     }
+  //   } else {
+  //     if (key === 0 || key === 1) {
+  //       setKey(-1);
+  //       setFirstPage(false);
+  //     }
+  //   }
+  // }, [device]);
 
+  useEffect(() => {
+    setKey(headKey);
+  }, [headKey]);
   //关于
   const [aboutState, setAboutState] = useState(false);
   return (
