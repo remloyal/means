@@ -8,7 +8,7 @@ import { CheckForUpdates, quitRenew, mainWindow } from './renew';
 import { dynamicConfig } from '../config';
 import { IsOnlineService, isOnline } from '../unitls/request';
 import log from '../pdfgen/log';
-import { initGidThread } from '../service/deviceHid/deviceHid';
+import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
 // The built directory structure
 //
 // ├─┬ dist-electron
@@ -112,7 +112,8 @@ export async function createWindow() {
     }
   });
 
-  win.on('close', () => {
+  win.on('close', async () => {
+    await hidProcess?.kill();
     // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
     win?.removeAllListeners();
     win = null;

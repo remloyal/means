@@ -1,17 +1,15 @@
 import { filePath } from '../../unitls/unitls';
 import fs from 'fs';
 import path from 'path';
-import { fork, ChildProcess } from 'child_process';
 import content from './content';
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, app, ipcMain, utilityProcess } from 'electron';
 import log from '../../pdfgen/log';
 import drivelist from 'drivelist';
-import { usb } from 'usb';
 import HID from 'node-hid';
 
 const targetPath = filePath('static');
 let mainWindow: BrowserWindow | null = null;
-let hidProcess: ChildProcess | null;
+export let hidProcess: Electron.UtilityProcess | null;
 
 interface HidEvent<T> {
   event: string;
@@ -26,14 +24,17 @@ interface HidEventData {
 
 const VERSION_ID = 10473; // 1003
 const PRODUCT_ID = 631; // 517
-const targetFileName = `${targetPath}/thread.js`;
-if (!fs.existsSync(targetFileName)) {
-  fs.writeFileSync(targetFileName, content);
+let targetFileName = path.join(process.cwd(), './public/thread.js');
+
+if (app.isPackaged) {
+  targetFileName = filePath('./app.asar/dist/thread.js');
 }
-const createThread = () => {
+
+log.info('targetFileName ==>', targetFileName);
+const createThread = async () => {
   try {
     // 创建子进程
-    hidProcess = fork(path.join(targetFileName));
+    hidProcess = utilityProcess.fork(targetFileName, process.argv, { cwd: targetPath });
     hidProcess.on('message', message => {
       // 判断事件类型并触发对应的事件处理函数
       const msg = message as HidEvent<any>;
@@ -45,10 +46,11 @@ const createThread = () => {
       }
     });
 
-    hidProcess.on('error', err => {
-      log.error('子进程发生错误:', err);
+    hidProcess.on('exit', err => {
+      log.info('子进程发生退出 exit:', err);
       hidProcess?.kill();
       hidProcess = null;
+      // mainWindow?.webContents.send('hidError', err);
     });
   } catch (error) {
     log.error(error);
@@ -66,9 +68,9 @@ ipcMain.handle('hidWrite', async (event, params: HidEventData) => {
 });
 
 ipcMain.handle('hidClose', (event, params: HidEventData) => {
-  hidProcess?.send({ event: 'hidClose', data: params });
-  //   hidProcess?.kill();
-  //   hidProcess = null;
+  hidProcess?.postMessage({ event: 'hidClose', data: params });
+  // hidProcess?.kill();
+  // hidProcess = null;
   //   console.log(hidProcess);
 });
 
@@ -78,13 +80,15 @@ function stringToUint8Array(str): number[] {
   return tmpUint8Array;
 }
 
+let timeout;
 const hidWrite = async (params): Promise<{ key: string; value: string } | boolean> => {
+  // log.info('hidWrite ===>', JSON.stringify(params));
   if (!hidProcess) {
     await createThread();
   }
   return new Promise(async (resolve, reject) => {
     try {
-      await hidProcess?.send({
+      hidProcess?.postMessage({
         event: 'hidWrite',
         data: { ...params, value: stringToUint8Array(params.value) },
       });
@@ -94,7 +98,17 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
           //   console.log('收到 hidData:', msg.data);
           resolve(msg.data);
         }
+        clearTimeout(timeout);
+        timeout = null;
       });
+      timeout = setTimeout(() => {
+        log.info('子进程读取超时...');
+        hidProcess?.kill();
+        hidProcess = null;
+        clearTimeout(timeout);
+        timeout = null;
+        resolve({ key: params.key, value: '' });
+      }, 10000);
     } catch (error) {
       resolve(false);
     }
@@ -132,7 +146,7 @@ export const filterUsbList = async () => {
     if (element.productId === PRODUCT_ID && element.vendorId === VERSION_ID) {
       const getsn: any = await hidWrite({ key: 'getsn', value: 'AT+GETSN:', path: element.path });
       hidList.push({ ...element, name: getsn.value.split(':')[1].replaceAll(';', '') });
-      await hidProcess?.send({ event: 'hidClose' });
+      await hidProcess?.postMessage({ event: 'hidClose' });
     }
   }
 

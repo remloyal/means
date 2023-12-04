@@ -35,4 +35,3 @@ yarn.lock
 /resources/*
 !/resources/static
 .vscode
-thread.js
