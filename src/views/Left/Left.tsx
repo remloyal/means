@@ -17,6 +17,7 @@ import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
 import { loadUsbData, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
+import { QuitPrompt } from './ExitPrompt';
 const DeviceImg = {
   M2H: M2H,
   M1H: M1H,
@@ -320,6 +321,7 @@ const Left: React.FC = () => {
           </div>
         </div>
       </Modal>
+      <QuitPrompt />
     </MainLeft>
   );
 };

@@ -68,6 +68,7 @@ const BasicSetting = () => {
     localStorage.setItem('language', value);
     setTongue(value);
     ipcRenderer.invoke('language', value);
+    ipcRenderer.invoke('lang', value);
   };
 
   const DateComponent = () => {

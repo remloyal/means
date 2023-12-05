@@ -8,6 +8,9 @@ export let instructSetup;
 export let DeviceAttribute;
 export const setTypePower = (type?) => {
   if (type) {
+    if (type.indexOf('#') != -1) {
+      type = type.split('#')[0];
+    }
     DeviceAttribute = DeviceTypeAT[type];
     instructRead = DeviceAttribute.read;
     instructSetup = DeviceAttribute.setup;

@@ -3,7 +3,10 @@ export const instructRead: OperateType<OperateTypeItem> = {
     key: 'deviceType',
     name: '获取设备型号',
     order: () => 'AT+GETDEVTYPE:',
-    getData: data => data,
+    getData: data => {
+      data = data.split('#')[0];
+      return data
+    },
   },
   multidUnit: {
     key: 'multidUnit',

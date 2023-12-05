@@ -34,7 +34,10 @@
     "clearText": "你确定要清空数据，并重置设备吗？",
     "errotText": "设备读取错误，请重新插入设备！",
     "reading": "数据读取中",
-    "saving": "数据保存中"
+    "saving": "数据保存中",
+    "exitPrompt":"关闭提示",
+    "minimizeTray":"最小化至托盘",
+    "exitApp":"退出应用"
   },
   "home": {
     "graph": "曲线图",
