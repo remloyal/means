@@ -1,6 +1,6 @@
 {
   "productName": "鼎为数据中心",
-  "appId": "com.leon.frigga",
+  "appId": "frigga.data.center",
   "asar": true,
   "directories": {
     "output": "release/${version}"
