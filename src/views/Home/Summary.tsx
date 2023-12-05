@@ -157,8 +157,6 @@ const SummaryGraph: React.FC = () => {
         power.includes('setHighHumi') && humiLists.push(item.humi);
         indexList.push(index.toString());
       });
-      console.log(humiLists);
-
       const lines = setLines();
       setDateList(dateLists);
       setValueList(valueLists);
@@ -231,11 +229,11 @@ const SummaryGraph: React.FC = () => {
             </Radio.Group>
           </div>
           <div>
-            <Tooltip title={t('home.thresholdEditing')} destroyTooltipOnHide={true}>
+            {/* <Tooltip title={t('home.thresholdEditing')} destroyTooltipOnHide={true}>
               <UnorderedListOutlined
                 style={{ fontSize: '28px', marginRight: '14px', cursor: 'pointer' }}
               />
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title={t('home.exportGraph')} destroyTooltipOnHide={true}>
               <FileJpgOutlined
                 onClick={exportImage}

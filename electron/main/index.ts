@@ -115,6 +115,7 @@ export async function createWindow() {
 
   win.on('close', async e => {
     e.preventDefault();
+    win?.show()
     win?.webContents.send('exitPrompt');
     // await hidProcess?.kill();
     // // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
@@ -258,7 +259,7 @@ const setTray = lan => {
     {
       label: lan == 1 ? 'quit' : '退出',
       click: () => {
-        app.quit();
+        app.exit();
       },
     },
   ]);

@@ -94,7 +94,7 @@ const Left: React.FC = () => {
       // 加载完成
       window.eventBus.on('loadingCompleted', res => {
         setLoading(false);
-        if (res.error) {
+        if (res && res?.error) {
           setTimeout(() => {
             message.error(res.error.toString());
           }, 1000);

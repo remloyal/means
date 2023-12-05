@@ -1,4 +1,4 @@
-import { timeZoneCollection } from '@/locale/timeZone';
+import { timeZoneCollection, timeZoneList } from '@/locale/timeZone';
 import { deviceConfigParam, equipment, language } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { convertTZ, convertUTC } from '@/utils/time';
@@ -8,18 +8,18 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-const getTimeZones = () => {
-  const data = timeZoneCollection[localStorage.getItem('language') || 'zh_CN'];
+const getTimeZones = (() => {
+  // const data = timeZoneCollection[localStorage.getItem('language') || 'zh_CN'];
   let timeZones: { value: string | number; label: string | number; name: string | number }[] = [];
-  data.forEach((item, index) => {
+  timeZoneList.forEach((item, index) => {
     timeZones.push({
-      label: item.DisplayName,
+      label: item,
       value: index,
-      name: getTimeZoneValue(item.DisplayName),
+      name: item,
     });
-  });
+  });  
   return timeZones;
-};
+})();
 
 // 设置时区
 export const TimeZone = ({ state }: { state: boolean }) => {
@@ -28,9 +28,10 @@ export const TimeZone = ({ state }: { state: boolean }) => {
   const [device, setDevice] = useRecoilState(equipment);
   const [timeZone, setTimeZone] = useState(0);
   const [timeOption, setTimeOption] = useState('');
-  const [timeZoneList, setTimeZoneList] = useState<
-    { value: string | number; label: string | number; name: string | number }[]
-  >(getTimeZones());
+  const [timeZoneList, setTimeZoneList] =
+    useState<{ value: string | number; label: string | number; name: string | number }[]>(
+      getTimeZones
+    );
   const tongue = useRecoilValue(language);
 
   useEffect(() => {
@@ -53,18 +54,18 @@ export const TimeZone = ({ state }: { state: boolean }) => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const data = timeZoneCollection[tongue || localStorage.getItem('language') || 'zh_CN'];
-    const todo: { value: string | number; label: string | number; name: string | number }[] = [];
-    data.forEach((item, index) => {
-      todo.push({
-        label: item.DisplayName,
-        value: index,
-        name: getTimeZoneValue(item.DisplayName),
-      });
-    });
-    setTimeZoneList(todo);
-  }, [tongue]);
+  // useEffect(() => {
+  //   const data = timeZoneCollection[tongue || localStorage.getItem('language') || 'zh_CN'];
+  //   const todo: { value: string | number; label: string | number; name: string | number }[] = [];
+  //   data.forEach((item, index) => {
+  //     todo.push({
+  //       label: item.DisplayName,
+  //       value: index,
+  //       name: getTimeZoneValue(item.DisplayName),
+  //     });
+  //   });
+  //   setTimeZoneList(todo);
+  // }, [tongue]);
 
   const init = async () => {
     const timeData = device?.record.time;
@@ -75,7 +76,7 @@ export const TimeZone = ({ state }: { state: boolean }) => {
     const timeZoneData = convertTZ(timeData.substring(14, timeData.length));
     console.log(timeZoneData);
 
-    const index = await getTimeZones().findIndex(item => item.name == timeZoneData);
+    const index = await getTimeZones.findIndex(item => item.name == timeZoneData);
     console.log(index);
     setTimeZone(index | 0);
 
