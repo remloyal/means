@@ -5,7 +5,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     order: () => 'AT+GETDEVTYPE:',
     getData: data => {
       data = data.split('#')[0];
-      return data
+      return data;
     },
   },
   multidUnit: {
@@ -96,7 +96,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取温度阈值上限',
     order: () => 'AT+GETHIGHTEMP:',
     getData: data => {
-      return parseInt(data.split(':')[1]);
+      return (parseInt(data.split(':')[1]) / 10).toFixed(1);
     },
   },
 
@@ -105,7 +105,7 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '读取温度阈值下限',
     order: () => 'AT+GETLOWTEMP:',
     getData: data => {
-      return parseInt(data.split(':')[1]);
+      return (parseInt(data.split(':')[1]) / 10).toFixed(1);
     },
   },
 

@@ -11,6 +11,9 @@ export const setTypePower = (type?) => {
     if (type.indexOf('#') != -1) {
       type = type.split('#')[0];
     }
+    if (!DeviceTypeAT[type]) {
+      throw new Error('DeviceTypeAT is null');
+    }
     DeviceAttribute = DeviceTypeAT[type];
     instructRead = DeviceAttribute.read;
     instructSetup = DeviceAttribute.setup;
@@ -24,7 +27,7 @@ export const setTypePower = (type?) => {
     window.eventBus.emit('typePower', []);
   }
 };
-export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {
+export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {  
   deviceExample.deviceInfo = deviceInfo;
   deviceExample.record = {};
   const { key, value } = await deviceExample.getType(deviceType);
@@ -120,6 +123,7 @@ class DeviceInstance {
       value: todo,
       key: item.key,
     });
+    await ipcRenderer.invoke('hidClose', { path: '', value: '' });
     return data;
   }
   getData(key?: string) {

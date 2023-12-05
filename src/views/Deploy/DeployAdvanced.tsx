@@ -289,8 +289,9 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
   };
   useEffect(() => {
     const pdfPwd = device?.record.pdfPwd;
-    if (pdfPwd) {
+    if (pdfPwd != '') {
       setStartValue(pdfPwd);
+      setChecked(true)
     }
   }, []);
 

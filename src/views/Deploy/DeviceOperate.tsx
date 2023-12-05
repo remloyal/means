@@ -164,6 +164,7 @@ export const StartModeDom = ({ state }: { state: boolean }) => {
           style={{ width: 120 }}
           onChange={handleChange}
           size="small"
+          disabled
           options={[
             { label: t('deploy.buttonStart'), value: 0 },
             { label: t('deploy.timingOn'), value: 1 },
@@ -327,7 +328,7 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   const [emp, setEmp] = useState(0);
   const [unit, setUnit] = useState('\u2103');
   const empChange = num => {
-    setEmp(parseInt(num));
+    setEmp(num);
     setDeviceConfig(item => {
       return {
         ...item,
@@ -354,7 +355,7 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
 
   const setHightEmp = async () => {
     if (emp != parseInt(device?.record.hightEmp)) {
-      await deviceOperate.setHightEmp(emp);
+      await deviceOperate.setHightEmp(emp * 10);
     }
   };
 
@@ -362,7 +363,14 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatUpperLimit')}</div>
       <div className="deploy-select">
-        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <InputNumber
+          size="small"
+          min={deviceConfig.lowtEmp}
+          onChange={empChange}
+          value={emp}
+          style={{ width: '80%' }}
+          step="0.1"
+        />
         <span className="deploy-span">{unit}</span>
       </div>
     </Col>
@@ -387,10 +395,10 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
-  const [emp, setEmp] = useState(0);
+  const [emp, setEmp] = useState(0.0);
   const [unit, setUnit] = useState('\u2103');
   const empChange = num => {
-    setEmp(parseInt(num));
+    setEmp(num);
     setDeviceConfig(item => {
       return {
         ...item,
@@ -417,7 +425,7 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
 
   const setLowtEmp = async () => {
     if (emp != parseInt(device?.record.lowtEmp)) {
-      await deviceOperate.setLowtEmp(emp);
+      await deviceOperate.setLowtEmp(emp * 10);
     }
   };
 
@@ -425,13 +433,19 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatLowerLimit')}</div>
       <div className="deploy-select">
-        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <InputNumber
+          size="small"
+          max={deviceConfig.hightEmp}
+          onChange={empChange}
+          value={emp}
+          style={{ width: '80%' }}
+          step="0.1"
+        />
         <span className="deploy-span">{unit}</span>
       </div>
     </Col>
   );
 };
-
 
 // 湿度阈值上限
 export const HightHumiDom = ({ state }: { state: boolean }) => {

@@ -94,6 +94,11 @@ const Left: React.FC = () => {
       // 加载完成
       window.eventBus.on('loadingCompleted', res => {
         setLoading(false);
+        if (res.error) {
+          setTimeout(() => {
+            message.error(res.error.toString());
+          }, 1000);
+        }
       });
 
       window.eventBus.on('updateDevice', deviceData => {
@@ -169,10 +174,10 @@ const Left: React.FC = () => {
           '---'
         ),
     },
-    {
-      label: t('left.batteryLevel'),
-      children: device != null ? device?.record.batteryLevel : '---',
-    },
+    // {
+    //   label: t('left.batteryLevel'),
+    //   children: device != null ? device?.record.batteryLevel : '---',
+    // },
     {
       label: t('left.DeviceStatus'),
       children: device != null ? DeviceStatus[device?.record.mode] : '---',

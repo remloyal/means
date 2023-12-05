@@ -103,7 +103,11 @@ export const loadUsbData = async data => {
         window.eventBus.emit('loadingCompleted');
       });
     } catch (error) {
-      console.log(error);
+      window.eventBus.emit('loadingCompleted', {
+        error: 'The application does not support this device!',
+      });
+      usbData = null;
+      // console.log(error);
     }
   }
 };

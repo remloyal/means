@@ -26,6 +26,13 @@ import { ipcRenderer } from 'electron';
 import HistoryRight from '../History/historyRight';
 import { DataExport } from './DataExport';
 import { c2f } from '@/utils/utils';
+
+// 温度单位
+const MultidUnit = {
+  0: '\u2103',
+  1: '\u2109',
+};
+
 const Summary: React.FC = () => {
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
@@ -131,7 +138,7 @@ const SummaryGraph: React.FC = () => {
 
   useEffect(() => {
     const chat = foldLine(dateList, valueList, line, humiList, [
-      t('home.temperature'),
+      t('home.temperature') + `(${MultidUnit[device?.record.multidUnit || 0]})`,
       power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);
@@ -147,9 +154,11 @@ const SummaryGraph: React.FC = () => {
       todo.forEach((item, index) => {
         dateLists.push(item.timeStamp);
         valueLists.push(MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? item.f : item.c);
-        humiLists.push(item.humi);
+        power.includes('setHighHumi') && humiLists.push(item.humi);
         indexList.push(index.toString());
       });
+      console.log(humiLists);
+
       const lines = setLines();
       setDateList(dateLists);
       setValueList(valueLists);
@@ -175,12 +184,19 @@ const SummaryGraph: React.FC = () => {
       lines.push(standardLine(record.lowHumi, '湿度阈值下限', '#0000FF'));
     }
     if (record?.hightEmp) {
-      lines.push(standardLine(record.hightEmp, '温度阈值上限', '#FF0000'));
+      lines.push(standardLine(setTempValue(record.hightEmp), '温度阈值上限', '#FF0000'));
     }
     if (record?.lowtEmp) {
-      lines.push(standardLine(record.lowtEmp, '温度阈值下限', '#0000FF'));
+      lines.push(standardLine(setTempValue(record.lowtEmp), '温度阈值下限', '#0000FF'));
     }
     return lines;
+  };
+  const setTempValue = data => {
+    const unit = MultidUnit[device?.record.multidUnit];
+    if (unit == '\u2109') {
+      return c2f(data);
+    }
+    return data;
   };
 
   useEffect(() => {
@@ -188,7 +204,7 @@ const SummaryGraph: React.FC = () => {
   }, [valueList, humiList, dateList]);
   const setChatOption = (key = 1) => {
     const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
-      t('home.temperature'),
+      t('home.temperature') + `(${MultidUnit[device?.record.multidUnit || 0]})`,
       power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);
@@ -278,12 +294,6 @@ const SummaryRight: React.FC = () => {
     2: t('device.temperaturerange'),
   };
 
-  // 温度单位
-  const MultidUnit = {
-    0: '\u2103',
-    1: '\u2109',
-  };
-
   const setTempValue = value => {
     const unit = MultidUnit[device?.record.multidUnit];
     if (unit == '\u2109') {
@@ -330,18 +340,18 @@ const SummaryRight: React.FC = () => {
       label: t('home.startDelay'),
       children: device != null ? `${device?.record.startDelayTime} S` : '---',
     },
-    {
-      label: t('home.repetitionPriming'),
-      children: device != null ? device?.record.repetitionPriming : '---',
-    },
+    // {
+    //   label: t('home.repetitionPriming'),
+    //   children: device != null ? device?.record.repetitionPriming : '---',
+    // },
     {
       label: t('home.displayTime'),
       children: device != null ? `${device?.record.multIdSleepTime} S` : '---',
     },
-    {
-      label: t('home.temporaryPDF'),
-      children: device != null ? device?.record.temporaryPDF : '---',
-    },
+    // {
+    //   label: t('home.temporaryPDF'),
+    //   children: device != null ? device?.record.temporaryPDF : '---',
+    // },
     {
       label: t('home.timeZone'),
       children: device != null ? device?.record.timeZone : '---',
@@ -358,14 +368,14 @@ const SummaryRight: React.FC = () => {
       label: t('home.lowTemperatureAlarm'),
       children: device != null ? setTempValue(device?.record.lowtEmp) : '---',
     },
-    {
-      label: t('home.runLengthCoding'),
-      children: device != null ? device?.record.runLengthCoding : '---',
-    },
-    {
-      label: t('home.journeyDescription'),
-      children: device != null ? device?.record.journeyDescription : '---',
-    },
+    // {
+    //   label: t('home.runLengthCoding'),
+    //   children: device != null ? device?.record.runLengthCoding : '---',
+    // },
+    // {
+    //   label: t('home.journeyDescription'),
+    //   children: device != null ? device?.record.journeyDescription : '---',
+    // },
   ];
 
   return (
