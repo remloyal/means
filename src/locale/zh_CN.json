@@ -33,7 +33,11 @@
     "quickReset": "快速重置",
     "clearText": "你确定要清空数据，并重置设备吗？",
     "errotText": "设备读取错误，请重新插入设备！",
-    "reading": "数据读取中"
+    "reading": "数据读取中",
+    "saving": "数据保存中",
+    "exitPrompt":"关闭提示",
+    "minimizeTray":"最小化至托盘",
+    "exitApp":"退出应用"
   },
   "home": {
     "graph": "曲线图",
@@ -68,10 +72,14 @@
     "sensorData": "传感器数据",
     "exportAs": "导出为",
     "language": "语言",
+    "confirm":"确认",
     "cancellation": "取消",
+    "screen":"筛选",
     "exportFailed": "导出失败",
     "exportSuccess": "导出成功",
-    "processing": "处理中"
+    "processing": "处理中",
+    "startTime":"开始时间",
+    "endTime":"结束时间"
   },
   "deploy": {
     "basicParameters": "基本参数",

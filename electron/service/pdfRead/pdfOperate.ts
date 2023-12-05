@@ -7,6 +7,7 @@ import { c2f, f2c } from '../../unitls/tool';
 import pdfjsLib from 'pdfjs-dist';
 dayjs.extend(customParseFormat);
 import log from '../../pdfgen/log';
+import { parsePDF } from './pad_json';
 
 // let pdfjsLib;
 export const importPDFFile = async (filePath: string) => {
@@ -17,7 +18,7 @@ export const importPDFFile = async (filePath: string) => {
   const loadingTask = pdfjsLib.getDocument(data);
   let lang = 'en'; //zh
   let type = pdfType[lang];
-  const list: any = [];
+  let list: any = [];
   let total = 0;
   await loadingTask.promise.then(
     async function (pdf) {
@@ -58,6 +59,14 @@ export const importPDFFile = async (filePath: string) => {
 
   //   console.log(list);
   let deviceInstance;
+  if (list.length > 1 && list[1] == '') {
+    // 乱码解析
+    const data = await parsePDF(filePath, list.length);
+    if (data) {
+      list = data;
+    }
+  }
+
   deviceInstance = await readFirst(list[0], type);
 
   let csvData: any = [];
@@ -101,25 +110,27 @@ const readFirst = (text, type) => {
           todo[key] = result.replace('[', '').replace(']', '');
         }
       } catch (error) {
-        log.error(error);
-        // console.log(error);
+        log.error(`正则匹配错误===》 ${item} `, error);
       }
     });
   });
+  for (var i in todo) {
+    todo[i] = todo[i].trim();
+  }
   console.log(todo);
   return todo;
 };
 
 const readData = async (text, todo, pageFooting) => {
-  let size = 2;
+  let size = 3;
   let key = '';
   let unit = '°C';
   if (text.includes('°C') || text.includes('℃')) {
-    size += 1;
+    // size += 1;
     key = '°C';
   }
   if (text.includes('℉')) {
-    size += 1;
+    // size += 1;
     key = '℉';
     unit = '℉';
   }
@@ -135,18 +146,23 @@ const readData = async (text, todo, pageFooting) => {
 };
 function splitData(data, size, unit, todo) {
   var result: any = [];
+  let text = data
+    .replace(/(\d{2})-(\d{2})-(\d{2})/g, ' $1-$2-$3')
+    .trim()
+    .split(' ');
+  text = text.filter(function (s) {
+    return s && s.trim();
+  });
   const format = todo.timeFormat
     ? `${todo.timeFormat.split(' ')[0]} HH:mm:ss`
     : 'DD-MM-YY HH:mm:ss';
-  const chunkSize = size == 4 ? 22 : size == 3 ? 20 : 20;
+  // const chunkSize = size == 4 ? 22 : size == 3 ? 20 : 20;
   // 23-11-1005:28:1971.466
-  for (var i = 0; i < data.length; i += chunkSize) {
-    const chunk = data.slice(i, i + chunkSize);
-    const time = chunk.slice(0, 8);
-    const temp = chunk.slice(8, 16);
-
-    const heat = size == 3 ? chunk.slice(-4) : chunk.slice(-6, -2);
-    const hum = size == 3 ? 0 : chunk.slice(-2);
+  for (var i = 0; i < text.length; i += size) {
+    const time = text[i];
+    const temp = text[i + 1];
+    const heat = text[i + 2];
+    const hum = size == 3 ? 0 : text[i + 3];
     let c;
     let f;
     if (unit == '℉') {
@@ -182,7 +198,10 @@ function formatText(text) {
     '℉',
     '期',
     '…',
-    ' ',
+    'undefined',
+    '죕웚',
+    '쪱볤',
+    'ꇦ',
   ];
   let character = text;
   rule.forEach(item => {

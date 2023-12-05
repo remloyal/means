@@ -19,12 +19,21 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MainBody, MainRight } from '@/components/main';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { equipment, historyDevice, language, typePower } from '@/stores';
+import { equipment, historyDevice, language, screenList, screenTime, typePower } from '@/stores';
 import DataSheet from './DataSheet';
 import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
 import HistoryRight from '../History/historyRight';
 import { DataExport } from './DataExport';
+import { c2f } from '@/utils/utils';
+import { DataFilter } from './DataFilter';
+
+// 温度单位
+const MultidUnit = {
+  0: '\u2103',
+  1: '\u2109',
+};
+
 const Summary: React.FC = () => {
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
@@ -108,6 +117,7 @@ const SummaryMain: React.FC = () => {
 
 const SummaryGraph: React.FC = () => {
   const device = useRecoilValue(equipment);
+  const filterTime = useRecoilValue(screenTime);
   const [option, setOption] = useState({});
   const graph = useRef(null);
   const [dateList, setDateList] = useState<string[]>([]);
@@ -119,6 +129,10 @@ const SummaryGraph: React.FC = () => {
   const { t } = useTranslation();
   const tongue = useRecoilValue(language);
   const power = useRecoilValue(typePower);
+  const MultidUnit = {
+    0: '\u2103',
+    1: '\u2109',
+  };
 
   useEffect(() => {
     setChat();
@@ -126,14 +140,14 @@ const SummaryGraph: React.FC = () => {
 
   useEffect(() => {
     const chat = foldLine(dateList, valueList, line, humiList, [
-      t('home.temperature'),
+      t('home.temperature') + `(${MultidUnit[device?.record.multidUnit || 0]})`,
       power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);
   }, [tongue]);
 
-  const setChat = () => {
-    const todo = device?.csvData;
+  const setChat = (list?) => {
+    const todo = list || device?.csvData;
     if (todo && todo?.length > 0) {
       const dateLists: string[] = [];
       const valueLists: number[] = [];
@@ -141,8 +155,8 @@ const SummaryGraph: React.FC = () => {
       const indexList: string[] = [];
       todo.forEach((item, index) => {
         dateLists.push(item.timeStamp);
-        valueLists.push(item.c);
-        humiLists.push(item.humi);
+        valueLists.push(MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? item.f : item.c);
+        power.includes('setHighHumi') && humiLists.push(item.humi);
         indexList.push(index.toString());
       });
       const lines = setLines();
@@ -170,12 +184,19 @@ const SummaryGraph: React.FC = () => {
       lines.push(standardLine(record.lowHumi, '湿度阈值下限', '#0000FF'));
     }
     if (record?.hightEmp) {
-      lines.push(standardLine(record.hightEmp, '温度阈值上限', '#FF0000'));
+      lines.push(standardLine(setTempValue(record.hightEmp), '温度阈值上限', '#FF0000'));
     }
     if (record?.lowtEmp) {
-      lines.push(standardLine(record.lowtEmp, '温度阈值下限', '#0000FF'));
+      lines.push(standardLine(setTempValue(record.lowtEmp), '温度阈值下限', '#0000FF'));
     }
     return lines;
+  };
+  const setTempValue = data => {
+    const unit = MultidUnit[device?.record.multidUnit];
+    if (unit == '\u2109') {
+      return c2f(data);
+    }
+    return data;
   };
 
   useEffect(() => {
@@ -183,7 +204,7 @@ const SummaryGraph: React.FC = () => {
   }, [valueList, humiList, dateList]);
   const setChatOption = (key = 1) => {
     const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
-      t('home.temperature'),
+      t('home.temperature') + `(${MultidUnit[device?.record.multidUnit || 0]})`,
       power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);
@@ -199,6 +220,13 @@ const SummaryGraph: React.FC = () => {
     const baseData = childRef.current.exportImage();
     ipcRenderer.send('export-jpg', baseData);
   };
+
+  const todoList = useRecoilValue(screenList);
+  useEffect(() => {
+    if (todoList.length > 0) {
+      setChat(todoList);
+    }
+  }, [todoList]);
   return (
     <>
       <div className="summary-graph" ref={graph}>
@@ -210,11 +238,11 @@ const SummaryGraph: React.FC = () => {
             </Radio.Group>
           </div>
           <div>
-            <Tooltip title={t('home.thresholdEditing')} destroyTooltipOnHide={true}>
+            {/* <Tooltip title={t('home.thresholdEditing')} destroyTooltipOnHide={true}>
               <UnorderedListOutlined
                 style={{ fontSize: '28px', marginRight: '14px', cursor: 'pointer' }}
               />
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title={t('home.exportGraph')} destroyTooltipOnHide={true}>
               <FileJpgOutlined
                 onClick={exportImage}
@@ -233,11 +261,14 @@ const SummaryGraph: React.FC = () => {
 const ExportData: React.FC = () => {
   const { t } = useTranslation();
   const device = useRecoilValue(equipment);
+  const filterTime = useRecoilValue(screenTime);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
     console.log(device);
   };
+  const filterate = () => {};
+  const [screen, setScreen] = useState(false);
 
   return (
     <>
@@ -245,7 +276,18 @@ const ExportData: React.FC = () => {
         <Button type="primary" size="large" onClick={showModal}>
           {t('home.exportData')}
         </Button>
-        <Button size="large">{t('home.dataFilter')}</Button>
+        <Button size="large" onClick={() => setScreen(true)}>
+          {t('home.dataFilter')}
+        </Button>
+      </div>
+      <div className="summary-graph-screen">
+        {filterTime.startTime != '' && filterTime.endTime ? (
+          <span>
+            {filterTime.startTime} ~ {filterTime.endTime}
+          </span>
+        ) : (
+          <></>
+        )}{' '}
       </div>
       <Modal
         title={t('home.exportData')}
@@ -258,6 +300,19 @@ const ExportData: React.FC = () => {
         maskClosable={false}
       >
         <DataExport onCancel={() => setIsModalOpen(false)} />
+      </Modal>
+      <Modal
+        title={t('home.dataFilter')}
+        open={screen}
+        footer={null}
+        width={400}
+        onOk={() => setScreen(false)}
+        onCancel={() => setScreen(false)}
+        destroyOnClose={true}
+        centered
+        maskClosable={false}
+      >
+        <DataFilter onCancel={() => setScreen(false)} />
       </Modal>
     </>
   );
@@ -273,11 +328,14 @@ const SummaryRight: React.FC = () => {
     2: t('device.temperaturerange'),
   };
 
-  // 温度单位
-  const MultidUnit = {
-    0: '\u2103',
-    1: '\u2109',
+  const setTempValue = value => {
+    const unit = MultidUnit[device?.record.multidUnit];
+    if (unit == '\u2109') {
+      return `${c2f(value)} ${unit}`;
+    }
+    return `${value} ${unit}`;
   };
+
   const setSensor = () => {
     const sensorType = {
       M2H: (
@@ -316,18 +374,18 @@ const SummaryRight: React.FC = () => {
       label: t('home.startDelay'),
       children: device != null ? `${device?.record.startDelayTime} S` : '---',
     },
-    {
-      label: t('home.repetitionPriming'),
-      children: device != null ? device?.record.repetitionPriming : '---',
-    },
+    // {
+    //   label: t('home.repetitionPriming'),
+    //   children: device != null ? device?.record.repetitionPriming : '---',
+    // },
     {
       label: t('home.displayTime'),
       children: device != null ? `${device?.record.multIdSleepTime} S` : '---',
     },
-    {
-      label: t('home.temporaryPDF'),
-      children: device != null ? device?.record.temporaryPDF : '---',
-    },
+    // {
+    //   label: t('home.temporaryPDF'),
+    //   children: device != null ? device?.record.temporaryPDF : '---',
+    // },
     {
       label: t('home.timeZone'),
       children: device != null ? device?.record.timeZone : '---',
@@ -338,22 +396,20 @@ const SummaryRight: React.FC = () => {
     },
     {
       label: t('home.highTemperatureAlarm'),
-      children:
-        device != null ? device?.record.hightEmp + MultidUnit[0] : '---',
+      children: device != null ? setTempValue(device?.record.hightEmp) : '---',
     },
     {
       label: t('home.lowTemperatureAlarm'),
-      children:
-        device != null ? device?.record.lowtEmp + MultidUnit[0] : '---',
+      children: device != null ? setTempValue(device?.record.lowtEmp) : '---',
     },
-    {
-      label: t('home.runLengthCoding'),
-      children: device != null ? device?.record.runLengthCoding : '---',
-    },
-    {
-      label: t('home.journeyDescription'),
-      children: device != null ? device?.record.journeyDescription : '---',
-    },
+    // {
+    //   label: t('home.runLengthCoding'),
+    //   children: device != null ? device?.record.runLengthCoding : '---',
+    // },
+    // {
+    //   label: t('home.journeyDescription'),
+    //   children: device != null ? device?.record.journeyDescription : '---',
+    // },
   ];
 
   return (

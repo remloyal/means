@@ -87,3 +87,31 @@ export const typePower = atom<string[]>({
   key: 'typePower',
   default: [],
 });
+
+export const menuKey = atom<number>({
+  key: 'MenuKey',
+  default: 0,
+});
+
+export const screenTime = atom<any>({
+  key: 'screenTime',
+  default: {
+    startTime: '',
+    endTime: '',
+  },
+});
+
+export const screenList = selector<any[]>({
+  key: 'screenList',
+  get: ({ get }) => {
+    const device = get(equipment);
+    const time = get(screenTime);
+    if (time.startTime && time.endTime) {
+      const csvData = device.csvData.filter(
+        item => item.timeStamp >= time.startTime && item.timeStamp <= time.endTime
+      );
+      return csvData;
+    }
+    return device?.csvData || [];
+  },
+});

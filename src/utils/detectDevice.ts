@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 import { ipcRenderer, ipcMain } from 'electron';
-import { createDeviceInstance } from './deviceOperation';
+import { createDeviceInstance, setTypePower } from './deviceOperation';
 import dayjs from 'dayjs';
 
 /**
@@ -103,7 +103,11 @@ export const loadUsbData = async data => {
         window.eventBus.emit('loadingCompleted');
       });
     } catch (error) {
-      console.log(error);
+      window.eventBus.emit('loadingCompleted', {
+        error: 'The application does not support this device!',
+      });
+      usbData = null;
+      // console.log(error);
     }
   }
 };
@@ -113,5 +117,6 @@ ipcRenderer.on('deviceRemoval', async (event, data) => {
   if (data.name == usbData.name) {
     usbData = null;
     window.eventBus.emit('friggaDevice:out');
+    setTypePower();
   }
 });

@@ -28,11 +28,8 @@ let targetFileName = path.join(process.cwd(), './public/thread.js');
 
 if (app.isPackaged) {
   targetFileName = filePath('./app.asar/dist/thread.js');
-} else {
-  if (!fs.existsSync(targetFileName)) {
-    fs.writeFileSync(targetFileName, content);
-  }
 }
+
 log.info('targetFileName ==>', targetFileName);
 const createThread = async () => {
   try {
@@ -75,6 +72,10 @@ ipcMain.handle('hidClose', (event, params: HidEventData) => {
   // hidProcess?.kill();
   // hidProcess = null;
   //   console.log(hidProcess);
+  Object.values(timeout).map((e: any) => {
+    e && clearTimeout(e);
+  });
+  timeout = {};
 });
 
 function stringToUint8Array(str): number[] {
@@ -83,6 +84,7 @@ function stringToUint8Array(str): number[] {
   return tmpUint8Array;
 }
 
+let timeout: any = {};
 const hidWrite = async (params): Promise<{ key: string; value: string } | boolean> => {
   // log.info('hidWrite ===>', JSON.stringify(params));
   if (!hidProcess) {
@@ -100,7 +102,17 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
           //   console.log('收到 hidData:', msg.data);
           resolve(msg.data);
         }
+        clearTimeout(timeout[params.key]);
+        timeout[params.key] = null;
       });
+      timeout[params.key] = setTimeout(() => {
+        log.info('子进程读取超时...');
+        hidProcess?.kill();
+        hidProcess = null;
+        timeout[params.key] && clearTimeout(timeout[params.key]);
+        timeout[params.key] = null;
+        resolve({ key: params.key, value: '' });
+      }, 10000);
     } catch (error) {
       resolve(false);
     }
@@ -138,7 +150,7 @@ export const filterUsbList = async () => {
     if (element.productId === PRODUCT_ID && element.vendorId === VERSION_ID) {
       const getsn: any = await hidWrite({ key: 'getsn', value: 'AT+GETSN:', path: element.path });
       hidList.push({ ...element, name: getsn.value.split(':')[1].replaceAll(';', '') });
-      hidProcess?.postMessage({ event: 'hidClose' });
+      await hidProcess?.postMessage({ event: 'hidClose' });
     }
   }
 

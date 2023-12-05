@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Segmented, Space, Switch, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { useRecoilValue } from 'recoil';
-import { equipment, resize } from '@/stores';
+import { equipment, resize, screenList } from '@/stores';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +14,12 @@ interface RecordType {
 
 const DataSheet = () => {
   const { t } = useTranslation();
+  const device = useRecoilValue(equipment);
+  const MultidUnit = {
+    0: '\u2103',
+    1: '\u2109',
+  };
+
   //   const data = useMemo(() => getData(count), [count]);
   const columns: TableProps<RecordType>['columns'] = [
     {
@@ -29,13 +35,13 @@ const DataSheet = () => {
       align: 'center',
     },
     {
-      title: '(\u2103)',
+      title: MultidUnit[device?.record.multidUnit || 0],
       dataIndex: 'heat',
       width: 120,
       align: 'center',
     },
   ];
-  const device = useRecoilValue(equipment);
+
   const [title, setTitle] = useState('');
   const [csvData, setCsvData] = useState<RecordType[]>();
   useEffect(() => {
@@ -50,13 +56,13 @@ const DataSheet = () => {
     setAxle(num);
   }, [resizeData]);
 
-  const getData = () => {
-    const todo = device?.csvData;
+  const getData = (list?) => {
+    const todo = list || device?.csvData;
     if (todo) {
       const data: RecordType[] = todo.map((item, index) => ({
         id: index + 1,
         time: `${item.timeStamp}`,
-        heat: `${item.c}`,
+        heat: MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? `${item.f}` : `${item.c}`,
       }));
       setCsvData(data);
     } else {
@@ -78,13 +84,21 @@ const DataSheet = () => {
     className = index % 2 === 0 ? 'oddRow' : 'evenRow';
     return className;
   };
+
+  const todoList = useRecoilValue(screenList);
+  useEffect(() => {
+    if (todoList.length > 0) {
+      getData(todoList);
+    }
+  }, [todoList]);
+
   return (
     <div style={{ padding: 0 }} className="tableTitle">
       <div style={{ paddingBottom: '10px', textAlign: 'center' }}>{title}</div>
       <Table
         bordered={false}
         virtual
-        size='small'
+        size="small"
         columns={columns}
         scroll={{ x: 100, y: axle || 500 }}
         rowKey="id"

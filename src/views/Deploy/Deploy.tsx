@@ -55,13 +55,33 @@ const DeployMain: React.FC = () => {
 
   const save = () => {
     setIsUpdate(true);
+    window.eventBus.emit('saving');
     setTimeout(() => {
       setIsUpdate(false);
     }, 1000);
   };
+
+  const [activeKey, setActiveKey] = useState(0);
   return (
     <>
-      <Tabs defaultActiveKey="1" items={items} destroyInactiveTabPane={true} />
+      {/* <Tabs defaultActiveKey="1" items={items} destroyInactiveTabPane={true} /> */}
+      <div className="deploy-title">
+        {items.map((item, index) => {
+          return (
+            <div
+              className={activeKey == index ? 'deploy-title-active' : ''}
+              onClick={() => setActiveKey(index)}
+            >
+              {item.label}
+            </div>
+          );
+        })}
+      </div>
+      {items.map((item, index) => {
+        return (
+          <div style={{ display: activeKey == index ? 'block' : 'none' }}>{item.children}</div>
+        );
+      })}
       <DataOperate save={save}></DataOperate>
     </>
   );
@@ -83,9 +103,9 @@ const DeployBasic = ({ state }: { state: boolean }) => {
   return (
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>
-        {data.map(Item => {
+        {data.map((Item, index) => {
           if (!Item) return <></>;
-          return <Item state={state} key={Item.name} />;
+          return <Item state={state} key={index} />;
         })}
       </Row>
     </div>

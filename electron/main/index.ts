@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, dialog, Menu } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog, Menu, Tray } from 'electron';
 import { release } from 'node:os';
 import { join } from 'node:path';
 import { deviceInit } from './device';
@@ -49,6 +49,7 @@ export const preload = join(__dirname, '../preload/index.js');
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, 'index.html');
 
+let tray;
 export async function createWindow() {
   win = new BrowserWindow({
     autoHideMenuBar: true,
@@ -112,14 +113,22 @@ export async function createWindow() {
     }
   });
 
-  win.on('close', async () => {
-    await hidProcess?.kill();
-    // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
-    win?.removeAllListeners();
-    win = null;
+  win.on('close', async e => {
+    e.preventDefault();
+    win?.show()
+    win?.webContents.send('exitPrompt');
+    // await hidProcess?.kill();
+    // // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
+    // win?.removeAllListeners();
+    // win = null;
   });
-  const menu = Menu.buildFromTemplate([]);
-  Menu.setApplicationMenu(menu);
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate([]));
+  tray = new Tray(join(process.env.VITE_PUBLIC, 'favicon.ico'));
+  tray.on('double-click', () => {
+    win?.show();
+  });
+
   // Apply electron-updater
   deviceInit(win);
   CheckForUpdates(win);
@@ -213,6 +222,7 @@ ipcMain.handle('lang', (_, data) => {
     zh_CN: 2,
   };
   dynamicConfig.lan = lang[data] || 1;
+  setTray(dynamicConfig.lan);
 });
 
 ipcMain.handle('getVersion', async (_, data) => {
@@ -221,6 +231,38 @@ ipcMain.handle('getVersion', async (_, data) => {
 
 ipcMain.handle('open-url', (event, url) => {
   console.log(url);
-
   shell.openExternal(url);
 });
+
+ipcMain.handle('exitType', (event, type) => {
+  setTimeout(async () => {
+    if (type == 1) {
+      win?.hide();
+    } else {
+      await hidProcess?.kill();
+      // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
+      win?.removeAllListeners();
+      win = null;
+      app.quit();
+    }
+  }, 1000);
+});
+
+const setTray = lan => {
+  const menu = Menu.buildFromTemplate([
+    {
+      label: lan == 1 ? 'view' : '显示',
+      click: () => {
+        win?.show();
+      },
+    },
+    {
+      label: lan == 1 ? 'quit' : '退出',
+      click: () => {
+        app.exit();
+      },
+    },
+  ]);
+  tray.setToolTip(lan == 1 ? 'Frigga Data Center' : '鼎为数据中心');
+  tray.setContextMenu(menu);
+};

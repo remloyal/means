@@ -78,9 +78,7 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
 
   const setTempPeriod = async () => {
     // console.log(startMode, device?.record.multidUnit);
-    if (startMode != device?.record.multidUnit) {
-      await deviceOperate.setMultidUnit(startMode);
-    }
+    await deviceOperate.setMultidUnit(startMode);
   };
 
   return (
@@ -291,8 +289,9 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
   };
   useEffect(() => {
     const pdfPwd = device?.record.pdfPwd;
-    if (pdfPwd) {
+    if (pdfPwd != '') {
       setStartValue(pdfPwd);
+      setChecked(true)
     }
   }, []);
 

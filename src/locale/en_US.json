@@ -2,7 +2,7 @@
   "header": {
     "summary": "Summary",
     "configureDevices": "Deploy Devices",
-    "data": "Distory Data",
+    "data": "History Data",
     "cfr": "21 CFR",
     "preferences": "Preferences",
     "help": "Help",
@@ -33,7 +33,11 @@
     "quickReset": "Quick Reset",
     "clearText": "Are you sure you want to clear the data and reset the device?",
     "errotText": "Device reading error, please reinsert the device!",
-    "reading": "Data Reading"
+    "reading": "Data Reading",
+    "saving": "Data Saving",
+    "exitPrompt":"Turn off prompts",
+    "minimizeTray":"Minimize to tray",
+    "exitApp":"Exit the application"
   },
   "home": {
     "graph": "Graph",
@@ -68,10 +72,14 @@
     "sensorData": "Sensor Data",
     "exportAs": "Export As",
     "language": "Language",
+    "confirm":"Confirm",
     "cancellation": "Cancellation",
+    "screen":"Screen",
     "exportFailed": "Export Failed",
     "exportSuccess": "Export Success",
-    "processing": "Processing"
+    "processing": "Processing",
+    "startTime":"Start Time",
+    "endTime":"End Time"
   },
   "deploy": {
     "basicParameters": "Basic parameters",
