@@ -72,10 +72,14 @@
     "sensorData": "传感器数据",
     "exportAs": "导出为",
     "language": "语言",
+    "confirm":"确认",
     "cancellation": "取消",
+    "screen":"筛选",
     "exportFailed": "导出失败",
     "exportSuccess": "导出成功",
-    "processing": "处理中"
+    "processing": "处理中",
+    "startTime":"开始时间",
+    "endTime":"结束时间"
   },
   "deploy": {
     "basicParameters": "基本参数",

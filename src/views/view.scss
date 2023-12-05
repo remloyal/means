@@ -217,6 +217,19 @@
       margin: 0 10px;
     }
   }
+  .summary-graph-screen {
+    position: absolute;
+    // width: 100%;
+    bottom: 24px;
+    left: 18%;
+    font-size: 12px;
+    transform: translate(-50%, 0);
+    text-align: center;
+
+    button {
+      margin: 0 10px;
+    }
+  }
 }
 
 .basic {
@@ -293,6 +306,6 @@
   }
   .deploy-title-active {
     color: var(--text-title-color);
-    border-bottom: var(--text-title-color) 1.5px solid;
+    border-bottom: var(--text-title-color) 2px solid;
   }
 }

@@ -19,13 +19,14 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MainBody, MainRight } from '@/components/main';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { equipment, historyDevice, language, typePower } from '@/stores';
+import { equipment, historyDevice, language, screenList, screenTime, typePower } from '@/stores';
 import DataSheet from './DataSheet';
 import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
 import HistoryRight from '../History/historyRight';
 import { DataExport } from './DataExport';
 import { c2f } from '@/utils/utils';
+import { DataFilter } from './DataFilter';
 
 // 温度单位
 const MultidUnit = {
@@ -116,6 +117,7 @@ const SummaryMain: React.FC = () => {
 
 const SummaryGraph: React.FC = () => {
   const device = useRecoilValue(equipment);
+  const filterTime = useRecoilValue(screenTime);
   const [option, setOption] = useState({});
   const graph = useRef(null);
   const [dateList, setDateList] = useState<string[]>([]);
@@ -144,8 +146,8 @@ const SummaryGraph: React.FC = () => {
     setOption(chat);
   }, [tongue]);
 
-  const setChat = () => {
-    const todo = device?.csvData;
+  const setChat = (list?) => {
+    const todo = list || device?.csvData;
     if (todo && todo?.length > 0) {
       const dateLists: string[] = [];
       const valueLists: number[] = [];
@@ -218,6 +220,13 @@ const SummaryGraph: React.FC = () => {
     const baseData = childRef.current.exportImage();
     ipcRenderer.send('export-jpg', baseData);
   };
+
+  const todoList = useRecoilValue(screenList);
+  useEffect(() => {
+    if (todoList.length > 0) {
+      setChat(todoList);
+    }
+  }, [todoList]);
   return (
     <>
       <div className="summary-graph" ref={graph}>
@@ -252,11 +261,14 @@ const SummaryGraph: React.FC = () => {
 const ExportData: React.FC = () => {
   const { t } = useTranslation();
   const device = useRecoilValue(equipment);
+  const filterTime = useRecoilValue(screenTime);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
     console.log(device);
   };
+  const filterate = () => {};
+  const [screen, setScreen] = useState(false);
 
   return (
     <>
@@ -264,7 +276,18 @@ const ExportData: React.FC = () => {
         <Button type="primary" size="large" onClick={showModal}>
           {t('home.exportData')}
         </Button>
-        <Button size="large">{t('home.dataFilter')}</Button>
+        <Button size="large" onClick={() => setScreen(true)}>
+          {t('home.dataFilter')}
+        </Button>
+      </div>
+      <div className="summary-graph-screen">
+        {filterTime.startTime != '' && filterTime.endTime ? (
+          <span>
+            {filterTime.startTime} ~ {filterTime.endTime}
+          </span>
+        ) : (
+          <></>
+        )}{' '}
       </div>
       <Modal
         title={t('home.exportData')}
@@ -277,6 +300,19 @@ const ExportData: React.FC = () => {
         maskClosable={false}
       >
         <DataExport onCancel={() => setIsModalOpen(false)} />
+      </Modal>
+      <Modal
+        title={t('home.dataFilter')}
+        open={screen}
+        footer={null}
+        width={400}
+        onOk={() => setScreen(false)}
+        onCancel={() => setScreen(false)}
+        destroyOnClose={true}
+        centered
+        maskClosable={false}
+      >
+        <DataFilter onCancel={() => setScreen(false)} />
       </Modal>
     </>
   );

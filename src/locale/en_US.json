@@ -72,10 +72,14 @@
     "sensorData": "Sensor Data",
     "exportAs": "Export As",
     "language": "Language",
+    "confirm":"Confirm",
     "cancellation": "Cancellation",
+    "screen":"Screen",
     "exportFailed": "Export Failed",
     "exportSuccess": "Export Success",
-    "processing": "Processing"
+    "processing": "Processing",
+    "startTime":"Start Time",
+    "endTime":"End Time"
   },
   "deploy": {
     "basicParameters": "Basic parameters",

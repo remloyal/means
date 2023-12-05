@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Segmented, Space, Switch, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { useRecoilValue } from 'recoil';
-import { equipment, resize } from '@/stores';
+import { equipment, resize, screenList } from '@/stores';
 import { ipcRenderer } from 'electron';
 import { useTranslation } from 'react-i18next';
 
@@ -56,8 +56,8 @@ const DataSheet = () => {
     setAxle(num);
   }, [resizeData]);
 
-  const getData = () => {
-    const todo = device?.csvData;
+  const getData = (list?) => {
+    const todo = list || device?.csvData;
     if (todo) {
       const data: RecordType[] = todo.map((item, index) => ({
         id: index + 1,
@@ -84,6 +84,14 @@ const DataSheet = () => {
     className = index % 2 === 0 ? 'oddRow' : 'evenRow';
     return className;
   };
+
+  const todoList = useRecoilValue(screenList);
+  useEffect(() => {
+    if (todoList.length > 0) {
+      getData(todoList);
+    }
+  }, [todoList]);
+
   return (
     <div style={{ padding: 0 }} className="tableTitle">
       <div style={{ paddingBottom: '10px', textAlign: 'center' }}>{title}</div>

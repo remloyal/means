@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 export const QuitPrompt = () => {
   const { t } = useTranslation();
   useEffect(() => {
-    console.log(66666666);
     ipcRenderer.on('exitPrompt', (event, data) => {
       //   setResizeData(data);
       setQuitState(true);
