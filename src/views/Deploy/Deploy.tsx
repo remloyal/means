@@ -94,11 +94,11 @@ const DeployBasic = ({ state }: { state: boolean }) => {
     TempPeriodDom,
     TimeZone,
     StartModeDom,
-    HightEmpDom,
     LowEmpDom,
+    HightEmpDom,
     StartDelayDom,
-    power.includes('setHighHumi') ? HightHumiDom : null,
     power.includes('setLowHumi') ? LowHumiDom : null,
+    power.includes('setHighHumi') ? HightHumiDom : null,
   ];
   return (
     <div style={{ padding: '0 20px' }}>

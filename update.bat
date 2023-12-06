@@ -1,11 +1,11 @@
 @echo off
-taskkill /f /im FriggaDataCenter.exe
+taskkill /f /im "Frigga Data Center.exe"
 timeout /T 1 /NOBREAK
 
-set backup_file=%1\resources\app_old.asar
-set update_file=%1\resources\update.asar
-set target_file=%1\resources\app.asar
-set app_path=%1\FriggaDataCenter.exe
+set backup_file=%1
+set update_file=%2
+set target_file=%3
+set app_path=%4
 
 echo  %backup_file%
 echo  %update_file%

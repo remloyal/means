@@ -5,7 +5,7 @@ import electron, { app, BrowserWindow, ipcMain } from 'electron';
 import log from '../pdfgen/log';
 import { createWindow, preload, setUpdateState } from './index';
 import { exec, spawn } from 'child_process';
-import { deleteDir, filePath, getUrl } from '../unitls/unitls';
+import { deleteDir, filePath, getUrl, judgingSpaces } from '../unitls/unitls';
 import { listenUpdater } from './update';
 
 const baseUrl = path.resolve('./') + '/resources/';
@@ -309,11 +309,25 @@ export const quitRenew = async () => {
     if (process.platform === 'win32') {
       try {
         const updateExe = filePath('./static/update.exe');
-        const child = spawn(`"${updateExe}"`, [`${process.cwd()}`], {
-          detached: true,
-          shell: true,
-          stdio: ['ignore'],
-        });
+        let directoryPath = process.cwd();
+        const backup_file = judgingSpaces(`${directoryPath}/resources/app_old.asar`);
+        const update_file = judgingSpaces(`${directoryPath}/resources/update.asar`);
+        const target_file = judgingSpaces(`${directoryPath}/resources/app.asar`);
+        const app_path = judgingSpaces(`${directoryPath}/Frigga Data Center.exe`);
+        log.info('backup_file====>', backup_file);
+        log.info('update_file====>', update_file);
+        log.info('target_file====>', target_file);
+        log.info('app_path====>', app_path);
+        
+        const child = spawn(
+          `"${updateExe}"`,
+          [`${backup_file}`, `${update_file}`, `${target_file}`, `${app_path}`],
+          {
+            detached: true,
+            shell: true,
+            stdio: ['ignore'],
+          }
+        );
         child.unref();
         log.info('win 增量更新中');
       } catch (error) {

@@ -82,9 +82,10 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
 });
 
 export const loadUsbData = async data => {
+  if (!data) return
   // 获取csv数据
   window.eventBus.emit('loading');
-  usbData = data;
+  usbData = data;  
   let csvData = await readCSVFilesFromDrive(data);
   if (data) {
     try {
@@ -114,7 +115,7 @@ export const loadUsbData = async data => {
 
 ipcRenderer.on('deviceRemoval', async (event, data) => {
   console.log('deviceRemoval==>', data);
-  if (data.name == usbData.name) {
+  if (data && data?.name == usbData?.name) {
     usbData = null;
     window.eventBus.emit('friggaDevice:out');
     setTypePower();

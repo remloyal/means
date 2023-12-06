@@ -157,7 +157,7 @@ const SummaryGraph: React.FC = () => {
         dateLists.push(item.timeStamp);
         valueLists.push(MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? item.f : item.c);
         power.includes('setHighHumi') && humiLists.push(item.humi);
-        indexList.push(index.toString());
+        indexList.push((index + 1).toString());
       });
       const lines = setLines();
       setDateList(dateLists);

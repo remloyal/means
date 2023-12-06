@@ -78,3 +78,11 @@ export function getUrl() {
   const url = `${base_url}cmsapi/tools/check/${localTimestamp}/${hash}?lan=${dynamicConfig.lan}&type=1&ver=${dynamicConfig.ver}&env=${dynamicConfig.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
   return url;
 }
+
+export const judgingSpaces = pathData => {
+  let directoryPath = path.join(pathData);
+  if (directoryPath.includes(' ')) {
+    directoryPath = `"${directoryPath}"`;
+  }
+  return directoryPath;
+};

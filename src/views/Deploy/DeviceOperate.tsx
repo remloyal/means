@@ -1,5 +1,6 @@
 import { deviceConfigParam, equipment } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
+import { c2f, f2c } from '@/utils/utils';
 import { Col, Input, InputNumber, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -339,26 +340,35 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   const init = () => {
     const multidUnit = device?.record.multidUnit;
     const hightEmp = device?.record.hightEmp;
+    let value = hightEmp || 0;
     if (parseInt(multidUnit) == 0) {
+      value = hightEmp;
       setUnit('\u2103');
     } else {
       setUnit('\u2109');
+      value = c2f(hightEmp);
     }
-    setEmp(hightEmp);
+    setEmp(value);
     setDeviceConfig(item => {
       return {
         ...item,
-        hightEmp: hightEmp,
+        hightEmp: value,
       };
     });
   };
 
   const setHightEmp = async () => {
     if (emp != parseInt(device?.record.hightEmp)) {
-      await deviceOperate.setHightEmp(emp * 10);
+      if (parseInt(device?.record.multidUnit) == 0) {
+        await deviceOperate.setHightEmp(emp * 10);
+      } else {
+        await deviceOperate.setHightEmp(f2c(emp) * 10);
+      }
     }
   };
-
+  useEffect(()=>{
+    init();
+  },[device])
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatUpperLimit')}</div>
@@ -409,25 +419,36 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   const init = () => {
     const multidUnit = device?.record.multidUnit;
     const lowtEmp = device?.record.lowtEmp;
-    // if (parseInt(multidUnit) == 0) {
-    //   setUnit('\u2103');
-    // } else {
-    //   setUnit('\u2109');
-    // }
-    setEmp(lowtEmp);
+    let value = lowtEmp || 0;
+    if (parseInt(multidUnit) == 0) {
+      value = lowtEmp;
+      setUnit('\u2103');
+    } else {
+      value = c2f(lowtEmp);
+      setUnit('\u2109');
+    }
+    setEmp(value);
     setDeviceConfig(item => {
       return {
         ...item,
-        lowtEmp: lowtEmp,
+        lowtEmp: value,
       };
     });
   };
 
   const setLowtEmp = async () => {
     if (emp != parseInt(device?.record.lowtEmp)) {
-      await deviceOperate.setLowtEmp(emp * 10);
+      if (parseInt(device?.record.multidUnit) == 0) {
+        await deviceOperate.setLowtEmp(emp * 10);
+      } else {
+        await deviceOperate.setLowtEmp(f2c(emp) * 10);
+      }
     }
   };
+
+  useEffect(()=>{
+    init();
+  },[device])
 
   return (
     <Col span={8}>
