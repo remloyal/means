@@ -50,7 +50,9 @@ const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, 'index.html');
 
 let tray;
+let updateState = false;
 export async function createWindow() {
+  updateState = false;
   win = new BrowserWindow({
     autoHideMenuBar: true,
     title: '鼎为数据中心',
@@ -114,13 +116,16 @@ export async function createWindow() {
   });
 
   win.on('close', async e => {
-    e.preventDefault();
-    win?.show()
-    win?.webContents.send('exitPrompt');
-    // await hidProcess?.kill();
-    // // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
-    // win?.removeAllListeners();
-    // win = null;
+    if (updateState) {
+      await hidProcess?.kill();
+      // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
+      win?.removeAllListeners();
+      win = null;
+    } else {
+      e.preventDefault();
+      win?.show();
+      win?.webContents.send('exitPrompt');
+    }
   });
 
   Menu.setApplicationMenu(Menu.buildFromTemplate([]));
@@ -212,10 +217,6 @@ ipcMain.on('window-reset', function () {
   }
 });
 
-ipcMain.handle('restartNow', () => {
-  quitRenew();
-});
-
 ipcMain.handle('lang', (_, data) => {
   const lang = {
     en_US: 1,
@@ -265,4 +266,8 @@ const setTray = lan => {
   ]);
   tray.setToolTip(lan == 1 ? 'Frigga Data Center' : '鼎为数据中心');
   tray.setContextMenu(menu);
+};
+
+export const setUpdateState = state => {
+  updateState = state;
 };

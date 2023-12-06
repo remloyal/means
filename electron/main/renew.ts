@@ -3,7 +3,7 @@ import fs from 'fs';
 import axios from 'axios';
 import electron, { app, BrowserWindow, ipcMain } from 'electron';
 import log from '../pdfgen/log';
-import { createWindow, preload } from './index';
+import { createWindow, preload, setUpdateState } from './index';
 import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl } from '../unitls/unitls';
 import { listenUpdater } from './update';
@@ -31,16 +31,12 @@ createTimer();
 export const CheckForUpdates = (winData: Electron.BrowserWindow | null) => {
   win = winData;
   return new Promise(async (resolve, reject) => {
-    // 判断是否开发环境
-    // if (!app.isPackaged) {
-    // resolve(false);
-    // return;
-    // }
-    // console.log('检测更新')
     let remoteConfiguration;
     // 获取远程配置
     try {
-      remoteConfiguration = (await axios.get(getUrl())).data;
+      let url = getUrl();
+      // let url = 'http://localhost:3000/upload';
+      remoteConfiguration = (await axios.get(url)).data;
       console.log(remoteConfiguration);
     } catch (error) {
       log.error('获取远程配置失败', error);
@@ -53,10 +49,21 @@ export const CheckForUpdates = (winData: Electron.BrowserWindow | null) => {
      */
     const localVersion = app.getVersion();
     const ment = compareVersions(data.version, localVersion);
+
     if (ment == -1 || ment == 0) {
       resolve(false);
     } else {
-      createRenew(data);
+      if (mainWindow == null) {
+        createRenew(data);
+      }
+      // 强制更新关闭主程序
+      if (data.forceUpdate == 1) {
+        setUpdateState(true);
+        setTimeout(() => {
+          win && win?.close();
+          win = null;
+        }, 1000);
+      }
       // if (fs.existsSync(baseUrl + 'app.asar')) {
       //   if (!fs.existsSync(baseUrl + 'app_old.asar')) {
       //   }
@@ -270,6 +277,7 @@ const createRenew = (data?, callback?) => {
 
   ipcMain.handle('startUpdate', (event, params) => {
     if (data.updateType == 1) {
+      setUpdateState(true);
       listenUpdater(mainWindow!, data);
       setTimeout(() => {
         win?.close();
@@ -346,4 +354,8 @@ const renewMac = () => {
 
 ipcMain.handle('language', (_, arg) => {
   mainWindow?.webContents.send('language', arg);
+});
+
+ipcMain.handle('restartNow', () => {
+  quitRenew();
 });
