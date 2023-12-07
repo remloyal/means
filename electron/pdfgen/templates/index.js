@@ -1425,7 +1425,7 @@ const drawHeadNoteSign = (pdf, { startX, startY, timeZone, dateFormat, globalInf
     .text(
       _util.stringFormat([
         text('PDF_NOTE', LANGUAGE),
-        _common.getTzToTimeStr(timeZone),
+        timeZone,
         `[${dateFormat}]`,
       ]),
       startX,

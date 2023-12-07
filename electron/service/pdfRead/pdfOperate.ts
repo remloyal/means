@@ -129,7 +129,7 @@ const readData = async (text, todo, pageFooting) => {
     // size += 1;
     key = '°C';
   }
-  if (text.includes('℉')) {
+  if (text.includes('℉') || text.includes('°F')) {
     // size += 1;
     key = '℉';
     unit = '℉';
@@ -167,7 +167,7 @@ function splitData(data, size, unit, todo) {
     let f;
     if (unit == '℉') {
       c = f2c(parseFloat(heat));
-      f = heat;
+      f = parseFloat(heat);
     } else {
       f = c2f(parseFloat(heat));
       c = parseFloat(heat);
@@ -212,64 +212,69 @@ function formatText(text) {
 
 // 温湿度 阈值
 function getThreshold(data, type) {
-  console.log('getThreshold===>', data);
-  if (!data) {
-    return { hightEmp: 0, lowtEmp: 0, highHumi: 0, lowHumi: 0 };
+  console.log("getThreshold===>", data);
+  let unit = "℃";
+  if (data.includes("°C") || data.includes("℃") || data.includes("ꇦ")) {
+    // size += 1;
+    unit = "℃";
   }
-  // const text = type == 'currency' ? data.split('：')[1].trim() : data.split(':')[1].trim();
-  let text = '';
+  if (data.includes("℉") || data.includes("°F")) {
+    unit = "℉";
+  }
+  if (data.includes("RH")) {
+    unit += "RH";
+  }
+  let text = "";
+
   try {
-    text = data.split('：')[1].trim();
+    text = data.split("：")[1].trim();
   } catch (error) {
-    text = data.split(':')[1].trim();
+    text = data.split(":")[1].trim();
   }
-  // 温度、湿度
-  if (
-    (text.includes('℃') || text.includes('°C')) &&
-    (text.includes('RH') || text.includes('%RH'))
-  ) {
-    const data = text
-      .replaceAll('℃', ',')
-      .replaceAll('°C', ',')
-      .replaceAll('%RH', ',')
-      .replaceAll('RH', ',')
-      .replaceAll('～', '')
-      .replaceAll('/', '')
-      .replaceAll('~', '')
-      .replace(/^,+/, '')
-      .replace(/,+$/, '')
-      .split(',');
-    console.log(data);
+  const handleData = text
+    .replaceAll("℃", ",")
+    .replaceAll("°C", ",")
+    .replaceAll("ꇦ", ",")
+    .replaceAll("℉", ",")
+    .replaceAll("°F", ",")
+    .replaceAll("%RH", ",")
+    .replaceAll("RH", ",")
+    .replaceAll("～", "")
+    .replaceAll("ꆫ", "")
+    .replaceAll("/", "")
+    .replaceAll("~", "")
+    .replace(/^,+/, "")
+    .replace(/,+$/, "")
+    .split(",");
+  if (unit.includes("℃") && unit.includes("RH")) {
     return {
-      hightEmp: parseFloat(data[1]) || 0,
-      lowtEmp: parseFloat(data[0]) || 0,
-      highHumi: parseFloat(data[3]) || 0,
-      lowHumi: parseFloat(data[2]) || 0,
+      hightEmp: parseFloat(handleData[1]) || 0,
+      lowtEmp: parseFloat(handleData[0]) || 0,
+      highHumi: parseFloat(handleData[3]) || 0,
+      lowHumi: parseFloat(handleData[2]) || 0,
+    };
+  }
+  if (unit.includes("℉") && unit.includes("RH")) {
+    return {
+      hightEmp: f2c(parseFloat(handleData[1])) || 0,
+      lowtEmp: f2c(parseFloat(handleData[0])) || 0,
+      highHumi: parseFloat(handleData[3]) || 0,
+      lowHumi: parseFloat(handleData[2]) || 0,
     };
   }
   // 只有温度
-  if (
-    (text.includes('℃') || text.includes('°C')) &&
-    (!text.includes('RH') || !text.includes('%RH'))
-  ) {
-    console.log(text);
-    const data = text
-      .replaceAll('℃', ',')
-      .replaceAll('°C', ',')
-      .replaceAll('%RH', ',')
-      .replaceAll('RH', ',')
-      .replaceAll('～', '')
-      .replaceAll('~', '')
-      .replaceAll('/', '')
-      .replace(/^,+/, '')
-      .replace(/,+$/, '')
-      .split(',');
+  if ((unit.includes("℃") || unit.includes("℉")) && !unit.includes("RH")) {
     return {
-      hightEmp: parseFloat(data[1]) || 0,
-      lowtEmp: parseFloat(data[0]) || 0,
+      hightEmp: unit.includes("℃")
+        ? parseFloat(handleData[1])
+        : f2c(parseFloat(handleData[1])),
+      lowtEmp: unit.includes("℃")
+        ? parseFloat(handleData[0])
+        : f2c(parseFloat(handleData[0])),
       highHumi: 0,
       lowHumi: 0,
     };
   }
+
   return { hightEmp: 0, lowtEmp: 0, highHumi: 0, lowHumi: 0 };
 }

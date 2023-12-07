@@ -3,6 +3,12 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import zh_CN from './zh_CN.json';
 import en_US from './en_US.json';
+import { ipcRenderer } from 'electron';
+
+const lang = await ipcRenderer.invoke('lang', localStorage.getItem('language') || 'en_US');
+if (!localStorage.getItem('language')) {
+  await localStorage.setItem('language', lang);
+}
 
 i18n
   // 检测用户当前使用的语言
@@ -14,7 +20,7 @@ i18n
   // 配置参数的文档: https://www.i18next.com/overview/configuration-options
   .init({
     debug: false,
-    fallbackLng: localStorage.getItem('language') || 'zh_CN',
+    fallbackLng: localStorage.getItem('language') || lang,
     interpolation: {
       escapeValue: false,
     },

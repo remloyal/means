@@ -114,7 +114,7 @@ const setFormatData = async data => {
       lastRecordedTime: lastRecordedTime,
       maximumValue: result.c.max,
       minimumValue: result.c.min,
-      timeZone: '',
+      timeZone: data.timeZone || 'UTC+08:00',
       firmwareVersion: data.firmwareVersion,
       stopMode: data.stopMode,
     },

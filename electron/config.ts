@@ -12,3 +12,8 @@ export const dynamicConfig = {
   lan: 1,
   env: 1,
 };
+
+export const language = {
+  'zh-CN': 'zh_CN',
+  'en-US': 'en_US',
+};

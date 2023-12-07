@@ -27,7 +27,7 @@ export const setTypePower = (type?) => {
     window.eventBus.emit('typePower', []);
   }
 };
-export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {  
+export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {
   deviceExample.deviceInfo = deviceInfo;
   deviceExample.record = {};
   const { key, value } = await deviceExample.getType(deviceType);
@@ -214,6 +214,7 @@ const updateDevice = () => {
     timeout = null;
   }
   timeout = setTimeout(() => {
+    deviceExample.setCsvData(deviceExample.csvData);
     window.eventBus.emit('updateDevice', Object.assign({}, deviceExample));
   }, 1500);
 };

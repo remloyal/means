@@ -1,8 +1,9 @@
 import { equipment } from '@/stores';
-import { Button, Checkbox, DatePicker, Select, message } from 'antd';
+import { Button, Checkbox, DatePicker, InputNumber, Select, message } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import dayjs from 'dayjs';
 import { ipcRenderer } from 'electron';
+import { c2f, f2c } from '../../utils/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilValue } from 'recoil';
@@ -14,6 +15,15 @@ const range = (start: number, end: number) => {
   }
   return result;
 };
+const MultidUnit = {
+  0: '℃',
+  1: '℉',
+};
+const Language = {
+  zh_CN: 'zh',
+  en_US: 'en',
+};
+
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 export const DataExport = ({ onCancel }) => {
   const { t } = useTranslation();
@@ -37,12 +47,24 @@ export const DataExport = ({ onCancel }) => {
       startTime,
       endTime,
     });
-    setParam(item => ({ ...item, startTime: startTime, endTime: endTime }));
+    const tempUnit = MultidUnit[device?.record.multidUnit | 0];
+    const lang = Language[localStorage.getItem('language') || 'en_US'];
+    setParam(item => ({
+      ...item,
+      startTime: startTime,
+      endTime: endTime,
+      tempUnit: tempUnit,
+      pdfTongue: lang,
+      hightEmp:
+        device?.record.multidUnit == 0 ? device?.record.hightEmp : c2f(device?.record.hightEmp),
+      lowtEmp:
+        device?.record.multidUnit == 0 ? device?.record.lowtEmp : c2f(device?.record.lowtEmp),
+    }));
     setTime([dayjs(startTime), dayjs(endTime)]);
     console.log(startTime, endTime);
   };
 
-  const onChange = (checkedValues) => {
+  const onChange = checkedValues => {
     // 必须有温度
     if (!checkedValues.includes('temp')) {
       setExportState(true);
@@ -111,6 +133,8 @@ export const DataExport = ({ onCancel }) => {
     tempUnit: '℃',
     pdfTongue: 'zh',
     data: ['temp', 'humi'],
+    lowtEmp: 0,
+    hightEmp: 0,
   });
   const [time, setTime] = useState<any>();
   const timeChange = data => {
@@ -129,20 +153,53 @@ export const DataExport = ({ onCancel }) => {
     }));
   };
   const unitChange = val => {
-    setParam(item => ({
-      ...item,
-      tempUnit: val,
-    }));
+    if (val == '℃') {
+      setParam(item => ({
+        ...item,
+        tempUnit: val,
+        hightEmp: device?.record.hightEmp,
+        lowtEmp: device?.record.lowtEmp,
+      }));
+    } else {
+      setParam(item => ({
+        ...item,
+        tempUnit: val,
+        hightEmp: c2f(device?.record.hightEmp),
+        lowtEmp: c2f(device?.record.lowtEmp),
+      }));
+    }
   };
   const [exportState, setExportState] = useState(false);
   const onExport = async () => {
-    const data = { ...device, param: param };
+    const data = { ...device, param: { ...param } };
+    if (data.param.tempUnit == '℉') {
+      data.param.hightEmp = f2c(param.hightEmp)
+      data.param.lowtEmp = f2c(param.lowtEmp)
+    }
     const res = await ipcRenderer.invoke('exportDevice', data);
     if (res) {
       onCancel();
     } else {
       message.error(t('home.exportFailed'));
     }
+  };
+
+  const hightEmpChange = num => {
+    setParam(item => {
+      return {
+        ...item,
+        hightEmp: num,
+      };
+    });
+  };
+
+  const lowtEmpChange = num => {
+    setParam(item => {
+      return {
+        ...item,
+        lowtEmp: num,
+      };
+    });
   };
   return (
     <>
@@ -176,11 +233,11 @@ export const DataExport = ({ onCancel }) => {
         <label htmlFor="">PDF{t('home.language')}：</label>
         <Select
           style={{ width: 200 }}
-          defaultValue={param.pdfTongue}
           onChange={tongueChange}
+          value={param.pdfTongue}
           options={[
-            { value: 'zh', label: '中文' },
-            { value: 'en', label: '英文' },
+            { value: 'zh', label: t('language.chinese') },
+            { value: 'en', label: t('language.english') },
           ]}
         />
       </div>
@@ -188,13 +245,35 @@ export const DataExport = ({ onCancel }) => {
         <label htmlFor="">{t('home.temperature')}：</label>
         <Select
           style={{ width: 200 }}
-          defaultValue={param.tempUnit}
           onChange={unitChange}
+          value={param.tempUnit}
           options={[
             { value: '℃', label: '℃' },
             { value: '℉', label: '℉' },
           ]}
         />
+      </div>
+      <div className="basic">
+        <label htmlFor="">{t('deploy.heatLowerLimit')}：</label>
+        <InputNumber
+          max={param.hightEmp}
+          onChange={lowtEmpChange}
+          value={param.lowtEmp}
+          style={{ width: 200 }}
+          step="0.1"
+        />
+        ({param.tempUnit})
+      </div>
+      <div className="basic">
+        <label htmlFor="">{t('deploy.heatUpperLimit')}：</label>
+        <InputNumber
+          min={param.lowtEmp}
+          onChange={hightEmpChange}
+          value={param.hightEmp}
+          style={{ width: 200 }}
+          step="0.1"
+        />
+        ({param.tempUnit})
       </div>
       <div className="basic" style={{ display: 'flex', justifyContent: 'right' }}>
         <Button onClick={onCancel}>{t('home.cancellation')}</Button>

@@ -59,6 +59,7 @@ const ENTYPE = {
     tempHigh: [/Temp-High (.*?)Humi-Low/],
     humiLow: [/Humi-Low (.*?)Humi-High/],
     humiHigh: [/Humi-High (.*?)Record/],
+    timeZone: [/All times shown are based on(.*?)24-Hour/,/쯹폐쪱볤믹폚(.*?),24킡쪱훆/],
   },
 };
 // 设备生成

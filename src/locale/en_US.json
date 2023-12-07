@@ -110,6 +110,7 @@
     "startTime": "Start Time",
     "currentNumberEntries": "Number",
     "localSave": "Local save",
+    "storeWay":"Store Way",
     "timeOptions": "Time Options",
     "quickView": "Quick View",
     "uploadPlatform": "Upload to cloud platform?",
@@ -145,7 +146,9 @@
     "piecesData": "Please keep the data within {{count}} items. {{select}} items have been selected, please reselect!",
     "import": "Import",
     "importSuccess": "Import was successful",
-    "importFailed": "Import failed"
+    "importFailed": "Import failed",
+    "local":"Local",
+    "clouds":"Clouds"
   },
   "device": {
     "initialstate": "Initial state",

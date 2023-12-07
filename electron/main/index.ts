@@ -5,7 +5,7 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { dynamicConfig } from '../config';
+import { dynamicConfig, language } from '../config';
 import { IsOnlineService, isOnline } from '../unitls/request';
 import log from '../pdfgen/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
@@ -224,6 +224,7 @@ ipcMain.handle('lang', (_, data) => {
   };
   dynamicConfig.lan = lang[data] || 1;
   setTray(dynamicConfig.lan);
+  return language[app.getLocale()];
 });
 
 ipcMain.handle('getVersion', async (_, data) => {
