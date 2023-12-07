@@ -304,7 +304,7 @@ const HistoryLift = () => {
     };
     return (
       <>
-        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.alarmOption')}：</div>
+        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('home.dataFilter')}：</div>
         <Radio.Group onChange={dataChange} value={value} size="small">
           <Space direction="vertical">
             <Radio value={1}>{t('history.allData')}</Radio>
@@ -441,7 +441,7 @@ const HistoryLift = () => {
     return (
       <>
         <div>
-          <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.alarmOption')}：</div>
+          <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.dataEditing')}：</div>
           <Space direction="vertical" style={{ width: '100%' }}>
             <Button style={{ width: '100%' }} disabled={detailsState} onClick={viewDetails}>
               {t('history.detail')}

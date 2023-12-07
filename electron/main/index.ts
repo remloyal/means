@@ -151,7 +151,7 @@ app.whenReady().then(async () => {
       'Please check your network connection or try again later!'
     );
     log.error('Network connection failed');
-    app.quit();
+    app.exit();
   }
   const online = new IsOnlineService();
   online.on('status', res => {
@@ -160,11 +160,12 @@ app.whenReady().then(async () => {
       win?.close();
       mainWindow?.close();
       log.error('Network connection failed');
-      dialog.showErrorBox(
-        'Network connection failed',
-        'Please check your network connection or try again later!'
-      );
-      app.quit();
+      dialog.showMessageBoxSync(win!, {
+        type: 'error',
+        title: 'Network connection failed',
+        message: 'Please check your network connection or try again later!',
+      });
+      app.exit();
     }
   });
 });

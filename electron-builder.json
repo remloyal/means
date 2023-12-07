@@ -15,6 +15,10 @@
       {
         "target": "nsis",
         "arch": ["x64"]
+      },
+      {
+        "target": "msi",
+        "arch": ["x64"]
       }
     ],
     "requestedExecutionLevel": "requireAdministrator",
@@ -27,9 +31,11 @@
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false,
     "createDesktopShortcut": true,
-    "createStartMenuShortcut": true
+    "createStartMenuShortcut": true,
+    "guid": "friggaDataCenter",
+    "include": "build/installer.nsh"
   },
-  "extraResources":{
+  "extraResources": {
     "from": "resources/static",
     "to": "static"
   },

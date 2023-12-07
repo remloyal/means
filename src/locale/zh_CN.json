@@ -148,7 +148,8 @@
     "importSuccess": "导入成功",
     "importFailed": "导入失败",
     "local":"本地",
-    "clouds":"云端"
+    "clouds":"云端",
+    "dataEditing":"数据编辑"
   },
   "device": {
     "initialstate": "初始状态",

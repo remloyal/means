@@ -10,6 +10,9 @@ import { text } from '../../pdfgen/gloable/language';
 export const exportHistory = async params => {
   const deviceList = await queryHistoryDeviceList(params.key);
   const excelPath = await selectSavePath();
+
+  if (!excelPath) return false;
+
   params.excelPath = excelPath;
   if (!params.lang) {
     params.lang = 'zh';

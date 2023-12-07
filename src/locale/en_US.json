@@ -15,7 +15,7 @@
     "restartNow": "You must restart for the new settings to take effect. Do you want to restart now?",
     "example": "Example",
     "version": "Version",
-    "dingwei": "Dingwei Data Center"
+    "dingwei": "Frigga Data Center"
   },
   "left": {
     "equipmentModel": "Equipment Model",
@@ -148,7 +148,8 @@
     "importSuccess": "Import was successful",
     "importFailed": "Import failed",
     "local":"Local",
-    "clouds":"Clouds"
+    "clouds":"Clouds",
+    "dataEditing":"Data Editing"
   },
   "device": {
     "initialstate": "Initial state",

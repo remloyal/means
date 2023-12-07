@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 import pkg from './package.json';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -22,6 +23,10 @@ export default defineConfig(({ command }) => {
       },
     },
     plugins: [
+      topLevelAwait({
+        promiseExportName: '__tla',
+        promiseImportName: i => `__tla_${i}`
+      }),
       react(),
       electron([
         {
