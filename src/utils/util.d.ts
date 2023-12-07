@@ -11,7 +11,7 @@ interface OperateTypeItem {
 }
 
 interface DeviceInstanceType {
-    device: any = null;
+  device: any ;
   deviceInfo: DeviceType | null;
   operate: OperateTypeItem | null;
   record: OperateType<any>;

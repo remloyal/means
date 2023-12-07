@@ -17,7 +17,22 @@
     "build:dir": "tsc && vite build && electron-builder install-app-deps",
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "prepare": "husky install",
+    "prettier:check": "prettier --config .prettierrc --check \"src/**/*.{js,ts,tsx,css,html}\"  \"electron/**/*.{js,ts,tsx,css,html}\"",
+    "eslint:check": "eslint src/*.ts"
+  },
+  "lint-staged": {
+    "electron/*.{ts,tsx,js}": [
+      "eslint --fix",
+      "prettier --list-different",
+      "prettier --config .prettierrc --check \"src/**/*.{js,ts,tsx,css,html}\"  \"electron/**/*.{js,ts,tsx,css,html}\" --write"
+    ],
+    "src/*.{ts,tsx,js}": [
+      "eslint --fix",
+      "prettier --list-different",
+      "prettier --config .prettierrc --check \"src/**/*.{js,ts,tsx,css,html}\"  \"electron/**/*.{js,ts,tsx,css,html}\" --write"
+    ]
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
@@ -52,9 +67,17 @@
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
     "@types/sequelize": "^4.28.18",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
     "@vitejs/plugin-react": "^4.1.0",
     "electron": "^27.0.2",
     "electron-builder": "^24.6.4",
+    "eslint": "^8.55.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react": "^7.33.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.0",
     "sass": "^1.69.5",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
@@ -63,6 +86,6 @@
     "vite-plugin-top-level-await": "^1.3.1"
   },
   "engines": {
-    "node": "^14.18.0 || >=16.0.0"
+    "node": ">=16.0.0"
   }
 }

@@ -1,3 +1,4 @@
 {
-    "editor.inlineSuggest.showToolbar": "onHover"
+    "editor.inlineSuggest.showToolbar": "onHover",
+    "commentTranslate.source": "DarkCWK.youdao-youdao"
 }

@@ -1,7 +1,7 @@
-export default {
-  parser: 'babel-eslint',
-  extends: ['airbnb-base', 'eslint:recommended', 'plugin:react/recommended'],
-  plugins: ['react', 'prettier'],
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  extends: ['eslint:recommended', 'plugin:react/recommended'],
+  plugins: ['@typescript-eslint', 'react', 'prettier'],
   env: {
     browser: true,
     node: true,
@@ -112,6 +112,7 @@ export default {
     // 8.6
     // 'implicit-arrow-linebreak': ['error', 'beside'],
     // Airbnb rules end
+    quotes: ['error', 'single'],
   },
   parserOptions: {
     ecmaFeatures: {
