@@ -93,7 +93,7 @@ export const Menu: React.FC = () => {
   const [deviceStateTime, setDeviceStateTime] = useRecoilState(deviceTime);
   const [headKey, setHeadKey] = useRecoilState(menuKey);
 
-  const restitution = (index?) => {
+  const restitution = (index: any) => {
     if (deviceMent) {
       const data = Object.assign({}, deviceExample);
       setDevice(data);

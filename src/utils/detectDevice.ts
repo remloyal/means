@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
  * @param {*} drive 磁盘
  */
 const readCSVFilesFromDrive = async drive => {
-  const drivePath = drive.drivePath;
+  const { drivePath } = drive;
   const files = fs.readdirSync(drivePath);
   const csvFiles = files.filter(file => file.endsWith('.csv'));
   let dataParsed: TimeType[] = [];
@@ -52,6 +52,7 @@ const parseCSVData = csvString => {
     const humi = parseFloat(fields[4]);
     // 合并日期和时间为一个时间戳字符串
     const dateTimeString = `${date} ${time}`;
+    /* eslint-disable */
     const dateTimeParts = dateTimeString.split(/[\/ :]/).map(Number);
     const timeStamp = dayjs(
       new Date(
@@ -82,14 +83,14 @@ ipcRenderer.on('deviceInsertion', async (event, data) => {
 });
 
 export const loadUsbData = async data => {
-  if (!data) return
+  if (!data) return;
   // 获取csv数据
   window.eventBus.emit('loading');
-  usbData = data;  
-  let csvData = await readCSVFilesFromDrive(data);
+  usbData = data;
+  const csvData = await readCSVFilesFromDrive(data);
   if (data) {
     try {
-      let operation = await createDeviceInstance(data);
+      const operation = await createDeviceInstance(data);
       operation.getData().then(async res => {
         if (csvData.length > 0) {
           operation.drive = csvData[0];

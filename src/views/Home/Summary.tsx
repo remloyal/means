@@ -140,13 +140,13 @@ const SummaryGraph: React.FC = () => {
 
   useEffect(() => {
     const chat = foldLine(dateList, valueList, line, humiList, [
-      t('home.temperature') + `(${MultidUnit[device?.record.multidUnit || 0]})`,
+      `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
       power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);
   }, [tongue]);
 
-  const setChat = (list?) => {
+  const setChat = (list: any = null) => {
     const todo = list || device?.csvData;
     if (todo && todo?.length > 0) {
       const dateLists: string[] = [];
@@ -204,7 +204,7 @@ const SummaryGraph: React.FC = () => {
   }, [valueList, humiList, dateList]);
   const setChatOption = (key = 1) => {
     const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
-      t('home.temperature') + `(${MultidUnit[device?.record.multidUnit || 0]})`,
+      `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
       power.includes('setHighHumi') ? t('home.humidity') : '',
     ]);
     setOption(chat);

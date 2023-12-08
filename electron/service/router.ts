@@ -111,7 +111,6 @@ ipcMain.handle('exportHistory', (event, params) => {
   });
 });
 
-
 // 导入历史分析
 ipcMain.handle('importPDF', (event, params) => {
   return new Promise((resolve, reject) => {
@@ -124,4 +123,3 @@ ipcMain.handle('importPDF', (event, params) => {
     }
   });
 });
-

@@ -120,7 +120,7 @@ export const AnalysisPage = () => {
           style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
           <div style={{ height: 100, width: 100 }}>
-            <Spin size="large" tip={t('home.processing') + '...'} style={{ height: 100 }}>
+            <Spin size="large" tip={`${t('home.processing')}...`} style={{ height: 100 }}>
               <div className="content" />
             </Spin>
           </div>

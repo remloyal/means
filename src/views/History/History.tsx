@@ -274,7 +274,7 @@ const HistoryLift = () => {
     }
   };
 
-  const queryDevice = async (param?) => {
+  const queryDevice = async (param: any = null) => {
     const todo = await ipcRenderer.invoke('queryDevice', param);
     setDeviceList(todo);
   };

@@ -10,14 +10,14 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 
 const getTimeZones = (() => {
   // const data = timeZoneCollection[localStorage.getItem('language') || 'zh_CN'];
-  let timeZones: { value: string | number; label: string | number; name: string | number }[] = [];
+  const timeZones: { value: string | number; label: string | number; name: string | number }[] = [];
   timeZoneList.forEach((item, index) => {
     timeZones.push({
       label: item,
       value: index,
       name: item,
     });
-  });  
+  });
   return timeZones;
 })();
 

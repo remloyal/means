@@ -137,7 +137,7 @@ export const filterUsbList = async () => {
 
       fileListPath.push({
         drivePath: element.mountpoints[0].path,
-        names: names,
+        names,
       });
     }
   }

@@ -35,7 +35,7 @@ export const DataFilter = ({ onCancel }) => {
       startTime,
       endTime,
     });
-    setParam(item => ({ ...item, startTime: startTime, endTime: endTime }));
+    setParam(item => ({ ...item, startTime, endTime }));
     //   setTime({ startTime: dayjs(startTime), endTime: dayjs(endTime) });
     setTime([dayjs(startTime), dayjs(endTime)]);
     if (filterTime.startTime && filterTime.endTime) {
@@ -55,7 +55,7 @@ export const DataFilter = ({ onCancel }) => {
     const endTime = end[1].split(':');
     if (type === 'start') {
       const presentTime = _!.format('HH:mm:ss').split(':');
-      let hours = parseInt(startTime[0]);
+      const hours = parseInt(startTime[0]);
       let minutes = parseInt(startTime[1]);
       let seconds = parseInt(startTime[2]);
       if (parseInt(presentTime[0]) > parseInt(startTime[0])) {
@@ -73,7 +73,7 @@ export const DataFilter = ({ onCancel }) => {
     }
     if (_!.valueOf() > dayjs(end[0]).valueOf()) {
       const presentTime = _!.format('HH:mm:ss').split(':');
-      let hours = parseInt(endTime[0]) + 1;
+      const hours = parseInt(endTime[0]) + 1;
       let minutes = parseInt(endTime[1]) + 1;
       let seconds = parseInt(endTime[2]) + 1;
       if (parseInt(presentTime[0]) < parseInt(endTime[0])) {

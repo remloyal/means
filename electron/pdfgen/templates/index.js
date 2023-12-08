@@ -300,7 +300,7 @@ const initSensorInfo = (globalInfo, info, monitors) => {
     type =>
       alerts.filter(alert => {
         const { min, max } = alert || {};
-        let showInfo = alert.type === type;
+        const showInfo = alert.type === type;
         // sensor为humi时，阈值(0,0),不绘制任何相关信息,仅限果蔬
         // if (
         //   // pdf (0,0)不绘制相关信息
@@ -412,7 +412,7 @@ const initDeviceInfo = (globalInfo, info, sensorInfo) => {
   return {
     terNo,
     model: referenceModel || model,
-    firmwareVersion: firmwareVersion,
+    firmwareVersion,
     hardwareVersion: hardwareVersion || 'DW_V02',
     companyName,
     fileCreatedTime: _util.pdfShowTime(
@@ -450,8 +450,8 @@ const initDeviceInfo = (globalInfo, info, sensorInfo) => {
         unbounded
           ? unbounded
           : dataCount > 0
-          ? sensorOneData[sensorOneData.length - 1].timestamp
-          : null, // 没有解绑时间时用数据的最后一点的时间，没有数据时，就不填了
+            ? sensorOneData[sensorOneData.length - 1].timestamp
+            : null, // 没有解绑时间时用数据的最后一点的时间，没有数据时，就不填了
         timeZone,
         DATE_FORMAT
       ),
@@ -465,8 +465,8 @@ const initDeviceInfo = (globalInfo, info, sensorInfo) => {
       unbounded
         ? unbounded
         : dataCount > 0
-        ? new Date(sensorOneData[sensorOneData.length - 1].timestamp)
-        : null,
+          ? new Date(sensorOneData[sensorOneData.length - 1].timestamp)
+          : null,
       endTimeFromWeb,
       forRenewReport,
       unbounded
@@ -1423,11 +1423,7 @@ const drawHeadNoteSign = (pdf, { startX, startY, timeZone, dateFormat, globalInf
     .fontSize(FONT_SIZE_SMALL)
     .fillColor([0, 0, 255])
     .text(
-      _util.stringFormat([
-        text('PDF_NOTE', LANGUAGE),
-        timeZone,
-        `[${dateFormat}]`,
-      ]),
+      _util.stringFormat([text('PDF_NOTE', LANGUAGE), timeZone, `[${dateFormat}]`]),
       startX,
       startY
     );
@@ -1661,7 +1657,7 @@ const drawHeadDataSummay = (
   posY += deltaY;
   textBreak(pdf, stopMode.label, posX, posY);
   textBreak(pdf, deviceStopMode, pageRightPos - stopMode.delta, posY);
-  
+
   return { startX: posX };
 };
 
@@ -3309,7 +3305,7 @@ const printFoot = (pdf, { pdfInfo, pageIndex = 1, terNo = '', globalInfo }) => {
 
   // 网站页脚
   posX = PAGE_LEFT_POS();
-  pdf.text(`wwww.friggatech.com`, posX, posY, {
+  pdf.text('wwww.friggatech.com', posX, posY, {
     lineBreak: false,
   });
   // device id 放右下角

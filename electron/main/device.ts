@@ -10,19 +10,18 @@ const VERSION_ID = 10473; // 1003
 const PRODUCT_ID = 631; // 517
 
 try {
-  usb.on('attach', async function (device) {
+  usb.on('attach', async device => {
     const data = await filterUsbList();
     console.log('attach==>', data);
     win?.webContents.send('deviceInsertion', data);
   });
 
-  usb.on('detach', async function (device) {
+  usb.on('detach', async device => {
     const data = await filterUsbList();
     console.log('detach ==>', data);
     win?.webContents.send('deviceRemoval', data);
     return data;
   });
-  
 } catch (error) {
   console.log(error);
 }

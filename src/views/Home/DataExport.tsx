@@ -51,9 +51,9 @@ export const DataExport = ({ onCancel }) => {
     const lang = Language[localStorage.getItem('language') || 'en_US'];
     setParam(item => ({
       ...item,
-      startTime: startTime,
-      endTime: endTime,
-      tempUnit: tempUnit,
+      startTime,
+      endTime,
+      tempUnit,
       pdfTongue: lang,
       hightEmp:
         device?.record.multidUnit == 0 ? device?.record.hightEmp : c2f(device?.record.hightEmp),
@@ -87,7 +87,7 @@ export const DataExport = ({ onCancel }) => {
     const endTime = end[1].split(':');
     if (type === 'start') {
       const presentTime = _!.format('HH:mm:ss').split(':');
-      let hours = parseInt(startTime[0]);
+      const hours = parseInt(startTime[0]);
       let minutes = parseInt(startTime[1]);
       let seconds = parseInt(startTime[2]);
       if (parseInt(presentTime[0]) > parseInt(startTime[0])) {
@@ -105,7 +105,7 @@ export const DataExport = ({ onCancel }) => {
     }
     if (_!.valueOf() > dayjs(end[0]).valueOf()) {
       const presentTime = _!.format('HH:mm:ss').split(':');
-      let hours = parseInt(endTime[0]) + 1;
+      const hours = parseInt(endTime[0]) + 1;
       let minutes = parseInt(endTime[1]) + 1;
       let seconds = parseInt(endTime[2]) + 1;
       if (parseInt(presentTime[0]) < parseInt(endTime[0])) {
@@ -173,8 +173,8 @@ export const DataExport = ({ onCancel }) => {
   const onExport = async () => {
     const data = { ...device, param: { ...param } };
     if (data.param.tempUnit == '℉') {
-      data.param.hightEmp = f2c(param.hightEmp)
-      data.param.lowtEmp = f2c(param.lowtEmp)
+      data.param.hightEmp = f2c(param.hightEmp);
+      data.param.lowtEmp = f2c(param.lowtEmp);
     }
     const res = await ipcRenderer.invoke('exportDevice', data);
     if (res) {

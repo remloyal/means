@@ -15,7 +15,7 @@ export const database = new Sequelize({
   storage: dbPath,
   // timezone: '+08:00',
   dialectModule: sqlite3,
-  logging: (manage) => {
+  logging: manage => {
     log.db(manage);
   },
 });

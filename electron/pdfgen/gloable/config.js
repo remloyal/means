@@ -11,6 +11,6 @@ const config = {
   pdfLine: _cfg.frigga.pdf.pdfLine,
   pdfUrlPrefix: _cfg.frigga.pdf.pdfUrlPrefix || '',
   excelUrlPrefix: (_cfg.frigga.excel && _cfg.frigga.excel.urlPrefix) || '',
-  downloadUrlPrefix: (_cfg.frigga.csv && _cfg.frigga.csv.downloadUrlPrefix) || ''
+  downloadUrlPrefix: (_cfg.frigga.csv && _cfg.frigga.csv.downloadUrlPrefix) || '',
 };
 export default config;

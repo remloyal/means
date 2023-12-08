@@ -181,10 +181,10 @@ export type StandardLine = ReturnType<typeof standardLine>;
 export const standardLine = (data: string | number, name: string, color: string) => {
   return {
     yAxis: data,
-    name: name,
+    name,
     lineStyle: {
       type: 'dashed',
-      color: color,
+      color,
       width: 1,
     },
     label: {
@@ -264,13 +264,13 @@ export type CreateSeries = ReturnType<typeof createSeries>;
 export const createSeries = (list, color, name) => {
   return {
     type: 'line',
-    name: name,
-    data: list.map(function (item) {
+    name,
+    data: list.map(item => {
       return [new Date(item[0]), item[1]];
     }),
     sampling: 'lttb',
     itemStyle: {
-      color: color,
+      color,
     },
   };
 };

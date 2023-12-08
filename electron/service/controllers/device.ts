@@ -21,7 +21,7 @@ if (!fs.existsSync(dbPath)) {
 // 处理device数据
 export const handleDeviceData = async params => {
   const todo = params.csvData;
-  const record = params.record;
+  const { record } = params;
   const result = await findMinMax(todo);
   const other_data = { ...params, csvData: null };
   const data = await Device.create({
@@ -42,8 +42,8 @@ export const handleDeviceData = async params => {
   //   const jsonData = JSON.stringify(todo, null, 2);
   const jsonData = convertToCSV(todo);
   const encryptText = encrypt(jsonData);
-  const jsonName = record.getsn + '_' + new Date().getTime();
-  const jsonPath = path.join(dbPath, jsonName + '.dewav');
+  const jsonName = `${record.getsn}_${new Date().getTime()}`;
+  const jsonPath = path.join(dbPath, `${jsonName}.dewav`);
   fs.writeFileSync(jsonPath, encryptText);
   await FileData.create({
     path: jsonPath,
@@ -135,7 +135,7 @@ export const queryHistoryDevice = async params => {
     const todo = parseCSVData(decryptText);
     const deviceData = params.otherData;
     deviceData.csvData = todo;
-    deviceData.database = params
+    deviceData.database = params;
     return deviceData;
   } catch (error) {
     log.error(error);

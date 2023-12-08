@@ -11,14 +11,14 @@ interface OperateTypeItem {
 }
 
 interface DeviceInstanceType {
-  device: any ;
+  device: any;
   deviceInfo: DeviceType | null;
   operate: OperateTypeItem | null;
   record: OperateType<any>;
   isComplete: boolean;
   actionList: OperateTypeItem[] | [];
-  csvData: TimeType[] = [];
-  drive: any = null;
+  csvData: TimeType[];
+  drive: any;
   initialize: () => void;
   init: (data: DeviceType) => void;
   write: (item: OperateTypeItem, param?: string | number) => void;

@@ -81,7 +81,7 @@ export async function createWindow() {
     // CheckForUpdates();
   });
   win.on('resize', () => {
-    let sizeData = win?.getContentBounds();
+    const sizeData = win?.getContentBounds();
     win?.webContents.send('resizeEvent', sizeData);
   });
   // Make all links open with the browser, not with the application
@@ -100,8 +100,8 @@ export async function createWindow() {
     win?.reload();
   });
   win.webContents.on('render-process-gone', async (e, killed) => {
-    console.log('----crashed----', e, killed, arguments);
-    let result = await dialog.showMessageBox(win!, {
+    console.log('----crashed----', e, killed);
+    const result = await dialog.showMessageBox(win!, {
       type: 'error',
       title: '应用程序崩溃',
       message: '当前程序发生异常，是否要重新加载应用程序?',
@@ -209,7 +209,7 @@ ipcMain.handle('open-win', (_, arg) => {
 });
 
 // 应用重启
-ipcMain.on('window-reset', function () {
+ipcMain.on('window-reset', () => {
   if (url) {
     win?.webContents.reload();
   } else {

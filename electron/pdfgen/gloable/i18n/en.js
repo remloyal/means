@@ -1,5 +1,5 @@
 'use strict';
-export const  en = {
+export const en = {
   INTERFACE_NOT_SUPPORT_TRY_AGIN: 'Refresh and try again',
 
   EXPORT_EXCEL_TITLE: 'temperatureAndHumidity',
@@ -342,27 +342,25 @@ export const  en = {
   PDF_EST_CREATED: 'Created',
   // pdf
 
-  // EXCEL M2H 
-  EXCEL_DEVICE_CHART:"Data Chart",
-  EXCEL_DEVICE_INFO:"Device Information",
-  EXCEL_DEVICE_LIST:"Data list",
+  // EXCEL M2H
+  EXCEL_DEVICE_CHART: 'Data Chart',
+  EXCEL_DEVICE_INFO: 'Device Information',
+  EXCEL_DEVICE_LIST: 'Data list',
 
-  EXCEL_DEVICE:"Device",
-  EXCEL_DEVICE_OVER:"Overview",
-  EXCEL_DEVICE_NAME:"Data Name",
-  EXCEL_DEVICE_TYPE:"Device Type",
-  EXCEL_DEVICE_STATUS:"Alarm status",
-  EXCEL_DEVICE_MAX:"Max Value",
-  EXCEL_DEVICE_MIN:"Min Value",
-  EXCEL_DEVICE_VERSION:"Firmware version",
-  EXCEL_DEVICE_INTERVAL:"Record Interval",
-  EXCEL_DEVICE_START:"Record Start",
-  EXCEL_DEVICE_END:"Record End",
-  EXCEL_DEVICE_POINTS:"Data Points",
-  EXCEL_DEVICE_DURATION:"Record duration",
-  EXCEL_DEVICE_NUMBER:"Journey Number",
-  EXCEL_DEVICE_NOTES:"Travel Notes",
-  EXCEL_DEVICE_TIME:"Time",
+  EXCEL_DEVICE: 'Device',
+  EXCEL_DEVICE_OVER: 'Overview',
+  EXCEL_DEVICE_NAME: 'Data Name',
+  EXCEL_DEVICE_TYPE: 'Device Type',
+  EXCEL_DEVICE_STATUS: 'Alarm status',
+  EXCEL_DEVICE_MAX: 'Max Value',
+  EXCEL_DEVICE_MIN: 'Min Value',
+  EXCEL_DEVICE_VERSION: 'Firmware version',
+  EXCEL_DEVICE_INTERVAL: 'Record Interval',
+  EXCEL_DEVICE_START: 'Record Start',
+  EXCEL_DEVICE_END: 'Record End',
+  EXCEL_DEVICE_POINTS: 'Data Points',
+  EXCEL_DEVICE_DURATION: 'Record duration',
+  EXCEL_DEVICE_NUMBER: 'Journey Number',
+  EXCEL_DEVICE_NOTES: 'Travel Notes',
+  EXCEL_DEVICE_TIME: 'Time',
 };
-
-

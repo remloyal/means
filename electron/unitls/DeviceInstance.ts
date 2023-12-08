@@ -2,7 +2,7 @@ const HID = require('node-hid');
 import { instructRead, instructSetup } from '../../src/utils/deviceType';
 import { convertTZ } from '../../src/utils/time';
 import dayjs from 'dayjs';
-import log from '../pdfgen/log'
+import log from '../pdfgen/log';
 export const createDeviceInstance = deviceInfo => {
   deviceExample?.init(deviceInfo);
   return deviceExample;
@@ -33,13 +33,16 @@ class DeviceInstance {
   }
   public initialize() {
     console.log(this.deviceInfo);
-    
-    this.device = new HID.HID(this.deviceInfo.deviceDescriptor.idVendor, this.deviceInfo?.deviceDescriptor.idProduct);
+
+    this.device = new HID.HID(
+      this.deviceInfo.deviceDescriptor.idVendor,
+      this.deviceInfo?.deviceDescriptor.idProduct
+    );
     this.device.on('data', res => {
       const todo = Uint8ArrayToString(res);
       console.log(todo);
       try {
-        const record = this.record;
+        const { record } = this;
         this.record = Object.assign({}, record, {
           [this.operate!.key.toString()]: this.operate?.getData(todo),
         });
@@ -91,7 +94,6 @@ class DeviceInstance {
   }
   write(item: OperateTypeItem) {
     try {
-      
       if (this.isComplete) {
         const actionList = [...this.actionList];
         actionList.push(item);
@@ -101,7 +103,7 @@ class DeviceInstance {
       if (!this.device) {
         this.initialize();
       }
-      var index = this.actionList.findIndex(res => res.name === item.name);
+      const index = this.actionList.findIndex(res => res.name === item.name);
       this.actionList.splice(index, 1);
       this.operate = item;
       const todo = item.order(item.param);
@@ -109,7 +111,7 @@ class DeviceInstance {
       this.device.write(dataee);
     } catch (error) {
       log.error(error);
-      this.device.close()
+      this.device.close();
     }
   }
   getData(key?: string) {
@@ -146,10 +148,10 @@ class DeviceInstance {
     this.record.firmwareVersion = 'V1.02';
   }
 }
-let deviceExample: DeviceInstance = new DeviceInstance();
+const deviceExample: DeviceInstance = new DeviceInstance();
 function Uint8ArrayToString(fileData: Uint8Array) {
-  var dataString = '';
-  for (var i = 0; i < fileData.length; i++) {
+  let dataString = '';
+  for (let i = 0; i < fileData.length; i++) {
     dataString += String.fromCharCode(fileData[i]);
   }
   console.log(dataString);

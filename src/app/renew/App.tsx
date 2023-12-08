@@ -102,10 +102,10 @@ const App = () => {
       ipcRenderer.invoke('startUpdate');
     }
   };
-  const cancelUpdating = () =>{
+  const cancelUpdating = () => {
     // 关闭窗口
     ipcRenderer.invoke('cancelUpdate');
-  }
+  };
   return (
     <div className="renew">
       <div>
@@ -130,7 +130,7 @@ const App = () => {
           {t('renew.startUpdating')}
         </Button>
         {version.forceUpdate == 0 ? (
-          <Button onClick={ cancelUpdating} disabled={state} style={{ marginLeft: '20px' }}>
+          <Button onClick={cancelUpdating} disabled={state} style={{ marginLeft: '20px' }}>
             {t('home.cancellation')}
           </Button>
         ) : (

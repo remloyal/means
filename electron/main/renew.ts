@@ -8,17 +8,17 @@ import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl, judgingSpaces } from '../unitls/unitls';
 import { listenUpdater } from './update';
 
-const baseUrl = path.resolve('./') + '/resources/';
-var AdmZip = require('adm-zip');
+const baseUrl = `${path.resolve('./')}/resources/`;
+const AdmZip = require('adm-zip');
 export let mainWindow: BrowserWindow | null = null;
 let win: BrowserWindow | null = null;
 // 缓存名称
-const cachePath = baseUrl + 'app_old.asar';
+const cachePath = `${baseUrl}app_old.asar`;
 // 更新解压缩路径
-const updatePath = baseUrl + 'update';
+const updatePath = `${baseUrl}update`;
 let renewtimer: NodeJS.Timeout | null = null;
 const createTimer = () => {
-  renewtimer = setInterval(function () {
+  renewtimer = setInterval(() => {
     CheckForUpdates(win);
     // clearInterval(renewtimer!);
   }, 1800000);
@@ -34,7 +34,7 @@ export const CheckForUpdates = (winData: Electron.BrowserWindow | null) => {
     let remoteConfiguration;
     // 获取远程配置
     try {
-      let url = getUrl();
+      const url = getUrl();
       // let url = 'http://localhost:3000/upload';
       remoteConfiguration = (await axios.get(url)).data;
       console.log(remoteConfiguration);
@@ -79,7 +79,7 @@ export const CheckForUpdates = (winData: Electron.BrowserWindow | null) => {
 /**
  * 下载更新
  */
-export const downLoad = async (deploy?) => {
+export const downLoad = async deploy => {
   if (fs.existsSync(updatePath)) {
     await deleteDir(updatePath);
   }
@@ -165,8 +165,8 @@ function compareVersions(version1, version2) {
 async function copyAsar(srcDir, outputPath) {
   return new Promise(async (resolve, reject) => {
     try {
-      var cmd = `copy ${srcDir.replaceAll('/', '\\')} ${outputPath.replaceAll('/', '\\')}`;
-      exec(cmd, function (error, stdout, stderr) {
+      const cmd = `copy ${srcDir.replaceAll('/', '\\')} ${outputPath.replaceAll('/', '\\')}`;
+      exec(cmd, (error, stdout, stderr) => {
         // 获取命令执行的输出
         // console.log(error, stdout, stderr);
         if (!error) {
@@ -228,8 +228,8 @@ const createRenew = (data?, callback?) => {
   const width = 400;
   const height = 350;
   let newWindow: BrowserWindow | null = new BrowserWindow({
-    width: width,
-    height: height,
+    width,
+    height,
     autoHideMenuBar: true,
     // backgroundColor:"#F9B882",
     // titleBarStyle:"hidden",
@@ -244,7 +244,7 @@ const createRenew = (data?, callback?) => {
   });
   newWindow.setMenuBarVisibility(false);
   if (process.env.VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(process.env.VITE_DEV_SERVER_URL + 'renewIndex.html');
+    newWindow.loadURL(`${process.env.VITE_DEV_SERVER_URL}renewIndex.html`);
     newWindow.webContents.openDevTools(); // 开发环境下打开调试工具
   } else {
     const indexHtml = path.join(process.env.DIST, 'renewIndex.html');
@@ -288,28 +288,28 @@ const createRenew = (data?, callback?) => {
     }
   });
 
-  ipcMain.on('openMain', function () {
+  ipcMain.on('openMain', () => {
     createWindow();
   });
 
-  ipcMain.handle('cancelUpdate', function () {
+  ipcMain.handle('cancelUpdate', () => {
     newWindow?.close();
     newWindow = null;
   });
 };
 
 export const quitRenew = async () => {
-  if (fs.existsSync(baseUrl + 'update.asar')) {
+  if (fs.existsSync(`${baseUrl}update.asar`)) {
     await _unzip(filePath, updatePath);
     if (!fs.existsSync(cachePath)) {
       // 备份
-      copyAsar(baseUrl + 'app.asar', cachePath);
+      copyAsar(`${baseUrl}app.asar`, cachePath);
     }
     // 判断是win还是mac
     if (process.platform === 'win32') {
       try {
         const updateExe = filePath('./static/update.exe');
-        let directoryPath = process.cwd();
+        const directoryPath = process.cwd();
         const backup_file = judgingSpaces(`${directoryPath}/resources/app_old.asar`);
         const update_file = judgingSpaces(`${directoryPath}/resources/update.asar`);
         const target_file = judgingSpaces(`${directoryPath}/resources/app.asar`);
@@ -318,7 +318,7 @@ export const quitRenew = async () => {
         log.info('update_file====>', update_file);
         log.info('target_file====>', target_file);
         log.info('app_path====>', app_path);
-        
+
         const child = spawn(
           `"${updateExe}"`,
           [`${backup_file}`, `${update_file}`, `${target_file}`, `${app_path}`],
@@ -332,7 +332,7 @@ export const quitRenew = async () => {
         log.info('win 增量更新中');
       } catch (error) {
         log.error('win 增量更新失败', error);
-        fs.copyFileSync(cachePath, baseUrl + 'app.asar');
+        fs.copyFileSync(cachePath, `${baseUrl}app.asar`);
       }
     }
     // 判断是否为mac
@@ -345,11 +345,11 @@ export const quitRenew = async () => {
 const renewMac = () => {
   try {
     // 删除zip
-    fs.unlinkSync(updatePath + 'app.zip');
+    fs.unlinkSync(`${updatePath}app.zip`);
     // 复制置换 app-update.yml
-    fs.copyFileSync(updatePath + '/app.asar', baseUrl + 'app.asar');
-    if (!fs.existsSync(updatePath + '/app-update.yml')) {
-      fs.copyFileSync(updatePath + '/app-update.yml', baseUrl + 'app-update.yml');
+    fs.copyFileSync(`${updatePath}/app.asar`, `${baseUrl}app.asar`);
+    if (!fs.existsSync(`${updatePath}/app-update.yml`)) {
+      fs.copyFileSync(`${updatePath}/app-update.yml`, `${baseUrl}app-update.yml`);
     }
     log.info('mac 增量更新成功');
     if (!app.isPackaged) {
@@ -361,7 +361,7 @@ const renewMac = () => {
       app.exit();
     }
   } catch (error) {
-    fs.copyFileSync(cachePath, baseUrl + 'app.asar');
+    fs.copyFileSync(cachePath, `${baseUrl}app.asar`);
     log.error('mac 增量更新失败', error);
   }
 };

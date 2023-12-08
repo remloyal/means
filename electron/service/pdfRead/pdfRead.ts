@@ -30,8 +30,8 @@ export const importPDF = async () => {
 
 const handlePdf = async params => {
   const todo = params.csvData;
-  const record = params.record;
-  const result = params.result;
+  const { record } = params;
+  const { result } = params;
   const other_data = { ...params, csvData: null };
   const data = await Device.create({
     type: record.deviceType,
@@ -50,8 +50,8 @@ const handlePdf = async params => {
   //   const jsonData = JSON.stringify(todo, null, 2);
   const jsonData = convertToCSV(todo);
   const encryptText = encrypt(jsonData);
-  const jsonName = record.getsn + '_' + new Date().getTime();
-  const jsonPath = path.join(dbPath, jsonName + '.dewav');
+  const jsonName = `${record.getsn}_${new Date().getTime()}`;
+  const jsonPath = path.join(dbPath, `${jsonName}.dewav`);
   fs.writeFileSync(jsonPath, encryptText);
   await FileData.create({
     path: jsonPath,
@@ -62,11 +62,11 @@ const handlePdf = async params => {
 };
 
 const setFormatData = async data => {
-  const csvData = data.csvData;
+  const { csvData } = data;
   const result = await findMinMax(csvData);
-  const firstRecordTime = dayjs(csvData[0].timeStamp).format(`YYYY-MM-DD HH:mm:ss`);
+  const firstRecordTime = dayjs(csvData[0].timeStamp).format('YYYY-MM-DD HH:mm:ss');
   const lastRecordedTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
-    `YYYY-MM-DD HH:mm:ss`
+    'YYYY-MM-DD HH:mm:ss'
   );
 
   const startDelay = parseInt(
@@ -110,8 +110,8 @@ const setFormatData = async data => {
       mode: '',
       keyStopEnableget: '',
       pdfPwd: '',
-      firstRecordTime: firstRecordTime,
-      lastRecordedTime: lastRecordedTime,
+      firstRecordTime,
+      lastRecordedTime,
       maximumValue: result.c.max,
       minimumValue: result.c.min,
       timeZone: data.timeZone || 'UTC+08:00',
@@ -121,7 +121,7 @@ const setFormatData = async data => {
     operateConfig: {},
     isComplete: true,
     actionList: [],
-    csvData: csvData,
+    csvData,
     csvName: '',
     drive: {},
     param: '',

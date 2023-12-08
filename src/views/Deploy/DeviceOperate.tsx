@@ -52,7 +52,7 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   const minuteOptions = getMinuteOptions();
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
-  const initTime = (data?) => {
+  const initTime = (data = null) => {
     let times = (device?.record.tempPeriod as number) ?? 0;
     if (data) {
       times = data;
@@ -202,7 +202,7 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
   const minuteOptions = getMinuteOptions();
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
-  const initTime = (data?) => {
+  const initTime = (data = null) => {
     let times = (device?.record.startDelayTime as number) ?? 0;
     if (data) {
       times = data;
@@ -366,9 +366,9 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
       }
     }
   };
-  useEffect(()=>{
+  useEffect(() => {
     init();
-  },[device])
+  }, [device]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatUpperLimit')}</div>
@@ -446,9 +446,9 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     init();
-  },[device])
+  }, [device]);
 
   return (
     <Col span={8}>
@@ -502,7 +502,7 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        highHumi: highHumi,
+        highHumi,
       };
     });
   };
@@ -558,7 +558,7 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        lowHumi: lowHumi,
+        lowHumi,
       };
     });
   };

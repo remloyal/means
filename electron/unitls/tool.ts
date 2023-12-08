@@ -10,21 +10,21 @@ export function findMinMax(data: Data[]): {
   f: { min: number; max: number; average: number | string };
   humi: { min: number; max: number; average: number | string };
 } {
-  let cList: number[] = [];
-  let fList: number[] = [];
-  let humiList: number[] = [];
+  const cList: number[] = [];
+  const fList: number[] = [];
+  const humiList: number[] = [];
   for (let i = 0; i < data.length; i++) {
     const { c, f, humi } = data[i];
     cList.push(Number(c));
     fList.push(Number(f));
     humiList.push(Number(humi));
   }
-  let cMin = findMinValue(cList);
-  let cMax = findMaxValue(cList);
-  let fMin = findMinValue(fList);
-  let fMax = findMaxValue(fList);
-  let humiMin = findMinValue(humiList);
-  let humiMax = findMaxValue(humiList);
+  const cMin = findMinValue(cList);
+  const cMax = findMaxValue(cList);
+  const fMin = findMinValue(fList);
+  const fMax = findMaxValue(fList);
+  const humiMin = findMinValue(humiList);
+  const humiMax = findMaxValue(humiList);
   return {
     c: { min: cMin, max: cMax, average: getAverage(cList) },
     f: { min: fMin, max: fMax, average: getAverage(fList) },
@@ -52,20 +52,20 @@ function findMinValue(data: number[]): number {
 }
 
 function getAverage(arr) {
-  let res =
+  const res =
     arr.reduce((sum, value) => {
       return sum + value;
     }, 0) / arr.length;
   return res.toFixed(1);
 }
 
-interface Data {
+interface DataType {
   c: number;
   f: number;
   humi: number;
   timeStamp: string;
 }
-export function convertToCSV(data: Data[]): string {
+export function convertToCSV(data: DataType[]): string {
   let csv = 'timeStamp,c,f,humi\n'; // CSV 文件的头部
   for (const { c, f, humi, timeStamp } of data) {
     csv += `${timeStamp},${c},${f},${humi}\n`; // 将每行数据格式化为 CSV 格式的字符串

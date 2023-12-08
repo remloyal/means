@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 const pdfData = (data, monitors) => {
-  const record = data.record;
-  const param = data.param;
+  const { record } = data;
+  const { param } = data;
   const deviceInfo = data.database;
   const bounded = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss:SSS');
   const unit = param.tempUnit == '℃' ? 'cels' : 'fahr';
@@ -18,7 +18,7 @@ const pdfData = (data, monitors) => {
         startTime: param.startTime,
         endTime: param.endTime,
         checkCompleteness: false,
-        unit: unit,
+        unit,
       },
       product: {
         alertStrategy: 1,
@@ -38,7 +38,7 @@ const pdfData = (data, monitors) => {
         ],
       },
       order: {
-        bounded: bounded,
+        bounded,
         unbounded: bounded,
         unbindType: 3,
         stopMode: record.stopMode,
@@ -87,7 +87,7 @@ const pdfData = (data, monitors) => {
       },
       customer: { name: 'frigga', filePath: data.filePath },
     },
-    monitors: monitors,
+    monitors,
   };
 };
 

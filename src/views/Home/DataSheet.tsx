@@ -56,7 +56,7 @@ const DataSheet = () => {
     setAxle(num);
   }, [resizeData]);
 
-  const getData = (list?) => {
+  const getData = (list: any = null) => {
     const todo = list || device?.csvData;
     if (todo) {
       const data: RecordType[] = todo.map((item, index) => ({

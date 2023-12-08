@@ -6,7 +6,7 @@ import { ipcRenderer } from 'electron';
 export let instructRead;
 export let instructSetup;
 export let DeviceAttribute;
-export const setTypePower = (type?) => {
+export const setTypePower = (type: any = null) => {
   if (type) {
     if (type.indexOf('#') != -1) {
       type = type.split('#')[0];
@@ -64,7 +64,7 @@ class DeviceInstance {
     try {
       console.log(data);
       const { key, value } = data;
-      const record = this.record;
+      const { record } = this;
       this.record = Object.assign({}, record, {
         [key]: this.operate?.getData(value),
       });
@@ -105,7 +105,7 @@ class DeviceInstance {
       this.actionList = actionList;
     }
     this.isComplete = false;
-    var index = this.actionList.findIndex(res => res.name === item.name);
+    const index = this.actionList.findIndex(res => res.name === item.name);
     this.actionList.splice(index, 1);
     this.operate = item;
     const todo = item.order(item.param);
@@ -163,8 +163,8 @@ class DeviceInstance {
 }
 
 function Uint8ArrayToString(fileData: Uint8Array) {
-  var dataString = '';
-  for (var i = 0; i < fileData.length; i++) {
+  let dataString = '';
+  for (let i = 0; i < fileData.length; i++) {
     dataString += String.fromCharCode(fileData[i]);
   }
   console.log(dataString);
@@ -199,7 +199,7 @@ function findMinMax(arr, start, end) {
   return { max: maxVal, min: minVal };
 }
 
-export let deviceExample: DeviceInstance = new DeviceInstance();
+export const deviceExample: DeviceInstance = new DeviceInstance();
 
 // 判断是否为OK
 const isOk = (data: any) => {
