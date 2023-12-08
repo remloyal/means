@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 import pkg from './package.json';
+import topLevelAwait from 'vite-plugin-top-level-await';
+import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -13,7 +15,7 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve';
   const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
-  
+
   return {
     resolve: {
       alias: {
@@ -22,6 +24,11 @@ export default defineConfig(({ command }) => {
       },
     },
     plugins: [
+      topLevelAwait({
+        promiseExportName: '__tla',
+        promiseImportName: i => `__tla_${i}`,
+      }),
+      eslint({ fix: true }),
       react(),
       electron([
         {

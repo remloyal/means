@@ -1,7 +1,13 @@
-export default {
-  parser: 'babel-eslint',
-  extends: ['airbnb-base', 'eslint:recommended', 'plugin:react/recommended'],
-  plugins: ['react', 'prettier'],
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'prettier',
+    'plugin:prettier/recommended',
+  ],
+  plugins: ['@typescript-eslint', 'react'],
   env: {
     browser: true,
     node: true,
@@ -11,6 +17,7 @@ export default {
     jasmine: true,
   },
   rules: {
+    'prettier/prettier': 'error',
     'generator-star-spacing': [0],
     'consistent-return': [0],
     'react/forbid-prop-types': [0],
@@ -66,16 +73,7 @@ export default {
     // 4.7
     'array-callback-return': ['error'],
     // 5.1
-    'prefer-destructuring': [
-      'error',
-      {
-        array: true,
-        object: true,
-      },
-      {
-        enforceForRenamedProperties: false,
-      },
-    ],
+    'prefer-destructuring': 'off',
     // 6.3
     'prefer-template': ['error'],
     'template-curly-spacing': ['error', 'never'],
@@ -112,6 +110,22 @@ export default {
     // 8.6
     // 'implicit-arrow-linebreak': ['error', 'beside'],
     // Airbnb rules end
+    quotes: ['error', 'single'],
+    'no-unused-vars': 'off',
+    'no-undef': 'off',
+    'func-style': 'off',
+    'space-before-function-paren': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'react/jsx-uses-react': 'error',
+    'react/jsx-uses-vars': 'error',
+    'react/no-unknown-property': 'off',
+    'react/display-name': 'off',
+    'no-async-promise-executor': 'off',
+    'array-callback-return': 'off',
+    'no-param-reassign': 'off',
+    'no-dupe-keys': 'off',
+    'no-case-declarations': 'off',
+    'no-fallthrough': 'off',
   },
   parserOptions: {
     ecmaFeatures: {
@@ -121,5 +135,8 @@ export default {
   },
   settings: {
     polyfills: ['fetch', 'promises'],
+    react: {
+      version: 'detect',
+    },
   },
 };

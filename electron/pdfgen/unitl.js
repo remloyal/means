@@ -1101,10 +1101,10 @@ export const get = (opts, query, callback) => {
         (typeof timeFromTer === 'string' ? new Date(timeFromTer).getTime() : timeFromTer.getTime())
       ? new Date(timeFromWeb).getTime()
       : bindOrUnbind
-      ? typeof bindOrUnbind === 'string'
-        ? new Date(bindOrUnbind).getTime()
-        : bindOrUnbind.getTime()
-      : null;
+        ? typeof bindOrUnbind === 'string'
+          ? new Date(bindOrUnbind).getTime()
+          : bindOrUnbind.getTime()
+        : null;
   },
   /**
    * web端会传来起始时间，导出pdf时，需要参考页面端传来的时间

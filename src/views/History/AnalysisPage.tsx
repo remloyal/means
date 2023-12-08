@@ -65,16 +65,22 @@ export const AnalysisPage = () => {
     exportState = true;
     const imgBaseData = await childRef.current.exportImage();
     const language = lang[localStorage.getItem('language') || 'zh_CN'] || 'zh';
-    const todo = await ipcRenderer.invoke('exportHistory', {
-      key: currentKey,
-      img: imgBaseData,
-      lang: language,
-    });
-    if (todo) {
+    try {
+      const todo = await ipcRenderer.invoke('exportHistory', {
+        key: currentKey,
+        img: imgBaseData,
+        lang: language,
+      });
+      if (todo) {
+        exportState = false;
+        console.log(todo);
+        message.success(t('home.exportSuccess'));
+      } else {
+        exportState = false;
+        message.error(t('home.exportFailed'));
+      }
+    } catch (error) {
       exportState = false;
-      console.log(todo);
-      message.success(t('home.exportSuccess'));
-    } else {
       message.error(t('home.exportFailed'));
     }
     setTimeout(() => {
@@ -114,7 +120,7 @@ export const AnalysisPage = () => {
           style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
           <div style={{ height: 100, width: 100 }}>
-            <Spin size="large" tip={t('home.processing') + '...'} style={{ height: 100 }}>
+            <Spin size="large" tip={`${t('home.processing')}...`} style={{ height: 100 }}>
               <div className="content" />
             </Spin>
           </div>
@@ -273,7 +279,7 @@ export const AnalysisTable = ({ data, ondelete }) => {
       <Table
         bordered
         virtual
-        size='small'
+        size="small"
         columns={columns}
         scroll={{ x: 1000, y: axle }}
         rowKey="id"

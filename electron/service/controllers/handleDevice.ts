@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 const pdfData = (data, monitors) => {
-  const record = data.record;
-  const param = data.param;
+  const { record } = data;
+  const { param } = data;
   const deviceInfo = data.database;
   const bounded = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss:SSS');
   const unit = param.tempUnit == '℃' ? 'cels' : 'fahr';
@@ -18,7 +18,7 @@ const pdfData = (data, monitors) => {
         startTime: param.startTime,
         endTime: param.endTime,
         checkCompleteness: false,
-        unit: unit,
+        unit,
       },
       product: {
         alertStrategy: 1,
@@ -38,13 +38,13 @@ const pdfData = (data, monitors) => {
         ],
       },
       order: {
-        bounded: bounded,
+        bounded,
         unbounded: bounded,
         unbindType: 3,
         stopMode: record.stopMode,
       },
       device: {
-        terNo: record. getsn,
+        terNo: record.getsn,
         usage: 1,
         firmwareVersion: record.firmwareVersion,
         model: record.deviceType,
@@ -61,7 +61,7 @@ const pdfData = (data, monitors) => {
           projectId: '',
           recipient: '',
           startDelayTime: parseInt(record.startDelayTime) / 60,
-          timeZone: 'Asia/Shanghai',
+          timeZone: record.timeZone.replace('UTC', '') || '+08:00',
           to: record.getsn,
           tripId: record.deviceType,
           vehicle: '',
@@ -76,9 +76,9 @@ const pdfData = (data, monitors) => {
             {
               type: 'temp',
               unit: param.tempUnit,
-              min: record.lowtEmp,
+              min: param.lowtEmp || record.lowtEmp,
               receiveAlert: true,
-              max: record.hightEmp,
+              max: param.hightEmp || record.hightEmp,
             },
           ],
           read: parseInt(record.tempPeriod) / 60,
@@ -87,7 +87,7 @@ const pdfData = (data, monitors) => {
       },
       customer: { name: 'frigga', filePath: data.filePath },
     },
-    monitors: monitors,
+    monitors,
   };
 };
 
@@ -100,6 +100,7 @@ export const setPdfData = async data => {
   return record;
 };
 
+// 定义一个名为setMonitorData的函数，接收data和param两个参数
 const setMonitorData = (data, param) => {
   const tempData: any = [];
   const tempDataF: any = [];
@@ -114,6 +115,7 @@ const setMonitorData = (data, param) => {
   }
   if (param.data.includes('temp')) {
     record['temp'] = tempData;
+    // 如果param.tempUnit为℃，则将tempData添加到record中，否则将tempDataF添加到record中
     // record['temp'] = param.tempUnit == '℃' ? tempData : tempDataF;
   }
   if (param.data.includes('humi')) {
@@ -121,5 +123,4 @@ const setMonitorData = (data, param) => {
   }
   return record;
 };
-
 // c : 25.2  f: 77.3  humi:  64 timeStamp :  "2023-11-09 20:07:19"

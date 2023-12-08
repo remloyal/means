@@ -68,13 +68,17 @@ ipcMain.handle('hidWrite', async (event, params: HidEventData) => {
 });
 
 ipcMain.handle('hidClose', (event, params: HidEventData) => {
+  // 向hidProcess发送消息，关闭hid
   hidProcess?.postMessage({ event: 'hidClose', data: params });
+  // 杀死hidProcess
   // hidProcess?.kill();
   // hidProcess = null;
   //   console.log(hidProcess);
+  // 遍历timeout对象，清除每一个timeout
   Object.values(timeout).map((e: any) => {
     e && clearTimeout(e);
   });
+  // 将timeout对象置空
   timeout = {};
 });
 
@@ -85,34 +89,56 @@ function stringToUint8Array(str): number[] {
 }
 
 let timeout: any = {};
+const errorCount: any = {};
+
+// hidWrite函数用于执行HID写入操作
 const hidWrite = async (params): Promise<{ key: string; value: string } | boolean> => {
-  // log.info('hidWrite ===>', JSON.stringify(params));
+  // 如果hidProcess不存在，则创建线程
   if (!hidProcess) {
     await createThread();
   }
+
   return new Promise(async (resolve, reject) => {
     try {
+      // 发送hidWrite事件和参数给hidProcess线程
       hidProcess?.postMessage({
         event: 'hidWrite',
         data: { ...params, value: stringToUint8Array(params.value) },
       });
+
+      // 监听hidProcess线程的消息
       hidProcess?.on('message', message => {
         const msg = message as HidEvent<any>;
         if (msg.event === 'hidData') {
-          //   console.log('收到 hidData:', msg.data);
+          // 收到hidData事件时，解析数据并返回
           resolve(msg.data);
         }
+
+        // 清除对应key的超时定时器
         clearTimeout(timeout[params.key]);
         timeout[params.key] = null;
       });
-      timeout[params.key] = setTimeout(() => {
-        log.info('子进程读取超时...');
-        hidProcess?.kill();
-        hidProcess = null;
-        timeout[params.key] && clearTimeout(timeout[params.key]);
-        timeout[params.key] = null;
-        resolve({ key: params.key, value: '' });
-      }, 10000);
+
+      // 设置超时定时器，5秒后执行超时处理逻辑
+      const handleTimeout = () => {
+        // 如果该错误已经发生三次，则执行超时处理逻辑
+        if (errorCount[params.key] >= 3) {
+          log.error(`子进程读取超时==> ${params.key} ${params.value}`);
+          hidProcess?.kill();
+          hidProcess = null;
+          clearTimeout(timeout[params.key]);
+          timeout[params.key] = null;
+          errorCount[params.key] = 0;
+          resolve({ key: params.key, value: '' });
+        } else {
+          // 增加错误计数
+          errorCount[params.key] = (errorCount[params.key] || 0) + 1;
+          log.error(`${params.key} 第${errorCount[params.key]} 次读取错误，尝试下次中...`);
+          // 重新调用hidWrite函数来重新发送hidWrite事件和参数给hidProcess线程
+          hidWrite(params).then(resolve).catch(reject);
+        }
+      };
+      timeout[params.key] = setTimeout(handleTimeout, 5000);
     } catch (error) {
       resolve(false);
     }
@@ -137,7 +163,7 @@ export const filterUsbList = async () => {
 
       fileListPath.push({
         drivePath: element.mountpoints[0].path,
-        names: names,
+        names,
       });
     }
   }

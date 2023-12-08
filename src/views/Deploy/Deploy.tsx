@@ -69,6 +69,7 @@ const DeployMain: React.FC = () => {
         {items.map((item, index) => {
           return (
             <div
+              key={index}
               className={activeKey == index ? 'deploy-title-active' : ''}
               onClick={() => setActiveKey(index)}
             >
@@ -79,7 +80,9 @@ const DeployMain: React.FC = () => {
       </div>
       {items.map((item, index) => {
         return (
-          <div style={{ display: activeKey == index ? 'block' : 'none' }}>{item.children}</div>
+          <div key={index} style={{ display: activeKey == index ? 'block' : 'none' }}>
+            {item.children}
+          </div>
         );
       })}
       <DataOperate save={save}></DataOperate>
@@ -94,11 +97,11 @@ const DeployBasic = ({ state }: { state: boolean }) => {
     TempPeriodDom,
     TimeZone,
     StartModeDom,
-    HightEmpDom,
     LowEmpDom,
+    HightEmpDom,
     StartDelayDom,
-    power.includes('setHighHumi') ? HightHumiDom : null,
     power.includes('setLowHumi') ? LowHumiDom : null,
+    power.includes('setHighHumi') ? HightHumiDom : null,
   ];
   return (
     <div style={{ padding: '0 20px' }}>

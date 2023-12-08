@@ -10,6 +10,9 @@ import { text } from '../../pdfgen/gloable/language';
 export const exportHistory = async params => {
   const deviceList = await queryHistoryDeviceList(params.key);
   const excelPath = await selectSavePath();
+
+  if (!excelPath) return false;
+
   params.excelPath = excelPath;
   if (!params.lang) {
     params.lang = 'zh';
@@ -36,7 +39,7 @@ const createExcel = async (params, deviceList) => {
   dataListSheet(workbook, { params, data: deviceList });
   log.info('====【3】==== 创建数据表');
 
-  const newpath = params.excelPath + '/frigga_' + dayjs().format('YYYYMMDDHHmmss') + '.xlsx';
+  const newpath = `${params.excelPath}/frigga_${dayjs().format('YYYYMMDDHHmmss')}.xlsx`;
   workbook.xlsx.writeFile(newpath);
   log.info('====【4】==== 创建Excel,路径：', newpath);
 };
@@ -112,7 +115,7 @@ const infoSheet = (workbook: Excel.Workbook, { params, data }) => {
     for (let j = 1; j < rowCount.cellCount + 1; j++) {
       const dobCol = worksheet.getCell(i, j);
       dobCol.border = borderStyle;
-      var columnLength = dobCol.value ? dobCol.value.toString().length : 10;
+      const columnLength = dobCol.value ? dobCol.value.toString().length : 10;
       dobCol.alignment = { vertical: 'middle', horizontal: 'center' };
       const column = worksheet.getColumn(j);
       column.width = columnLength * 1.3;
@@ -174,7 +177,7 @@ const dataListSheet = (workbook: Excel.Workbook, { params, data }) => {
     for (let j = 1; j < rowCount.cellCount + 1; j++) {
       const dobCol = worksheet.getCell(i, j);
       dobCol.border = borderStyle;
-      var columnLength = dobCol.value ? dobCol.value.toString().length : 10;
+      const columnLength = dobCol.value ? dobCol.value.toString().length : 10;
       dobCol.alignment = { vertical: 'middle', horizontal: 'center' };
       const column = worksheet.getColumn(j);
       column.width = columnLength * 1.3;
@@ -224,11 +227,11 @@ const setRowStyle = (worksheet: Excel.Worksheet, cellCount, number) => {
 
 // 单云格自适应
 const selfAdaption = (worksheet: Excel.Worksheet) => {
-  worksheet.columns.forEach(function (column, i) {
+  worksheet.columns.forEach((column, i) => {
     if (i !== 0) {
-      var maxLength = 0;
-      column['eachCell']!({ includeEmpty: true }, function (cell) {
-        var columnLength = cell.value ? cell.value.toString().length : 10;
+      let maxLength = 0;
+      column['eachCell']!({ includeEmpty: true }, cell => {
+        const columnLength = cell.value ? cell.value.toString().length : 10;
         if (columnLength > maxLength) {
           maxLength = columnLength;
         }

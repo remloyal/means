@@ -178,7 +178,6 @@ const initFileSystem = archiveFolder => {
   return { worked, error };
 };
 
-
 const getPdfLanguage = info => {
   const { product, device, filter } = info || {};
   const { params } = device || {};

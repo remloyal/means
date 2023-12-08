@@ -15,7 +15,7 @@ interface PopupProps {
 const { confirm } = Modal;
 export const Popup = ({ title, content, onClose, onConfirm, width, t }: PopupProps) => {
   const confirmData = confirm({
-    width: width,
+    width,
     title: (
       <div className="popup-title">
         <div
@@ -35,7 +35,7 @@ export const Popup = ({ title, content, onClose, onConfirm, width, t }: PopupPro
     icon: null,
     wrapClassName: 'popup',
     maskClosable: true,
-    content: content,
+    content,
     centered: true,
     footer: [],
     onOk() {

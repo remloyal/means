@@ -1,3 +1,4 @@
+// 字符串时间拆分成数组
 export function splitStringTime(str: string) {
   let time = '';
   time += str.substring(0, 4);
@@ -11,16 +12,16 @@ export function splitStringTime(str: string) {
 
 export function color16() {
   //十六进制颜色随机
-  var r = Math.floor(Math.random() * 256);
-  var g = Math.floor(Math.random() * 256);
-  var b = Math.floor(Math.random() * 256);
-  let r16 =
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  const r16 =
     r.toString(16).length === 1 && r.toString(16) <= 'f' ? 0 + r.toString(16) : r.toString(16);
-  let g16 =
+  const g16 =
     g.toString(16).length === 1 && g.toString(16) <= 'f' ? 0 + g.toString(16) : g.toString(16);
-  let b16 =
+  const b16 =
     b.toString(16).length === 1 && b.toString(16) <= 'f' ? 0 + b.toString(16) : b.toString(16);
-  let color = '#' + r16 + g16 + b16;
+  const color = `#${r16}${g16}${b16}`;
   return color;
 }
 

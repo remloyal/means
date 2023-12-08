@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [tongue, setTongue] = useRecoilState(language);
   const [locale, setLocal] = useState<Locale>(enUS);
   const [date, setDate] = useRecoilState(dateFormat);
-  
+
   useEffect(() => {
     setTongue(localStorage.getItem('language') || 'zh_CN');
     setDate(localStorage.getItem('dateFormat') || 'YYYY-MM-DD');
@@ -46,7 +46,7 @@ const App: React.FC = () => {
           }}
         >
           <Suspense>
-          <Left></Left>
+            <Left></Left>
             <Router />
           </Suspense>
         </div>

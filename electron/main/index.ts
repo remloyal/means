@@ -5,7 +5,7 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { dynamicConfig } from '../config';
+import { dynamicConfig, language } from '../config';
 import { IsOnlineService, isOnline } from '../unitls/request';
 import log from '../pdfgen/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
@@ -50,7 +50,9 @@ const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, 'index.html');
 
 let tray;
+let updateState = false;
 export async function createWindow() {
+  updateState = false;
   win = new BrowserWindow({
     autoHideMenuBar: true,
     title: '鼎为数据中心',
@@ -79,7 +81,7 @@ export async function createWindow() {
     // CheckForUpdates();
   });
   win.on('resize', () => {
-    let sizeData = win?.getContentBounds();
+    const sizeData = win?.getContentBounds();
     win?.webContents.send('resizeEvent', sizeData);
   });
   // Make all links open with the browser, not with the application
@@ -98,8 +100,8 @@ export async function createWindow() {
     win?.reload();
   });
   win.webContents.on('render-process-gone', async (e, killed) => {
-    console.log('----crashed----', e, killed, arguments);
-    let result = await dialog.showMessageBox(win!, {
+    console.log('----crashed----', e, killed);
+    const result = await dialog.showMessageBox(win!, {
       type: 'error',
       title: '应用程序崩溃',
       message: '当前程序发生异常，是否要重新加载应用程序?',
@@ -114,13 +116,16 @@ export async function createWindow() {
   });
 
   win.on('close', async e => {
-    e.preventDefault();
-    win?.show()
-    win?.webContents.send('exitPrompt');
-    // await hidProcess?.kill();
-    // // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
-    // win?.removeAllListeners();
-    // win = null;
+    if (updateState) {
+      await hidProcess?.kill();
+      // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
+      win?.removeAllListeners();
+      win = null;
+    } else {
+      e.preventDefault();
+      win?.show();
+      win?.webContents.send('exitPrompt');
+    }
   });
 
   Menu.setApplicationMenu(Menu.buildFromTemplate([]));
@@ -136,30 +141,38 @@ export async function createWindow() {
   initGidThread(win);
 }
 
+// 当应用准备就绪时，执行下面的函数
 app.whenReady().then(async () => {
+  // 调用isOnline函数，获取网络连接状态
   const state = await isOnline();
+  // 如果网络连接状态正常，则创建窗口
   if (state) {
     createWindow();
+    // 如果网络连接状态不正常，则显示错误提示框，并退出应用
   } else {
     dialog.showErrorBox(
       'Network connection failed',
       'Please check your network connection or try again later!'
     );
     log.error('Network connection failed');
-    app.quit();
+    app.exit();
   }
+  // 创建一个IsOnlineService实例
   const online = new IsOnlineService();
+  // 监听网络连接状态的变化
   online.on('status', res => {
     console.log(res);
+    // 如果网络连接状态不正常，则关闭窗口，并退出应用
     if (res == false) {
       win?.close();
       mainWindow?.close();
       log.error('Network connection failed');
-      dialog.showErrorBox(
-        'Network connection failed',
-        'Please check your network connection or try again later!'
-      );
-      app.quit();
+      dialog.showMessageBoxSync(win!, {
+        type: 'error',
+        title: 'Network connection failed',
+        message: 'Please check your network connection or try again later!',
+      });
+      app.exit();
     }
   });
 });
@@ -203,17 +216,13 @@ ipcMain.handle('open-win', (_, arg) => {
 });
 
 // 应用重启
-ipcMain.on('window-reset', function () {
+ipcMain.on('window-reset', () => {
   if (url) {
     win?.webContents.reload();
   } else {
     app.relaunch();
     app.exit();
   }
-});
-
-ipcMain.handle('restartNow', () => {
-  quitRenew();
 });
 
 ipcMain.handle('lang', (_, data) => {
@@ -223,17 +232,21 @@ ipcMain.handle('lang', (_, data) => {
   };
   dynamicConfig.lan = lang[data] || 1;
   setTray(dynamicConfig.lan);
+  return language[app.getLocale()];
 });
 
+// 处理获取版本号的事件
 ipcMain.handle('getVersion', async (_, data) => {
   return await app.getVersion();
 });
 
+// 处理打开url的事件
 ipcMain.handle('open-url', (event, url) => {
   console.log(url);
   shell.openExternal(url);
 });
 
+// 处理退出类型的事件
 ipcMain.handle('exitType', (event, type) => {
   setTimeout(async () => {
     if (type == 1) {
@@ -248,6 +261,7 @@ ipcMain.handle('exitType', (event, type) => {
   }, 1000);
 });
 
+// 设置托盘图标
 const setTray = lan => {
   const menu = Menu.buildFromTemplate([
     {
@@ -265,4 +279,9 @@ const setTray = lan => {
   ]);
   tray.setToolTip(lan == 1 ? 'Frigga Data Center' : '鼎为数据中心');
   tray.setContextMenu(menu);
+};
+
+// 设置更新状态
+export const setUpdateState = state => {
+  updateState = state;
 };

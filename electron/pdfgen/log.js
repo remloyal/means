@@ -94,7 +94,7 @@ log4js.configure({
  * @param { any } content
  */
 const debug = content => {
-  let logger = log4js.getLogger('debug');
+  const logger = log4js.getLogger('debug');
   logger.level = levels.debug;
   logger.debug(content);
 };
@@ -104,7 +104,7 @@ const debug = content => {
  * @param { any } content
  */
 const info = (...content) => {
-  let logger = log4js.getLogger('info');
+  const logger = log4js.getLogger('info');
   logger.level = levels.info;
   logger.info(content.toString());
 };
@@ -114,7 +114,7 @@ const info = (...content) => {
  * @param { any } content
  */
 const db = content => {
-  let logger = log4js.getLogger('database');
+  const logger = log4js.getLogger('database');
   logger.level = levels.info;
   logger.info(content.toString());
 };
@@ -124,7 +124,7 @@ const db = content => {
  * @param { any } content
  */
 const error = (...content) => {
-  let logger = log4js.getLogger('error');
+  const logger = log4js.getLogger('error');
   logger.level = levels.error;
   logger.error(content.toString());
 };
@@ -137,8 +137,8 @@ const formatError = (ctx, err) => {
   return { ctx, err };
 };
 
-let errorLogger = log4js.getLogger('error');
-let resLogger = log4js.getLogger('response');
+const errorLogger = log4js.getLogger('error');
+const resLogger = log4js.getLogger('response');
 
 const loggers = {
   // 封装错误日志

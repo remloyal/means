@@ -1,5 +1,5 @@
 'use strict';
-export const  zh = {
+export const zh = {
   EXPORT_EXCEL_TITLE: '温度与湿度',
   EXPORT_EXCEL_DATE_TITLE: '日期',
   EXPORT_EXCEL_TIME_TITLE: '时间',
@@ -292,25 +292,25 @@ export const  zh = {
   PDF_EST_ER: '签注人',
   PDF_EST_CREATED: '创建日期',
 
-  // EXCEL M2H 
-  EXCEL_DEVICE_CHART:"数据图表",
-  EXCEL_DEVICE_INFO:"设备信息",
-  EXCEL_DEVICE_LIST:"数据列表",
+  // EXCEL M2H
+  EXCEL_DEVICE_CHART: '数据图表',
+  EXCEL_DEVICE_INFO: '设备信息',
+  EXCEL_DEVICE_LIST: '数据列表',
 
-  EXCEL_DEVICE:"设备",
-  EXCEL_DEVICE_OVER:"概述",
-  EXCEL_DEVICE_NAME:"数据名称",
-  EXCEL_DEVICE_TYPE:"设备型号",
-  EXCEL_DEVICE_STATUS:"报警状态",
-  EXCEL_DEVICE_MAX:"最高值",
-  EXCEL_DEVICE_MIN:"最低值",
-  EXCEL_DEVICE_VERSION:"固件版本",
-  EXCEL_DEVICE_INTERVAL:"记录间隔",
-  EXCEL_DEVICE_START:"记录开始",
-  EXCEL_DEVICE_END:"记录结束",
-  EXCEL_DEVICE_POINTS:"数据点数",
-  EXCEL_DEVICE_DURATION:"记录时长",
-  EXCEL_DEVICE_NUMBER:"行程编号",
-  EXCEL_DEVICE_NOTES:"行程备注",
-  EXCEL_DEVICE_TIME:"时间",
+  EXCEL_DEVICE: '设备',
+  EXCEL_DEVICE_OVER: '概述',
+  EXCEL_DEVICE_NAME: '数据名称',
+  EXCEL_DEVICE_TYPE: '设备型号',
+  EXCEL_DEVICE_STATUS: '报警状态',
+  EXCEL_DEVICE_MAX: '最高值',
+  EXCEL_DEVICE_MIN: '最低值',
+  EXCEL_DEVICE_VERSION: '固件版本',
+  EXCEL_DEVICE_INTERVAL: '记录间隔',
+  EXCEL_DEVICE_START: '记录开始',
+  EXCEL_DEVICE_END: '记录结束',
+  EXCEL_DEVICE_POINTS: '数据点数',
+  EXCEL_DEVICE_DURATION: '记录时长',
+  EXCEL_DEVICE_NUMBER: '行程编号',
+  EXCEL_DEVICE_NOTES: '行程备注',
+  EXCEL_DEVICE_TIME: '时间',
 };

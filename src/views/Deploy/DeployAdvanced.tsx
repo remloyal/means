@@ -71,7 +71,7 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        multidUnit: multidUnit,
+        multidUnit,
       };
     });
   };
@@ -211,7 +211,7 @@ export const ScreenOffTimeDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        multIdSleepTime: multIdSleepTime,
+        multIdSleepTime,
       };
     });
   };
@@ -242,7 +242,7 @@ export const ScreenOffTimeDom = ({ state }: { state: boolean }) => {
 const timeOption = () => {
   const options: { label: string; value: number }[] = [];
   for (let i = 5; i <= 60; i++) {
-    options.push({ label: i + 's', value: i });
+    options.push({ label: `${i}s`, value: i });
   }
   return options;
 };
@@ -291,7 +291,7 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
     const pdfPwd = device?.record.pdfPwd;
     if (pdfPwd != '') {
       setStartValue(pdfPwd);
-      setChecked(true)
+      setChecked(true);
     }
   }, []);
 

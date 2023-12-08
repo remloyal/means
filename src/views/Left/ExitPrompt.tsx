@@ -9,10 +9,6 @@ export const QuitPrompt = () => {
       //   setResizeData(data);
       setQuitState(true);
     });
-    ipcRenderer.on('exitType', (event, err) => {
-      //   setLoading(false);
-      //   alert(t('left.errotText'));
-    });
   }, []);
   const [quitState, setQuitState] = useState(false);
   const [value, setValue] = useState(1);

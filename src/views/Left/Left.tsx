@@ -19,9 +19,9 @@ import { loadUsbData, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
 import { QuitPrompt } from './ExitPrompt';
 const DeviceImg = {
-  M2H: M2H,
-  M1H: M1H,
-  M2D: M2D,
+  M2H,
+  M1H,
+  M2D,
 };
 
 const Left: React.FC = () => {
@@ -253,8 +253,8 @@ const Left: React.FC = () => {
               device == null
                 ? 'image-alarm'
                 : device?.database.alarm == 1
-                ? 'image-alarm image-alarm-red'
-                : 'image-alarm image-alarm-blue'
+                  ? 'image-alarm image-alarm-red'
+                  : 'image-alarm image-alarm-blue'
             }
           />
         </div>
@@ -309,7 +309,7 @@ const Left: React.FC = () => {
           style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
           <div style={{ height: 100, width: 100 }}>
-            <Spin size="large" tip={t('left.reading') + '...'} style={{ height: 100 }}>
+            <Spin size="large" tip={`${t('left.reading')}...`} style={{ height: 100 }}>
               <div className="content" />
             </Spin>
           </div>
@@ -320,7 +320,7 @@ const Left: React.FC = () => {
           style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
           <div style={{ height: 100, width: 100 }}>
-            <Spin size="large" tip={t('left.saving') + '...'} style={{ height: 100 }}>
+            <Spin size="large" tip={`${t('left.saving')}...`} style={{ height: 100 }}>
               <div className="content" />
             </Spin>
           </div>

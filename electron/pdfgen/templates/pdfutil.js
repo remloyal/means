@@ -496,7 +496,7 @@ const calcuteSummary = ({
       if (firstValideDataIndex < 0) firstValideDataIndex = i;
 
       //*支持mkt展示的才做计算
-      if (!!pdfMktShow) {
+      if (pdfMktShow) {
         sum = initValidValue(sum);
         timeInter = initValidValue(timeInter);
         timeSum = initValidValue(timeSum);
@@ -579,15 +579,15 @@ const calcuteSummary = ({
   });
   average =
     valideDataCnt > 0 && sum !== null ? _util.formatDecimal(sum / valideDataCnt, 1) : undefined;
-  if (!!pdfMktShow) {
+  if (pdfMktShow) {
     mkt =
       valideDataCnt === 1
         ? data[firstValideDataIndex].val
         : valideDataCnt === 0
-        ? null
-        : temSum !== null && timeSum !== null
-        ? _util.formatDecimal(-MKT_PARAMS.δH / Math.log(temSum / timeSum) - MKT_PARAMS.K, 1)
-        : null;
+          ? null
+          : temSum !== null && timeSum !== null
+            ? _util.formatDecimal(-MKT_PARAMS.δH / Math.log(temSum / timeSum) - MKT_PARAMS.K, 1)
+            : null;
 
     data.forEach((m, i) => {
       if (m.val != SENSOR_EXC_DEFAULT) {
@@ -737,7 +737,7 @@ const calcuteYiyaoSummary = ({
       if (firstValideDataIndex < 0) firstValideDataIndex = i;
 
       //*支持mkt展示的才做计算
-      if (!!pdfMktShow) {
+      if (pdfMktShow) {
         sum = initValidValue(sum);
         timeInter = initValidValue(timeInter);
         timeSum = initValidValue(timeSum);
@@ -778,15 +778,15 @@ const calcuteYiyaoSummary = ({
   });
   average =
     valideDataCnt > 0 && sum !== null ? _util.formatDecimal(sum / valideDataCnt, 1) : undefined;
-  if (!!pdfMktShow) {
+  if (pdfMktShow) {
     mkt =
       valideDataCnt === 1
         ? data[firstValideDataIndex].val
         : valideDataCnt === 0
-        ? null
-        : temSum !== null && timeSum !== null
-        ? _util.formatDecimal(-MKT_PARAMS.δH / Math.log(temSum / timeSum) - MKT_PARAMS.K, 1)
-        : null;
+          ? null
+          : temSum !== null && timeSum !== null
+            ? _util.formatDecimal(-MKT_PARAMS.δH / Math.log(temSum / timeSum) - MKT_PARAMS.K, 1)
+            : null;
 
     data.forEach((m, i) => {
       if (m.val != SENSOR_EXC_DEFAULT) {
@@ -963,8 +963,8 @@ const stepLength = (text, config) => {
       (startPos === 'left'
         ? 0
         : index === `${text}`.length - 1
-        ? lengthMap[`${fontSize}`][`${text}`[0]] || defaultSize // 减去第一位的长度
-        : 0)
+          ? lengthMap[`${fontSize}`][`${text}`[0]] || defaultSize // 减去第一位的长度
+          : 0)
     );
   }, 0);
 };

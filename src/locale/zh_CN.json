@@ -110,6 +110,7 @@
     "startTime": "启动时间",
     "currentNumberEntries": "当前条数",
     "localSave": "本地保存",
+    "storeWay":"存储方式",
     "timeOptions": "时间选项",
     "quickView": "快速查看",
     "uploadPlatform": "上传到云平台？",
@@ -145,7 +146,10 @@
     "piecesData": "数据请在{{count}}条以内，已选择{{select}}条，请重新选择！",
     "import": "导入",
     "importSuccess": "导入成功",
-    "importFailed": "导入失败"
+    "importFailed": "导入失败",
+    "local":"本地",
+    "clouds":"云端",
+    "dataEditing":"数据编辑"
   },
   "device": {
     "initialstate": "初始状态",

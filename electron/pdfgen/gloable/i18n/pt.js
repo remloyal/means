@@ -1,5 +1,5 @@
 'use strict';
-export const  pt = {
+export const pt = {
   EXPORT_EXCEL_TITLE: 'temperatureAndHumidity',
   EXPORT_EXCEL_DATE_TITLE: 'Date',
   EXPORT_EXCEL_TIME_TITLE: 'Time',

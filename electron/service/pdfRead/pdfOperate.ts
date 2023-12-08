@@ -21,16 +21,16 @@ export const importPDFFile = async (filePath: string) => {
   let list: any = [];
   let total = 0;
   await loadingTask.promise.then(
-    async function (pdf) {
+    async pdf => {
       total = pdf.numPages;
       // PDF 文件解析成功后的回调函数
       // 在这里你可以访问 PDF 文件的所有内容
 
       for (let index = 1; index <= pdf.numPages; index++) {
         // const element = array[index];
-        if (index == 1) {
-        }
-        const textContent = await pdf.getPage(index).then(function (page) {
+        // if (index == 1) {
+        // }
+        const textContent = await pdf.getPage(index).then(page => {
           return page.getTextContent();
         });
 
@@ -50,7 +50,7 @@ export const importPDFFile = async (filePath: string) => {
         //   console.log(text);
       }
     },
-    function (reason) {
+    reason => {
       // PDF 文件解析失败后的回调函数
       log.error(reason);
       console.error(reason);
@@ -58,7 +58,6 @@ export const importPDFFile = async (filePath: string) => {
   );
 
   //   console.log(list);
-  let deviceInstance;
   if (list.length > 1 && list[1] == '') {
     // 乱码解析
     const data = await parsePDF(filePath, list.length);
@@ -67,9 +66,9 @@ export const importPDFFile = async (filePath: string) => {
     }
   }
 
-  deviceInstance = await readFirst(list[0], type);
+  const deviceInstance: any = await readFirst(list[0], type);
 
-  let csvData: any = [];
+  const csvData: any = [];
   for (let index = 1; index < list.length; index++) {
     const element = list[index];
     const todo = await readData(element, deviceInstance, `${index + 1}/${list.length}`);
@@ -86,7 +85,7 @@ const readFirst = (text, type) => {
   const data = text.replace('ALARM', '').replace('www.friggatech.com', '').replace('®', ' ');
   data.slice(0, data.lastIndexOf('Record Chart'));
   let rule;
-  let todo = { type: '' };
+  const todo = { type: '' };
   console.log(data.charAt(0));
   if (data.charAt(0) == '.') {
     rule = type.currency.rule;
@@ -114,7 +113,7 @@ const readFirst = (text, type) => {
       }
     });
   });
-  for (var i in todo) {
+  for (const i in todo) {
     todo[i] = todo[i].trim();
   }
   console.log(todo);
@@ -129,7 +128,7 @@ const readData = async (text, todo, pageFooting) => {
     // size += 1;
     key = '°C';
   }
-  if (text.includes('℉')) {
+  if (text.includes('℉') || text.includes('°F')) {
     // size += 1;
     key = '℉';
     unit = '℉';
@@ -138,19 +137,19 @@ const readData = async (text, todo, pageFooting) => {
     size += 1;
     key = 'RH';
   }
-  text.replace(`wwww.friggatech.com`, '');
-  let data = text.replace(`wwww.friggatech.com`, '').replace(pageFooting, '').trim();
+  text.replace('wwww.friggatech.com', '');
+  let data = text.replace('wwww.friggatech.com', '').replace(pageFooting, '').trim();
   data = await formatText(data);
-  var chunkedData = splitData(data, size, unit, todo);
+  const chunkedData = splitData(data, size, unit, todo);
   return chunkedData;
 };
 function splitData(data, size, unit, todo) {
-  var result: any = [];
+  const result: any = [];
   let text = data
     .replace(/(\d{2})-(\d{2})-(\d{2})/g, ' $1-$2-$3')
     .trim()
     .split(' ');
-  text = text.filter(function (s) {
+  text = text.filter(s => {
     return s && s.trim();
   });
   const format = todo.timeFormat
@@ -158,7 +157,7 @@ function splitData(data, size, unit, todo) {
     : 'DD-MM-YY HH:mm:ss';
   // const chunkSize = size == 4 ? 22 : size == 3 ? 20 : 20;
   // 23-11-1005:28:1971.466
-  for (var i = 0; i < text.length; i += size) {
+  for (let i = 0; i < text.length; i += size) {
     const time = text[i];
     const temp = text[i + 1];
     const heat = text[i + 2];
@@ -167,7 +166,7 @@ function splitData(data, size, unit, todo) {
     let f;
     if (unit == '℉') {
       c = f2c(parseFloat(heat));
-      f = heat;
+      f = parseFloat(heat);
     } else {
       f = c2f(parseFloat(heat));
       c = parseFloat(heat);
@@ -213,63 +212,64 @@ function formatText(text) {
 // 温湿度 阈值
 function getThreshold(data, type) {
   console.log('getThreshold===>', data);
-  if (!data) {
-    return { hightEmp: 0, lowtEmp: 0, highHumi: 0, lowHumi: 0 };
+  let unit = '℃';
+  if (data.includes('°C') || data.includes('℃') || data.includes('ꇦ')) {
+    // size += 1;
+    unit = '℃';
   }
-  // const text = type == 'currency' ? data.split('：')[1].trim() : data.split(':')[1].trim();
+  if (data.includes('℉') || data.includes('°F')) {
+    unit = '℉';
+  }
+  if (data.includes('RH')) {
+    unit += 'RH';
+  }
   let text = '';
+
   try {
     text = data.split('：')[1].trim();
   } catch (error) {
     text = data.split(':')[1].trim();
   }
-  // 温度、湿度
-  if (
-    (text.includes('℃') || text.includes('°C')) &&
-    (text.includes('RH') || text.includes('%RH'))
-  ) {
-    const data = text
-      .replaceAll('℃', ',')
-      .replaceAll('°C', ',')
-      .replaceAll('%RH', ',')
-      .replaceAll('RH', ',')
-      .replaceAll('～', '')
-      .replaceAll('/', '')
-      .replaceAll('~', '')
-      .replace(/^,+/, '')
-      .replace(/,+$/, '')
-      .split(',');
-    console.log(data);
+  const handleData = text
+    .replaceAll('℃', ',')
+    .replaceAll('°C', ',')
+    .replaceAll('ꇦ', ',')
+    .replaceAll('℉', ',')
+    .replaceAll('°F', ',')
+    .replaceAll('%RH', ',')
+    .replaceAll('RH', ',')
+    .replaceAll('～', '')
+    .replaceAll('ꆫ', '')
+    .replaceAll('/', '')
+    .replaceAll('~', '')
+    .replace(/^,+/, '')
+    .replace(/,+$/, '')
+    .split(',');
+  if (unit.includes('℃') && unit.includes('RH')) {
     return {
-      hightEmp: parseFloat(data[1]) || 0,
-      lowtEmp: parseFloat(data[0]) || 0,
-      highHumi: parseFloat(data[3]) || 0,
-      lowHumi: parseFloat(data[2]) || 0,
+      hightEmp: parseFloat(handleData[1]) || 0,
+      lowtEmp: parseFloat(handleData[0]) || 0,
+      highHumi: parseFloat(handleData[3]) || 0,
+      lowHumi: parseFloat(handleData[2]) || 0,
+    };
+  }
+  if (unit.includes('℉') && unit.includes('RH')) {
+    return {
+      hightEmp: f2c(parseFloat(handleData[1])) || 0,
+      lowtEmp: f2c(parseFloat(handleData[0])) || 0,
+      highHumi: parseFloat(handleData[3]) || 0,
+      lowHumi: parseFloat(handleData[2]) || 0,
     };
   }
   // 只有温度
-  if (
-    (text.includes('℃') || text.includes('°C')) &&
-    (!text.includes('RH') || !text.includes('%RH'))
-  ) {
-    console.log(text);
-    const data = text
-      .replaceAll('℃', ',')
-      .replaceAll('°C', ',')
-      .replaceAll('%RH', ',')
-      .replaceAll('RH', ',')
-      .replaceAll('～', '')
-      .replaceAll('~', '')
-      .replaceAll('/', '')
-      .replace(/^,+/, '')
-      .replace(/,+$/, '')
-      .split(',');
+  if ((unit.includes('℃') || unit.includes('℉')) && !unit.includes('RH')) {
     return {
-      hightEmp: parseFloat(data[1]) || 0,
-      lowtEmp: parseFloat(data[0]) || 0,
+      hightEmp: unit.includes('℃') ? parseFloat(handleData[1]) : f2c(parseFloat(handleData[1])),
+      lowtEmp: unit.includes('℃') ? parseFloat(handleData[0]) : f2c(parseFloat(handleData[0])),
       highHumi: 0,
       lowHumi: 0,
     };
   }
+
   return { hightEmp: 0, lowtEmp: 0, highHumi: 0, lowHumi: 0 };
 }

@@ -5,10 +5,15 @@ const UrlList = {
   externalNetwork: 'https://cms.dw.ifrigga.com:7665/',
 };
 
-export const base_url = UrlList['intranet'];
+export const base_url = UrlList['test_url'];
 
 export const dynamicConfig = {
   ver: '1.0.0',
   lan: 1,
   env: 1,
+};
+
+export const language = {
+  'zh-CN': 'zh_CN',
+  'en-US': 'en_US',
 };

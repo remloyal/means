@@ -17,14 +17,14 @@ export const filePath = (route: string) => {
  * @param {*} url
  */
 export function deleteDir(url) {
-  var files: string[] = [];
+  let files: string[] = [];
   if (fs.existsSync(url)) {
     //判断给定的路径是否存在
     log.info('清除 旧目标目录', url);
     files = fs.readdirSync(url); //返回文件和子目录的数组
     for (let index = 0; index < files.length; index++) {
       const file = files[index];
-      var curPath = path.join(url, file);
+      const curPath = path.join(url, file);
       if (curPath.includes('.asar')) {
         deleteFile(curPath);
         continue;
@@ -45,18 +45,18 @@ export function deleteDir(url) {
 
 function deleteFile(path) {
   // 获取当前操作系统的平台
-  const platform = process.platform;
+  const { platform } = process;
 
   // 定义删除命令
   let command = '';
 
   // 如果当前操作系统是 Windows
   if (platform === 'win32') {
-    command = 'del /s /f "' + path + '"';
+    command = `del /s /f "${path}"`;
   }
   // 如果当前操作系统是 macOS
   else if (platform === 'darwin') {
-    command = 'rm -rf "' + path + '"';
+    command = `rm -rf "${path}"`;
   }
   if (!path) {
     command = '';
@@ -78,3 +78,11 @@ export function getUrl() {
   const url = `${base_url}cmsapi/tools/check/${localTimestamp}/${hash}?lan=${dynamicConfig.lan}&type=1&ver=${dynamicConfig.ver}&env=${dynamicConfig.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
   return url;
 }
+
+export const judgingSpaces = pathData => {
+  let directoryPath = path.join(pathData);
+  if (directoryPath.includes(' ')) {
+    directoryPath = `"${directoryPath}"`;
+  }
+  return directoryPath;
+};

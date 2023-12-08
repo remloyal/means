@@ -50,7 +50,7 @@ export function decrypt(data) {
 const salt = 'WCSAadf9092_1212sfAOIJCSsdz12';
 export function cryptMd5(data: string) {
   // 密码“加盐”
-  var saltPassword = data + salt;
-  var result =  CryptoJS.MD5(saltPassword).toString().toLowerCase()
+  const saltPassword = data + salt;
+  const result = CryptoJS.MD5(saltPassword).toString().toLowerCase();
   return result;
 }

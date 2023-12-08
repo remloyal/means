@@ -23,9 +23,9 @@ const App = () => {
         ...version,
         old: data.old,
         new: data.new,
-        forceUpdate: data.forceUpdate || 0,
+        forceUpdate: data.data.forceUpdate || 0,
       });
-      setUpdateType(data.updateType);
+      setUpdateType(data.data.updateType);
       setContent(data.data.content);
     });
     ipcRenderer.on('updateProgressing', async (event, data) => {
@@ -95,17 +95,17 @@ const App = () => {
 
   const handleOk = () => {
     if (updateType == 0) {
-      ipcRenderer.invoke('startUpdate');
+      ipcRenderer.invoke('restartNow');
     }
     if (updateType == 1) {
       // 全量更新错误，重新检查下载
       ipcRenderer.invoke('startUpdate');
     }
   };
-  const cancelUpdating = () =>{
+  const cancelUpdating = () => {
     // 关闭窗口
     ipcRenderer.invoke('cancelUpdate');
-  }
+  };
   return (
     <div className="renew">
       <div>
@@ -130,7 +130,7 @@ const App = () => {
           {t('renew.startUpdating')}
         </Button>
         {version.forceUpdate == 0 ? (
-          <Button onClick={ cancelUpdating} disabled={state} style={{ marginLeft: '20px' }}>
+          <Button onClick={cancelUpdating} disabled={state} style={{ marginLeft: '20px' }}>
             {t('home.cancellation')}
           </Button>
         ) : (

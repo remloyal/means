@@ -63,6 +63,7 @@ interface RecordType {
 const HistoryMain = () => {
   const { t } = useTranslation();
   const [unit, setUnit] = useState('\u2103');
+  const StorageMethod = [t('history.local'), t('history.clouds')];
   const columns: TableProps<RecordType>['columns'] = [
     {
       title: t('home.serialNumber'),
@@ -147,12 +148,12 @@ const HistoryMain = () => {
       },
     },
     {
-      title: <span style={{ fontSize: '12px' }}>{t('history.localSave')}</span>,
+      title: <span style={{ fontSize: '12px' }}>{t('history.storeWay')}</span>,
       dataIndex: 'dataStorage_type',
       width: 60,
       align: 'center',
       render(value: any, record: RecordType, index: number) {
-        return <span>{value == 0 ? '是' : '否'}</span>;
+        return <span>{StorageMethod[value]}</span>;
       },
     },
   ];
@@ -177,6 +178,7 @@ const HistoryMain = () => {
   useEffect(() => {
     setDeviceRecord(deviceList);
     // console.log(deviceList);
+    setSelectedRowKeys([]);
   }, [deviceList]);
 
   const getRowClassName = (record, index) => {
@@ -199,12 +201,12 @@ const HistoryMain = () => {
   const getData = async () => {
     const data = await ipcRenderer.invoke('queryDevice');
     setDeviceList(data);
-    const multidUnit = device?.record.multidUnit;
-    if (parseInt(multidUnit) == 1) {
-      setUnit('\u2109');
-    } else {
-      setUnit('\u2103');
-    }
+    // const multidUnit = device?.record.multidUnit;
+    // if (parseInt(multidUnit) == 1) {
+    //   setUnit('\u2109');
+    // } else {
+    //   setUnit('\u2103');
+    // }
   };
   const handleRowClick = event => {
     const index = selectedRowKeys.findIndex(item => item == event.id);
@@ -272,7 +274,7 @@ const HistoryLift = () => {
     }
   };
 
-  const queryDevice = async (param?) => {
+  const queryDevice = async (param: any = null) => {
     const todo = await ipcRenderer.invoke('queryDevice', param);
     setDeviceList(todo);
   };
@@ -302,7 +304,7 @@ const HistoryLift = () => {
     };
     return (
       <>
-        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.alarmOption')}：</div>
+        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('home.dataFilter')}：</div>
         <Radio.Group onChange={dataChange} value={value} size="small">
           <Space direction="vertical">
             <Radio value={1}>{t('history.allData')}</Radio>
@@ -332,6 +334,7 @@ const HistoryLift = () => {
         const list = [...deviceList];
         const foundArr = list.filter(item => !deviceListKey.includes(item.id));
         setDeviceList(foundArr);
+        setDeviceListKey([]);
         message.success({
           content: t('history.dataDeletionSuccessful'),
         });
@@ -438,7 +441,7 @@ const HistoryLift = () => {
     return (
       <>
         <div>
-          <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.alarmOption')}：</div>
+          <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.dataEditing')}：</div>
           <Space direction="vertical" style={{ width: '100%' }}>
             <Button style={{ width: '100%' }} disabled={detailsState} onClick={viewDetails}>
               {t('history.detail')}

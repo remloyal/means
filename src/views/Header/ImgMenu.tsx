@@ -10,7 +10,7 @@ import about from '@/assets/img/关于.png';
 export const SummaryImg = () => {
   return (
     <>
-      <img className={'menu-img'} src={summary} alt="" style={{width:"12px"}} />
+      <img className={'menu-img'} src={summary} alt="" style={{ width: '12px' }} />
     </>
   );
 };

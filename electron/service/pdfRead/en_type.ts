@@ -1,6 +1,6 @@
 // 应用生成
 const ENTYPE = {
-  title: ["Date", "Time", "℃", "℉", "RH"],
+  title: ['Date', 'Time', '℃', '℉', 'RH'],
   rule: {
     time: [
       /File Created Date: (.*?)Frigga Data Report/,
@@ -13,34 +13,16 @@ const ENTYPE = {
       /킡쪱훆,(.*?)]뚩떥탅쾢/,
     ],
     lowAlarm: [/Temp Low Alarm: (.*?)Temp High Alarm/],
-    highAlarm: [
-      /Temp High Alarm: (.*?)Humi Low Alarm:/,
-      /Temp High Alarm: (.*?)Data Points/,
-    ],
+    highAlarm: [/Temp High Alarm: (.*?)Humi Low Alarm:/, /Temp High Alarm: (.*?)Data Points/],
     humiLowAlarm: [/Humi Low Alarm: (.*?)Humi High Alarm: /],
     humiHighAlarm: [/Humi High Alarm: (.*?)Data Points/],
     dataPoints: [/Data Points: (.*?)Stop Mode/],
-    stopMode: [
-      /Stop Mode: (.*?)Device Information/,
-      /춣횹쒣쪽:(.*?)힢:쯹폐쪱볤믹폚/,
-    ],
+    stopMode: [/Stop Mode: (.*?)Device Information/, /춣횹쒣쪽:(.*?)힢:쯹폐쪱볤믹폚/],
     deviceID: [/Device ID: (.*?)Device Model/, /ID:(.*?)짨놸탍뫅/],
-    deviceModel: [
-      /Device Model: (.*?)Firmware Version/,
-      /짨놸탍뫅:(.*?)만볾냦놾:/,
-    ],
-    firmwareVersion: [
-      /Firmware Version: (.*?)Hardware Version/,
-      /만볾냦놾:(.*?)펲볾냦놾/,
-    ],
-    hardwareVersion: [
-      /Hardware Version: (.*?)Device Configuration/,
-      /놾:(.*?)볇슼룅튪컂뛈횵/,
-    ],
-    startDelay: [
-      /Start delay: (.*?)Log interval/,
-      /뚩떥탅쾢퇓쪱뾪쪼:(.*?)듦뒢볤룴/,
-    ],
+    deviceModel: [/Device Model: (.*?)Firmware Version/, /짨놸탍뫅:(.*?)만볾냦놾:/],
+    firmwareVersion: [/Firmware Version: (.*?)Hardware Version/, /만볾냦놾:(.*?)펲볾냦놾/],
+    hardwareVersion: [/Hardware Version: (.*?)Device Configuration/, /놾:(.*?)볇슼룅튪컂뛈횵/],
+    startDelay: [/Start delay: (.*?)Log interval/, /뚩떥탅쾢퇓쪱뾪쪼:(.*?)듦뒢볤룴/],
     logInterval: [
       /Log Interval: (.*?) Start Time/,
       /Log interval: (.*?)Start Time/,
@@ -59,6 +41,7 @@ const ENTYPE = {
     tempHigh: [/Temp-High (.*?)Humi-Low/],
     humiLow: [/Humi-Low (.*?)Humi-High/],
     humiHigh: [/Humi-High (.*?)Record/],
+    timeZone: [/All times shown are based on(.*?)24-Hour/, /쯹폐쪱볤믹폚(.*?),24킡쪱훆/],
   },
 };
 // 设备生成
@@ -71,14 +54,8 @@ const DEVICEENTYPE = {
     humiLowAlarm: [/Humi Low Alarm: (.*?)Humi High Alarm: /],
     humiHighAlarm: [/Humi High Alarm: (.*?)Data Points/],
     stopMode: [/Stop Mode: (.*?)Note:/, /춣횹쒣쪽:(.*?)힢:쯹폐쪱볤믹폚/],
-    hardwareVersion: [
-      /Hardware Version: (.*?)Logging Summary/,
-      /펲볾냦놾:(.*?)볇슼룅튪컂뛈횵/,
-    ],
-    startDelay: [
-      /Start Delay: (.*?)Log Interval/,
-      /뚩떥탅쾢퇓쪱뾪쪼:(.*?)듦뒢볤룴/,
-    ],
+    hardwareVersion: [/Hardware Version: (.*?)Logging Summary/, /펲볾냦놾:(.*?)볇슼룅튪컂뛈횵/],
+    startDelay: [/Start Delay: (.*?)Log Interval/, /뚩떥탅쾢퇓쪱뾪쪼:(.*?)듦뒢볤룴/],
     logInterval: [/Log Interval: (.*?)Start Time/, /듦뒢볤룴:(.*?)뾪쪼쪱볤/],
     minsStartTime: [/MinsStart Time: (.*?)End Time/],
     endTime: [/End Time: (.*?)Device Information/],

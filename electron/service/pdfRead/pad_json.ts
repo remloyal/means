@@ -1,4 +1,3 @@
-
 export const parsePDF = async (file, size) => {
   return new Promise(async (resolve, reject) => {
     // const pdfParser = new PDFParser();
@@ -13,7 +12,7 @@ export const parsePDF = async (file, size) => {
 
     // pdfParser.loadPDF(file);
     const { PdfReader } = await import('pdfreader');
-    let textList: any = [];
+    const textList: any = [];
     let index = 1;
     new PdfReader(null).parseFileItems(file, (err, item) => {
       if (err) console.error('error:', err);
@@ -36,7 +35,7 @@ function getList(list) {
   const textList: any = [];
   for (let index = 0; index < list.length; index++) {
     const element = list[index];
-    const Texts = element.Texts;
+    const { Texts } = element;
     for (let i = 0; i < Texts.length; i++) {
       const text = Texts[i].R[0].T;
       textList[index] += decodeURIComponent(text);

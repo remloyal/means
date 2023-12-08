@@ -16,8 +16,8 @@ export const request = async (url, method?, headers?, data?) => {
 function httpRequest(url, method?, headers?, data?) {
   return new Promise((resolve, reject) => {
     const options = {
-      method: method,
-      headers: headers,
+      method,
+      headers,
     };
     const request = http.request(url, options, response => {
       let responseData = '';
@@ -46,8 +46,8 @@ function httpRequest(url, method?, headers?, data?) {
 function httpsRequest(url, method?, headers?, data?) {
   return new Promise((resolve, reject) => {
     const options = {
-      method: method,
-      headers: headers,
+      method,
+      headers,
     };
     const request = https.request(url, options, response => {
       let responseData = '';
