@@ -118,3 +118,17 @@ export const c2f = c => {
   f2c = f => {
     return Math.round(((f - 32) / 1.8) * 10) / 10;
   };
+
+export function Uint8ArrayToString(fileData: Uint8Array) {
+  let dataString = '';
+  for (let i = 0; i < fileData.length; i++) {
+    dataString += String.fromCharCode(fileData[i]);
+  }
+  return dataString.replace('\u0002', '').replaceAll('\u0000', '');
+}
+
+export function stringToUint8Array(str): number[] {
+  const tmpUint8Array = str.split('').map(e => e.charCodeAt(0));
+  tmpUint8Array.unshift(1);
+  return tmpUint8Array;
+}

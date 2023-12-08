@@ -1,3 +1,4 @@
+// 字符串时间拆分成数组
 export function splitStringTime(str: string) {
   let time = '';
   time += str.substring(0, 4);

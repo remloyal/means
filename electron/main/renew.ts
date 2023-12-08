@@ -137,7 +137,7 @@ export const downLoad = async deploy => {
  * 比较版本
  * @version1 新的
  * @version2 旧的
- * @return  1 | -1
+ * @return  1 | -1 | 0
  */
 function compareVersions(version1, version2) {
   // 将版本号字符串分割成数字数组

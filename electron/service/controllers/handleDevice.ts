@@ -100,6 +100,7 @@ export const setPdfData = async data => {
   return record;
 };
 
+// 定义一个名为setMonitorData的函数，接收data和param两个参数
 const setMonitorData = (data, param) => {
   const tempData: any = [];
   const tempDataF: any = [];
@@ -114,6 +115,7 @@ const setMonitorData = (data, param) => {
   }
   if (param.data.includes('temp')) {
     record['temp'] = tempData;
+    // 如果param.tempUnit为℃，则将tempData添加到record中，否则将tempDataF添加到record中
     // record['temp'] = param.tempUnit == '℃' ? tempData : tempDataF;
   }
   if (param.data.includes('humi')) {
@@ -121,5 +123,4 @@ const setMonitorData = (data, param) => {
   }
   return record;
 };
-
 // c : 25.2  f: 77.3  humi:  64 timeStamp :  "2023-11-09 20:07:19"

@@ -141,10 +141,14 @@ export async function createWindow() {
   initGidThread(win);
 }
 
+// 当应用准备就绪时，执行下面的函数
 app.whenReady().then(async () => {
+  // 调用isOnline函数，获取网络连接状态
   const state = await isOnline();
+  // 如果网络连接状态正常，则创建窗口
   if (state) {
     createWindow();
+    // 如果网络连接状态不正常，则显示错误提示框，并退出应用
   } else {
     dialog.showErrorBox(
       'Network connection failed',
@@ -153,9 +157,12 @@ app.whenReady().then(async () => {
     log.error('Network connection failed');
     app.exit();
   }
+  // 创建一个IsOnlineService实例
   const online = new IsOnlineService();
+  // 监听网络连接状态的变化
   online.on('status', res => {
     console.log(res);
+    // 如果网络连接状态不正常，则关闭窗口，并退出应用
     if (res == false) {
       win?.close();
       mainWindow?.close();
@@ -228,15 +235,18 @@ ipcMain.handle('lang', (_, data) => {
   return language[app.getLocale()];
 });
 
+// 处理获取版本号的事件
 ipcMain.handle('getVersion', async (_, data) => {
   return await app.getVersion();
 });
 
+// 处理打开url的事件
 ipcMain.handle('open-url', (event, url) => {
   console.log(url);
   shell.openExternal(url);
 });
 
+// 处理退出类型的事件
 ipcMain.handle('exitType', (event, type) => {
   setTimeout(async () => {
     if (type == 1) {
@@ -251,6 +261,7 @@ ipcMain.handle('exitType', (event, type) => {
   }, 1000);
 });
 
+// 设置托盘图标
 const setTray = lan => {
   const menu = Menu.buildFromTemplate([
     {
@@ -270,6 +281,7 @@ const setTray = lan => {
   tray.setContextMenu(menu);
 };
 
+// 设置更新状态
 export const setUpdateState = state => {
   updateState = state;
 };

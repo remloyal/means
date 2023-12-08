@@ -3,52 +3,82 @@ import { deviceType, DeviceTypeAT } from './deviceType';
 import { convertTZ } from './time';
 import { ipcRenderer } from 'electron';
 
+// 指令读取
 export let instructRead;
+
+// 指令设置
 export let instructSetup;
+
+// 设备属性变量
 export let DeviceAttribute;
+// 导出一个函数，用于设置设备类型
 export const setTypePower = (type: any = null) => {
+  // 如果type参数存在
   if (type) {
+    // 如果type参数中包含#号，则将#号分割
     if (type.indexOf('#') != -1) {
       type = type.split('#')[0];
     }
+    // 如果DeviceTypeAT中不存在type参数，则抛出错误
     if (!DeviceTypeAT[type]) {
       throw new Error('DeviceTypeAT is null');
     }
     DeviceAttribute = DeviceTypeAT[type];
     instructRead = DeviceAttribute.read;
     instructSetup = DeviceAttribute.setup;
+    // 向window.eventBus发送一个typePower事件，参数为instructRead和instructSetup中的属性
     window.eventBus.emit('typePower', [
       ...Object.keys(instructRead),
       ...Object.keys(instructSetup),
     ]);
   } else {
+    // 如果type参数不存在，则将instructRead和instructSetup赋值为空数组
     instructRead = [];
     instructSetup = [];
+    // 向window.eventBus发送一个typePower事件，参数为空数组
     window.eventBus.emit('typePower', []);
   }
 };
+// 导出一个异步函数，用于创建设备实例
 export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> => {
+  // 将设备信息赋值给deviceExample
   deviceExample.deviceInfo = deviceInfo;
+  // 初始化设备记录
   deviceExample.record = {};
+  // 获取设备类型
   const { key, value } = await deviceExample.getType(deviceType);
   console.log('deviceExample =======>', key, value);
+  // 设置设备操作类型
   setTypePower(value);
+  // 初始化设备
   await deviceExample?.init(deviceInfo);
   return deviceExample;
 };
 
 class DeviceInstance {
+  // 设备实例
   device: any = null;
+  // 设备信息
   deviceInfo: DeviceType | null = null;
+  // 数据库
   database: any = null;
+  // 操作类型
   operate: OperateTypeItem | null = null;
+  // 记录
   record: any = {};
+  // 操作配置
   operateConfig: OperateType<any> = {};
+  // 是否完成
   isComplete: boolean = true;
+  // 操作列表
   actionList: OperateTypeItem[] = [];
+  // csv数据
   csvData: TimeType[] = [];
+  // csv名称
   csvName: string = '';
+  // 驱动
   drive: any = null;
+  // 参数
   param: string | number = '';
   constructor(deviceInfo?: DeviceType) {
     // const operate = [...Object.keys(instructSetup)];
@@ -62,18 +92,27 @@ class DeviceInstance {
 
   public initialize(data) {
     try {
+      // 打印data
       console.log(data);
+      // 解构data
       const { key, value } = data;
+      // 解构this.record
       const { record } = this;
+      // 将record和value进行合并
       this.record = Object.assign({}, record, {
-        [key]: this.operate?.getData(value),
+        // 如果value不为空，则使用operate.getData方法获取value
+        [key]: value != '' ? this.operate?.getData(value) : value,
       });
+      // 调用repeatOperation方法
       this.repeatOperation();
     } catch (error) {
+      // 打印错误信息
       console.log(error);
+      // 调用repeatOperation方法
       this.repeatOperation();
     }
   }
+
   public repeatOperation() {
     try {
       if (this.actionList.length > 0) {
@@ -146,38 +185,38 @@ class DeviceInstance {
     // this.device.close();
     this.device = null;
   }
+
   setCsvData(csvData: TimeType[]) {
+    // 设置csvData
     this.csvData = csvData;
-    this.record.firstRecordTime = dayjs(csvData[0].timeStamp).format(
+
+    // 设置第一条记录的时间
+    const firstRecordTime = dayjs(csvData[0].timeStamp).format(
       `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
     );
-    this.record.lastRecordedTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
+    this.record.firstRecordTime = firstRecordTime;
+
+    // 设置最后一条记录的时间
+    const lastRecordTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
       `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
     );
+    this.record.lastRecordedTime = lastRecordTime;
+
+    // 查找最大值和最小值
     const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
+
+    // 设置最大值和最小值
     this.record.maximumValue = max;
     this.record.minimumValue = min;
+
+    // 转换时区
     this.record.timeZone = convertTZ(this.record.time);
+
+    // 设置固件版本
     this.record.firmwareVersion = 'V1.02';
   }
 }
-
-function Uint8ArrayToString(fileData: Uint8Array) {
-  let dataString = '';
-  for (let i = 0; i < fileData.length; i++) {
-    dataString += String.fromCharCode(fileData[i]);
-  }
-  console.log(dataString);
-
-  return dataString.replace('\u0002', '').replaceAll('\u0000', '');
-}
-
-function stringToUint8Array(str): number[] {
-  const tmpUint8Array = str.split('').map(e => e.charCodeAt(0));
-  tmpUint8Array.unshift(1);
-  return tmpUint8Array;
-}
-
+// 寻找数组中的最大值和最小值
 function findMinMax(arr, start, end) {
   if (start === end) {
     return { max: arr[start].c, min: arr[start].c };

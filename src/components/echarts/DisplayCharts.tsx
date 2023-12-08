@@ -98,6 +98,12 @@ export const foldLine = (
             color: '#666666', // 设置网格线颜色
           },
         },
+        max(value) {
+          return Math.ceil(value.max + 10);
+        },
+        min(value) {
+          return Math.ceil(value.min - 10);
+        },
       },
     ],
     grid: {
