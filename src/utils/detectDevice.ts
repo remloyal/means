@@ -10,22 +10,28 @@ import dayjs from 'dayjs';
  */
 const readCSVFilesFromDrive = async drive => {
   const { drivePath } = drive;
-  const files = fs.readdirSync(drivePath);
-  const csvFiles = files.filter(file => file.endsWith('.csv'));
-  let dataParsed: TimeType[] = [];
-  let csvName = '';
-  let stopMode = '';
-  for (const csvFile of csvFiles) {
-    csvName = csvFile;
-    const filePath = path.join(drivePath, csvFile);
-    const data = fs.readFileSync(filePath, 'utf-8');
-    // console.log(`读取到CSV文件 ${csvFile} 的内容：`);
-    // console.log(data);
-    const { data: todo, stopMode: mode } = parseCSVData(data);
-    dataParsed = todo;
-    stopMode = mode;
+  //  静默设备 文件会读取错误
+  try {
+    const files = fs.readdirSync(drivePath);
+    console.log(files);
+    const csvFiles = files.filter(file => file.endsWith('.csv'));
+    let dataParsed: TimeType[] = [];
+    let csvName = '';
+    let stopMode = '';
+    for (const csvFile of csvFiles) {
+      csvName = csvFile;
+      const filePath = path.join(drivePath, csvFile);
+      const data = fs.readFileSync(filePath, 'utf-8');
+      // console.log(`读取到CSV文件 ${csvFile} 的内容：`);
+      // console.log(data);
+      const { data: todo, stopMode: mode } = parseCSVData(data);
+      dataParsed = todo;
+      stopMode = mode;
+    }
+    return [drive, dataParsed, csvName, stopMode];
+  } catch (error) {
+    return [drive, [], drive.name, '--'];
   }
-  return [drive, dataParsed, csvName, stopMode];
 };
 
 /**

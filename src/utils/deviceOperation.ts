@@ -190,24 +190,35 @@ class DeviceInstance {
     // 设置csvData
     this.csvData = csvData;
 
-    // 设置第一条记录的时间
-    const firstRecordTime = dayjs(csvData[0].timeStamp).format(
-      `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-    );
-    this.record.firstRecordTime = firstRecordTime;
+    if (csvData.length > 0) {
+      // 设置第一条记录的时间
+      const firstRecordTime = dayjs(csvData[0].timeStamp).format(
+        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+      );
+      this.record.firstRecordTime = firstRecordTime;
 
-    // 设置最后一条记录的时间
-    const lastRecordTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
-      `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-    );
-    this.record.lastRecordedTime = lastRecordTime;
+      // 设置最后一条记录的时间
+      const lastRecordTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
+        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+      );
+      this.record.lastRecordedTime = lastRecordTime;
 
-    // 查找最大值和最小值
-    const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
+      // 查找最大值和最小值
+      const { max, min } = findMinMax(csvData, 0, csvData.length - 1);
 
-    // 设置最大值和最小值
-    this.record.maximumValue = max;
-    this.record.minimumValue = min;
+      // 设置最大值和最小值
+      this.record.maximumValue = max;
+      this.record.minimumValue = min;
+    } else {
+      this.record.firstRecordTime = dayjs().format(
+        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+      );
+      this.record.lastRecordedTime = dayjs().format(
+        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+      );
+      this.record.maximumValue = 0;
+      this.record.minimumValue = 0;
+    }
 
     // 转换时区
     this.record.timeZone = convertTZ(this.record.time);

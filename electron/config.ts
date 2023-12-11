@@ -63,6 +63,8 @@ export const PATH_PARAM = {
   THREAD: SYSTEM.IS_DEV
     ? path.join(process.cwd(), './public/thread.js')
     : path.join(process.cwd(), RESOURCES_NAME, './app.asar/dist/thread.js'),
+  CACHE_PATH: path.join(process.cwd(), RESOURCES_NAME, 'cache'),
+  STATIC_PATH: path.join(process.cwd(), RESOURCES_NAME, 'static'),
 };
 
 // 数据库
