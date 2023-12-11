@@ -2,7 +2,7 @@
 
 import Request from './request';
 const qs = require('querystring');
-import _log from './log';
+import _log from '../unitls/log';
 const crypto = require('crypto');
 const moment = require('dayjs');
 const fs = require('fs');

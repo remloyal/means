@@ -2,7 +2,7 @@ import { filePath } from '../../unitls/unitls';
 import { queryHistoryDeviceList } from './device';
 import { selectSavePath } from './exportDevice';
 import Excel, { BorderStyle, Borders } from 'exceljs';
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
 import dayjs from 'dayjs';
 import { timeDiff } from '../../unitls/tool';
 import { text } from '../../pdfgen/gloable/language';

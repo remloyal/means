@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import { database } from '../db';
 import { decrypt, encrypt } from '../../unitls/encryption';
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
 
 const appPath = path.resolve(process.cwd());
 const filePath = path.join(appPath, 'resources', 'cache');

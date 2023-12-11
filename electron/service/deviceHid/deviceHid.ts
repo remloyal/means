@@ -3,9 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import content from './content';
 import { BrowserWindow, app, ipcMain, utilityProcess } from 'electron';
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
 import drivelist from 'drivelist';
 import HID from 'node-hid';
+import { PATH_PARAM } from '../../config';
 
 const targetPath = filePath('static');
 let mainWindow: BrowserWindow | null = null;
@@ -24,11 +25,7 @@ interface HidEventData {
 
 const VERSION_ID = 10473; // 1003
 const PRODUCT_ID = 631; // 517
-let targetFileName = path.join(process.cwd(), './public/thread.js');
-
-if (app.isPackaged) {
-  targetFileName = filePath('./app.asar/dist/thread.js');
-}
+const targetFileName = PATH_PARAM.THREAD;
 
 log.info('targetFileName ==>', targetFileName);
 const createThread = async () => {

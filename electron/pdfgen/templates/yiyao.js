@@ -65,7 +65,7 @@ import {
 } from '../templates/pdfutil';
 import { text } from '../gloable/language';
 import * as _util from '../unitl';
-import _log from '../log';
+import _log from '../../unitls/log';
 import { transFahr } from '../unitl';
 
 const paintYiyao = (pdf, info, monitors) => {

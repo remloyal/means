@@ -1,13 +1,13 @@
 import path from 'path';
-import log from '../pdfgen/log';
+import log from './log';
 import { exec, execSync } from 'child_process';
 import fs from 'fs';
 import dayjs from 'dayjs';
 import { cryptMd5 } from './encryption';
-import { base_url, dynamicConfig } from '../config';
+import { BASE_URL, DYNAMIC_CONFIG, PATH_PARAM, RESOURCES_NAME } from '../config';
 //   项目根路径/resources/{资源}
 export const filePath = (route: string) => {
-  const pathroute = path.join(process.cwd(), '/resources', route);
+  const pathroute = path.join(process.cwd(), RESOURCES_NAME, route);
   // log.info('获取文件路径====>', pathroute);
   return pathroute;
 };
@@ -71,11 +71,11 @@ function deleteFile(path) {
 }
 
 export function getUrl() {
-  console.log(dynamicConfig);
+  console.log(DYNAMIC_CONFIG);
 
   const localTimestamp = dayjs().valueOf().toString();
   const hash = cryptMd5(localTimestamp);
-  const url = `${base_url}cmsapi/tools/check/${localTimestamp}/${hash}?lan=${dynamicConfig.lan}&type=1&ver=${dynamicConfig.ver}&env=${dynamicConfig.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
+  const url = `${BASE_URL}cmsapi/tools/check/${localTimestamp}/${hash}?lan=${DYNAMIC_CONFIG.lan}&type=1&ver=${DYNAMIC_CONFIG.ver}&env=${DYNAMIC_CONFIG.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
   return url;
 }
 

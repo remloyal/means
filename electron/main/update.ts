@@ -1,6 +1,6 @@
 import { app, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import log from '../pdfgen/log';
+import log from '../unitls/log';
 import path from 'path';
 // 开发模式调试
 if (!app.isPackaged) {

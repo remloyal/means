@@ -1,3 +1,4 @@
+import { LOG_PARAM } from '../config';
 import log4js from 'log4js';
 import path from 'path';
 
@@ -17,7 +18,7 @@ log4js.configure({
     console: { type: 'console' },
     info: {
       type: 'dateFile',
-      filename: path.join('resources/logs/', 'info/info'),
+      filename: LOG_PARAM.INFO_PATH,
       encoding: 'utf-8',
       pattern: 'yyyy-MM-dd.log',
       alwaysIncludePattern: true,
@@ -26,7 +27,7 @@ log4js.configure({
     },
     error: {
       type: 'dateFile',
-      filename: path.join('resources/logs/', 'error/error'),
+      filename: LOG_PARAM.ERROR_PATH,
       pattern: 'yyyy-MM-dd.log',
       alwaysIncludePattern: true, // 设置文件名称为 filename + pattern
       maxLogSize: logSize,
@@ -34,7 +35,7 @@ log4js.configure({
     },
     database: {
       type: 'dateFile',
-      filename: path.join('resources/logs/', 'database/db'),
+      filename: LOG_PARAM.DATABASE_PATH,
       pattern: 'yyyy-MM-dd.log',
       alwaysIncludePattern: true, // 设置文件名称为 filename + pattern
       maxLogSize: logSize,
@@ -45,7 +46,7 @@ log4js.configure({
       pattern: 'yyyy-MM-dd.log',
       alwaysIncludePattern: true,
       encoding: 'utf-8',
-      filename: path.join('resources/logs/', 'application/application'),
+      filename: LOG_PARAM.APPLICATION_PATH,
       maxLogSize: logSize,
       backups: 100,
     },
@@ -53,7 +54,7 @@ log4js.configure({
     response: {
       type: 'dateFile',
       // category:'resLogger',
-      filename: path.join('resources/logs/', 'responses/response'),
+      filename: LOG_PARAM.RESPONSES_PATH,
       pattern: 'yyyy-MM-dd.log', //日志输出模式
       alwaysIncludePattern: true,
       maxLogSize: logSize,

@@ -2,6 +2,7 @@ import { net } from 'electron';
 import http from 'http';
 import https from 'https';
 import { EventEmitter } from 'events';
+import { PING_TIMEOUT, PING_URL } from '../config';
 
 export const request = async (url, method?, headers?, data?) => {
   let todo: any = null;
@@ -74,7 +75,7 @@ function httpsRequest(url, method?, headers?, data?) {
 }
 
 // 检测网络连接状态
-export function isOnline(url = 'https://www.friggatech.com/'): Promise<boolean> {
+export function isOnline(url = PING_URL): Promise<boolean> {
   return new Promise(resolve => {
     const request = net.request(url);
 
@@ -102,12 +103,12 @@ export class IsOnlineService extends EventEmitter {
    */
   constructor(
     options = {
-      authority: 'https://www.friggatech.com/',
-      rate: 10 * 1000,
+      authority: PING_URL,
+      rate: PING_TIMEOUT,
     }
   ) {
     super();
-    if (!options.rate) options.rate = 10 * 1000;
+    if (!options.rate) options.rate = PING_TIMEOUT;
     this.isInternetAvailable = false;
     const checkForever = async () => {
       this.emit('checking');
