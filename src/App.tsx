@@ -45,8 +45,8 @@ const App: React.FC = () => {
             display: 'flex',
           }}
         >
+          <Left></Left>
           <Suspense>
-            <Left></Left>
             <Router />
           </Suspense>
         </div>

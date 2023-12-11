@@ -2,7 +2,7 @@ import { filePath } from '../../unitls/unitls';
 import { queryHistoryDeviceList } from './device';
 import { selectSavePath } from './exportDevice';
 import Excel, { BorderStyle, Borders } from 'exceljs';
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
 import dayjs from 'dayjs';
 import { timeDiff } from '../../unitls/tool';
 import { text } from '../../pdfgen/gloable/language';
@@ -95,15 +95,17 @@ const infoSheet = (workbook: Excel.Workbook, { params, data }) => {
       item.dataName,
       item.gentsn,
       '正常',
-      item.temperature.max,
-      item.temperature.min,
-      item.temperature.average,
+      item.temperature.max || '',
+      item.temperature.min || '',
+      item.temperature.average != 'NaN' ? item.temperature.average || '' : '',
       '1.0.0',
       `${record.tempPeriod / 60} Min`,
-      item.csvData[0].timeStamp,
-      item.csvData[item.csvData.length - 1].timeStamp,
+      item.csvData[0]?.timeStamp || '',
+      item.csvData[item.csvData.length - 1]?.timeStamp || '',
       item.csvData.length,
-      timeDiff(item.csvData[0].timeStamp, item.csvData[item.csvData.length - 1].timeStamp),
+      item.csvData.length > 0
+        ? timeDiff(item.csvData[0].timeStamp, item.csvData[item.csvData.length - 1].timeStamp)
+        : '',
       '',
       '',
     ]);

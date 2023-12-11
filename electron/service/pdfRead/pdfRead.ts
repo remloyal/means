@@ -11,7 +11,7 @@ import { encrypt } from '../../unitls/encryption';
 import { dbPath } from '../controllers/device';
 import { importPDFFile } from './pdfOperate';
 dayjs.extend(customParseFormat);
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
 import { win } from '../../main/index';
 
 export const importPDF = async () => {

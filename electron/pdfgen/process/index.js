@@ -20,7 +20,7 @@ import * as constants from '../templates/constants';
 import _config from '../gloable/config';
 import * as _util from '../unitl';
 import * as _common from '../gloable/common';
-import _log from '../log';
+import _log from '../../unitls/log';
 import dayjs from 'dayjs';
 import createPdf from '../templates/frigga/index';
 

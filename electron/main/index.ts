@@ -5,9 +5,9 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { dynamicConfig, language } from '../config';
+import { DYNAMIC_CONFIG, LANGUAGE, WINDOW_PARAM } from '../config';
 import { IsOnlineService, isOnline } from '../unitls/request';
-import log from '../pdfgen/log';
+import log from '../unitls/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
 // The built directory structure
 //
@@ -35,15 +35,13 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
   process.exit(0);
 }
-dynamicConfig.ver = app.getVersion();
+DYNAMIC_CONFIG.ver = app.getVersion();
 // Remove electron security warnings
 // This warning only shows in development mode
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 export let win: BrowserWindow | null = null;
-const WIDTH = 1440;
-const HEIGHT = 900;
 // Here, you can also use other preload
 export const preload = join(__dirname, '../preload/index.js');
 const url = process.env.VITE_DEV_SERVER_URL;
@@ -55,10 +53,10 @@ export async function createWindow() {
   updateState = false;
   win = new BrowserWindow({
     autoHideMenuBar: true,
-    title: '鼎为数据中心',
+    title: WINDOW_PARAM.TITLE,
     icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
-    width: WIDTH,
-    height: HEIGHT,
+    width: WINDOW_PARAM.WIDTH,
+    height: WINDOW_PARAM.HEIGHT,
     webPreferences: {
       preload,
       nodeIntegration: true,
@@ -91,10 +89,10 @@ export async function createWindow() {
   });
   win.once('ready-to-show', () => {
     // 限制窗口最小尺寸（int整形）, 无边框模式下，不考虑标题栏高度
-    win!.setMinimumSize(WIDTH, HEIGHT);
+    win!.setMinimumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
     win!.show();
   });
-  win.setAspectRatio(1.6);
+  win.setAspectRatio(WINDOW_PARAM.RATIO);
   win.webContents.on('did-fail-load', data => {
     console.log('----fail----', data);
     win?.reload();
@@ -150,11 +148,11 @@ app.whenReady().then(async () => {
     createWindow();
     // 如果网络连接状态不正常，则显示错误提示框，并退出应用
   } else {
+    log.error('Network connection failed');
     dialog.showErrorBox(
       'Network connection failed',
       'Please check your network connection or try again later!'
     );
-    log.error('Network connection failed');
     app.exit();
   }
   // 创建一个IsOnlineService实例
@@ -230,9 +228,9 @@ ipcMain.handle('lang', (_, data) => {
     en_US: 1,
     zh_CN: 2,
   };
-  dynamicConfig.lan = lang[data] || 1;
-  setTray(dynamicConfig.lan);
-  return language[app.getLocale()];
+  DYNAMIC_CONFIG.lan = lang[data] || 1;
+  setTray(DYNAMIC_CONFIG.lan);
+  return LANGUAGE[app.getLocale()];
 });
 
 // 处理获取版本号的事件

@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
 import electron, { app, BrowserWindow, ipcMain } from 'electron';
-import log from '../pdfgen/log';
+import log from '../unitls/log';
 import { createWindow, preload, setUpdateState } from './index';
 import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl, judgingSpaces } from '../unitls/unitls';

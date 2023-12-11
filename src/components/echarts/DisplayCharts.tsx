@@ -14,7 +14,7 @@ interface Chart {
   style?: React.CSSProperties;
   hight?: number;
 }
-
+let sliderZoom;
 export const ShareChart = forwardRef((props: Chart, ref) => {
   const { option, parent, style, hight } = props;
   const chartWrapper = useRef<HTMLDivElement>(null);
@@ -36,6 +36,30 @@ export const ShareChart = forwardRef((props: Chart, ref) => {
   useEffect(() => {
     if (chartWrapper != null && chart.current != null) {
       chart.current.setOption(option, true);
+      sliderZoom = chart.current._componentsViews.find(
+        (view: any) => view.type == 'dataZoom.slider'
+      );
+      if (sliderZoom) {
+        let leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
+        let rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
+        sliderZoom._displayables.handleLabels[0].x = option.dataZoom.start < 10 ? leftP : 0;
+        sliderZoom._displayables.handleLabels[1].x = option.dataZoom.start > 90 ? rightP : 0;
+        chart.current.on('datazoom', (e: any) => {
+          console.log(e);
+          if (e.start < 10) {
+            leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
+          } else {
+            leftP = 0;
+          }
+          if (e.end > 90) {
+            rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
+          } else {
+            rightP = 0;
+          }
+          sliderZoom._displayables.handleLabels[0].x = leftP;
+          sliderZoom._displayables.handleLabels[1].x = rightP;
+        });
+      }
     }
   }, [option]);
 
@@ -159,6 +183,7 @@ export const foldLine = (
         itemStyle: {
           color: 'red',
         },
+        symbol: 'circle',
         markLine: {
           symbol: 'none',
           data: [...lines],
@@ -173,6 +198,7 @@ export const foldLine = (
         itemStyle: {
           color: '#1677FE',
         },
+        symbol: 'circle',
         markLine: {
           symbol: 'none',
           data: [...lines],
@@ -258,7 +284,7 @@ export const createFoldLine = (seriesList: CreateSeries[]) => {
         right: 14, //右边的距离
         bottom: 15, //底边的距离
         borderRadius: 5,
-        filterMode: 'empty',
+        filterMode: 'filter',
       },
     ],
     // 设置系列（series）数据
@@ -275,6 +301,11 @@ export const createSeries = (list, color, name) => {
       return [new Date(item[0]), item[1]];
     }),
     sampling: 'lttb',
+    lineStyle: {
+      width: 1,
+    },
+    symbol: 'circle',
+    showSymbol: false,
     itemStyle: {
       color,
     },

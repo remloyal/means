@@ -6,7 +6,7 @@ import { pdfType } from './pdfType';
 import { c2f, f2c } from '../../unitls/tool';
 import pdfjsLib from 'pdfjs-dist';
 dayjs.extend(customParseFormat);
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
 import { parsePDF } from './pad_json';
 
 // let pdfjsLib;

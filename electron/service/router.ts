@@ -1,6 +1,5 @@
 import { ipcMain } from 'electron';
 import { Device } from './model';
-import { findMinMax } from '../unitls/tool';
 import {
   deleteDevice,
   handleDeviceData,
@@ -12,7 +11,7 @@ import {
 import { exportDevicePdf } from './controllers/exportDevice';
 import { exportHistory } from './controllers/exportHistory';
 import { importPDF } from './pdfRead/pdfRead';
-import log from '../pdfgen/log';
+import log from '../unitls/log';
 
 ipcMain.handle('createDevice', (event, params) => {
   return new Promise(async (resolve, reject) => {

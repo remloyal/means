@@ -79,7 +79,7 @@ import {
   needTransSensorValue,
 } from '../templates/pdfutil';
 import { text } from '../gloable/language';
-import _log from '../log';
+import _log from '../../unitls/log';
 import { transFahr } from '../unitl';
 
 const { POP_INTERVAL, NEED_POP } = PDF_CONFIG.POP;

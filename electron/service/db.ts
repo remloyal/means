@@ -1,20 +1,21 @@
-import path from 'path';
+/* eslint-disable quotes */
 import fs from 'fs';
-import { ipcMain } from 'electron';
 import { Sequelize } from 'sequelize';
 import sqlite3 from 'sqlite3';
-const appPath = path.resolve(process.cwd());
-const configDir = path.join(appPath, 'resources');
-const dbPath = path.join(appPath, 'resources', 'database.db');
-if (!fs.existsSync(configDir)) {
-  fs.mkdirSync(configDir);
+import { DB_PARAM, PATH_PARAM } from '../config';
+
+if (!fs.existsSync(PATH_PARAM.RESOURCES)) {
+  fs.mkdirSync(PATH_PARAM.RESOURCES);
 }
-import log from '../pdfgen/log';
+import log from '../unitls/log';
+
 export const database = new Sequelize({
   dialect: 'sqlite',
-  storage: dbPath,
+  storage: DB_PARAM.DB_PATH,
   // timezone: '+08:00',
   dialectModule: sqlite3,
+  password: DB_PARAM.DB_PASSWORD,
+  dialectModulePath: '@journeyapps/sqlcipher',
   logging: manage => {
     log.db(manage);
   },

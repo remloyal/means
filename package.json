@@ -23,7 +23,7 @@
     "eslint:check": "eslint --fix --ext .ts --ext .jsx --ext .tsx src/ electron/"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "*.{ts,tsx}": [
       "prettier --write",
       "eslint --fix"
     ],
@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@journeyapps/sqlcipher": "^5.3.1",
     "adm-zip": "^0.5.10",
     "antd": "^5.10.2",
     "axios": "^1.6.2",

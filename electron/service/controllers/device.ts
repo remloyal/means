@@ -6,14 +6,13 @@ import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import { database } from '../db';
 import { decrypt, encrypt } from '../../unitls/encryption';
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
+import { PATH_PARAM } from '../../config';
 
-const appPath = path.resolve(process.cwd());
-const filePath = path.join(appPath, 'resources', 'cache');
-if (!fs.existsSync(filePath)) {
-  fs.mkdirSync(filePath);
+if (!fs.existsSync(PATH_PARAM.CACHE_PATH)) {
+  fs.mkdirSync(PATH_PARAM.CACHE_PATH);
 }
-export const dbPath = path.join(filePath, dayjs().format('YYYY-MM'));
+export const dbPath = path.join(PATH_PARAM.CACHE_PATH, dayjs().format('YYYY-MM'));
 if (!fs.existsSync(dbPath)) {
   fs.mkdirSync(dbPath);
 }

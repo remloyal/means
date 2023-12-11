@@ -1,13 +1,12 @@
-import { filePath } from '../../unitls/unitls';
 import fs from 'fs';
 import path from 'path';
 import content from './content';
 import { BrowserWindow, app, ipcMain, utilityProcess } from 'electron';
-import log from '../../pdfgen/log';
+import log from '../../unitls/log';
 import drivelist from 'drivelist';
 import HID from 'node-hid';
+import { PATH_PARAM } from '../../config';
 
-const targetPath = filePath('static');
 let mainWindow: BrowserWindow | null = null;
 export let hidProcess: Electron.UtilityProcess | null;
 
@@ -24,17 +23,13 @@ interface HidEventData {
 
 const VERSION_ID = 10473; // 1003
 const PRODUCT_ID = 631; // 517
-let targetFileName = path.join(process.cwd(), './public/thread.js');
-
-if (app.isPackaged) {
-  targetFileName = filePath('./app.asar/dist/thread.js');
-}
+const targetFileName = PATH_PARAM.THREAD;
 
 log.info('targetFileName ==>', targetFileName);
 const createThread = async () => {
   try {
     // 创建子进程
-    hidProcess = utilityProcess.fork(targetFileName, process.argv, { cwd: targetPath });
+    hidProcess = utilityProcess.fork(targetFileName, process.argv, { cwd: PATH_PARAM.STATIC_PATH });
     hidProcess.on('message', message => {
       // 判断事件类型并触发对应的事件处理函数
       const msg = message as HidEvent<any>;
@@ -154,17 +149,24 @@ export const filterUsbList = async () => {
     const element = list[index];
     if (element.isUSB) {
       let names = '';
-      const files = fs.readdirSync(element.mountpoints[0].path, {
-        withFileTypes: true,
-      });
-      files.forEach(item => {
-        names += `${item.name} `;
-      });
+      try {
+        const files = fs.readdirSync(element.mountpoints[0].path, {
+          withFileTypes: true,
+        });
+        files.forEach(item => {
+          names += `${item.name} `;
+        });
 
-      fileListPath.push({
-        drivePath: element.mountpoints[0].path,
-        names,
-      });
+        fileListPath.push({
+          drivePath: element.mountpoints[0].path,
+          names,
+        });
+      } catch (error) {
+        fileListPath.push({
+          drivePath: element.mountpoints[0].path,
+          names,
+        });
+      }
     }
   }
 
@@ -194,11 +196,22 @@ export const filterUsbList = async () => {
     }
   }
 
+  // 为空可能是静默设备，数据为空
+  if (usbList.length == 0 && fileListPath.length == hidList.length) {
+    hidList.forEach((item, index) => {
+      usbList.push({
+        ...fileListPath[index],
+        ...item,
+      });
+    });
+  }
+
   // 默认返回第一个
   if (deviceUsbList.length == 0) {
     deviceUsbList.push(...usbList);
     return deviceUsbList[0];
   }
+
   //对比是增加还是减少
   console.log('设备对比 ==>', usbList.length, deviceUsbList.length);
   if (usbList.length > deviceUsbList.length) {
