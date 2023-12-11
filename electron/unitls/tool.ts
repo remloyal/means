@@ -56,7 +56,7 @@ function getAverage(arr) {
     arr.reduce((sum, value) => {
       return sum + value;
     }, 0) / arr.length;
-  return res.toFixed(1);
+  return res.toFixed(1) || 0;
 }
 
 interface DataType {
