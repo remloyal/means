@@ -94,8 +94,11 @@ export const foldLine = (
   valueList: string[] | number[],
   lines: StandardLine[],
   humiList: string[] | number[],
-  legend: string[]
+  legend: string[],
+  temp: string[]
 ) => {
+  const tempValue = temp;
+
   return {
     tooltip: {
       show: true,
@@ -128,9 +131,15 @@ export const foldLine = (
           },
         },
         max(value) {
+          if (tempValue[0] > value.max) {
+            return Math.ceil(parseFloat(tempValue[0]) + 5);
+          }
           return Math.ceil(value.max + 10);
         },
         min(value) {
+          if (tempValue[1] < value.min) {
+            return Math.ceil(parseFloat(tempValue[1]) - 5);
+          }
           return Math.ceil(value.min - 10);
         },
       },

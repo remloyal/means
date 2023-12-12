@@ -139,10 +139,17 @@ const SummaryGraph: React.FC = () => {
   }, [device]);
 
   useEffect(() => {
-    const chat = foldLine(dateList, valueList, line, humiList, [
-      `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
-      power.includes('setHighHumi') ? t('home.humidity') : '',
-    ]);
+    const chat = foldLine(
+      dateList,
+      valueList,
+      line,
+      humiList,
+      [
+        `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
+        power.includes('setHighHumi') ? t('home.humidity') : '',
+      ],
+      [device?.record.hightEmp, device?.record.lowtEmp]
+    );
     setOption(chat);
   }, [tongue]);
 
@@ -203,10 +210,17 @@ const SummaryGraph: React.FC = () => {
     setChatOption();
   }, [valueList, humiList, dateList]);
   const setChatOption = (key = 1) => {
-    const chat = foldLine(key == 1 ? dateList : order, valueList, line, humiList, [
-      `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
-      power.includes('setHighHumi') ? t('home.humidity') : '',
-    ]);
+    const chat = foldLine(
+      key == 1 ? dateList : order,
+      valueList,
+      line,
+      humiList,
+      [
+        `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
+        power.includes('setHighHumi') ? t('home.humidity') : '',
+      ],
+      [device?.record.hightEmp, device?.record.lowtEmp]
+    );
     setOption(chat);
   };
 
