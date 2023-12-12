@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { Device, FileData } from '../model';
-import { convertToCSV, findMinMax, parseCSVData } from '../../unitls/tool';
+import { convertToCSV, findMinMax, getDuration, parseCSVData } from '../../unitls/tool';
 import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import { database } from '../db';
@@ -164,6 +164,8 @@ const getDeviceList = (device, file) => {
   const data = fs.readFileSync(file.path);
   const decryptText = decrypt(data.toString());
   const todo = parseCSVData(decryptText);
+  const duration = getDuration(todo);
   device.csvData = todo;
+  device.duration = duration;
   return device;
 };

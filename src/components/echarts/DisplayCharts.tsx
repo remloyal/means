@@ -40,24 +40,29 @@ export const ShareChart = forwardRef((props: Chart, ref) => {
         (view: any) => view.type == 'dataZoom.slider'
       );
       if (sliderZoom) {
-        let leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
-        let rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
-        sliderZoom._displayables.handleLabels[0].x = option.dataZoom.start < 10 ? leftP : 0;
-        sliderZoom._displayables.handleLabels[1].x = option.dataZoom.start > 90 ? rightP : 0;
+        let leftP;
+        let rightP;
+        if (sliderZoom._displayables?.handleLabels) {
+          leftP = sliderZoom._displayables?.handleLabels[0]?.style.text.length * 8;
+          rightP = -sliderZoom._displayables?.handleLabels[1]?.style.text.length * 8;
+          sliderZoom._displayables.handleLabels[0].x = option.dataZoom.start < 10 ? leftP : 0;
+          sliderZoom._displayables.handleLabels[1].x = option.dataZoom.start > 90 ? rightP : 0;
+        }
         chart.current.on('datazoom', (e: any) => {
-          console.log(e);
-          if (e.start < 10) {
-            leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
-          } else {
-            leftP = 0;
+          if (sliderZoom._displayables?.handleLabels) {
+            if (e.start < 10) {
+              leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
+            } else {
+              leftP = 0;
+            }
+            if (e.end > 90) {
+              rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
+            } else {
+              rightP = 0;
+            }
+            sliderZoom._displayables.handleLabels[0].x = leftP;
+            sliderZoom._displayables.handleLabels[1].x = rightP;
           }
-          if (e.end > 90) {
-            rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
-          } else {
-            rightP = 0;
-          }
-          sliderZoom._displayables.handleLabels[0].x = leftP;
-          sliderZoom._displayables.handleLabels[1].x = rightP;
         });
       }
     }

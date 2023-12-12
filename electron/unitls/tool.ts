@@ -132,3 +132,34 @@ export function stringToUint8Array(str): number[] {
   tmpUint8Array.unshift(1);
   return tmpUint8Array;
 }
+
+export const getDuration = (todo: any[]) => {
+  const minList: number[] = [];
+  for (let i = 1; i < todo.length; i++) {
+    const diff = dayjs(todo[i].timeStamp).valueOf();
+    minList.push(diff);
+  }
+  const maxDiff = minList.sort((a, b) => a - b);
+  const seconds = dayjs(maxDiff[maxDiff.length - 1]).diff(dayjs(maxDiff[0])) / 1000;
+  return secondsToTime(seconds);
+};
+
+// 传入秒数 转换成 时 分
+export const secondsToTime = (seconds: number) => {
+  if (seconds <= 0) {
+    return '0 m';
+  }
+  if (seconds < 3600 && seconds > 0) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes} m`;
+  }
+  let hours = Math.floor(seconds / 3600);
+  const remainder = seconds % 3600;
+  const minutes = Math.floor(remainder / 60);
+  if (hours >= 24) {
+    const day = Math.floor(hours / 24);
+    hours = hours - day * 24;
+    return `${day}D ${hours}H ${minutes}M`;
+  }
+  return `${hours}H ${minutes}M`;
+};

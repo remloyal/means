@@ -1,4 +1,4 @@
-import { equipment } from '@/stores';
+import { equipment, typePower } from '@/stores';
 import { Button, Checkbox, DatePicker, InputNumber, Select, message } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import dayjs from 'dayjs';
@@ -28,6 +28,7 @@ const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 export const DataExport = ({ onCancel }) => {
   const { t } = useTranslation();
   const device = useRecoilValue(equipment);
+  const power = useRecoilValue(typePower);
 
   useEffect(() => {
     initTime();
@@ -36,13 +37,21 @@ export const DataExport = ({ onCancel }) => {
     startTime: '',
     endTime: '',
   });
-  const options = [
+  const [options, setOptions] = useState<any[]>([
     { label: t('home.temperature'), value: 'temp' },
     { label: t('home.humidity'), value: 'humi' },
-  ];
+  ]);
   const initTime = () => {
     const startTime = device?.record.firstRecordTime;
     const endTime = device?.record.lastRecordedTime;
+    if (power.includes('setHighHumi')) {
+      setOptions([
+        { label: t('home.temperature'), value: 'temp' },
+        { label: t('home.humidity'), value: 'humi' },
+      ]);
+    } else {
+      setOptions([{ label: t('home.temperature'), value: 'temp' }]);
+    }
     setRegionalTime({
       startTime,
       endTime,

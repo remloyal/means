@@ -218,7 +218,7 @@ export const AnalysisTable = ({ data, ondelete }) => {
     },
     {
       title: <span className="span_12">{t('history.duration')}</span>,
-      dataIndex: 'cloudStorage',
+      dataIndex: 'duration',
       width: 40,
       align: 'center',
     },

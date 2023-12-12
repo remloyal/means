@@ -25,7 +25,7 @@ import { FileJpgOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
 import HistoryRight from '../History/historyRight';
 import { DataExport } from './DataExport';
-import { c2f } from '@/utils/utils';
+import { c2f, secondsToTime } from '@/utils/utils';
 import { DataFilter } from './DataFilter';
 
 // 温度单位
@@ -364,7 +364,7 @@ const SummaryRight: React.FC = () => {
     },
     {
       label: t('home.recordInterval'),
-      children: device != null ? `${device?.record.tempPeriod} S` : '---',
+      children: device != null ? secondsToTime(device?.record.tempPeriod) : '---',
     },
     {
       label: t('home.sensorType'),
@@ -372,7 +372,7 @@ const SummaryRight: React.FC = () => {
     },
     {
       label: t('home.startDelay'),
-      children: device != null ? `${device?.record.startDelayTime} S` : '---',
+      children: device != null ? secondsToTime(device?.record.startDelayTime) : '---',
     },
     // {
     //   label: t('home.repetitionPriming'),
@@ -380,7 +380,7 @@ const SummaryRight: React.FC = () => {
     // },
     {
       label: t('home.displayTime'),
-      children: device != null ? `${device?.record.multIdSleepTime} S` : '---',
+      children: device != null ? `${device?.record.multIdSleepTime || 0} S` : '---',
     },
     // {
     //   label: t('home.temporaryPDF'),

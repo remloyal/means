@@ -65,7 +65,9 @@ export const importPDFFile = async (filePath: string) => {
       list = data;
     }
   }
-
+  if (list.length == 0) {
+    return false;
+  }
   const deviceInstance: any = await readFirst(list[0], type);
 
   const csvData: any = [];

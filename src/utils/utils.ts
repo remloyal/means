@@ -12,3 +12,23 @@ export const c2f = c => {
   f2c = f => {
     return Math.round(((f - 32) / 1.8) * 10) / 10;
   };
+
+// 传入秒数 转换成 时 分
+export const secondsToTime = (seconds: number) => {
+  if (seconds <= 0) {
+    return '0 m';
+  }
+  if (seconds < 3600 && seconds > 0) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes} m`;
+  }
+  let hours = Math.floor(seconds / 3600);
+  const remainder = seconds % 3600;
+  const minutes = Math.floor(remainder / 60);
+  if (hours >= 24) {
+    const day = Math.floor(hours / 24);
+    hours = hours - day * 24;
+    return `${day} D ${hours} H ${minutes} M`;
+  }
+  return `${hours} H ${minutes} M`;
+};
