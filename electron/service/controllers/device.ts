@@ -23,33 +23,61 @@ export const handleDeviceData = async params => {
   const { record } = params;
   const result = await findMinMax(todo);
   const other_data = { ...params, csvData: null };
-  const data = await Device.create({
-    type: record.deviceType,
-    gentsn: record.getsn,
-    dataName: `${record.getsn}_${dayjs(new Date()).format('YYYYMMDDHHmmss')}`,
-    startTime: dayjs(record.firstRecordTime),
-    dataCount: todo.length,
-    temperature: JSON.stringify(result.c),
-    fahrenheit: JSON.stringify(result.f),
-    humidity: JSON.stringify(result.humi),
-    dataStorage_type: 0,
-    otherData: JSON.stringify(other_data),
-    alarm: result.c.max > record.highHumi ? 1 : 0,
+  const oldData = await Device.findOne({
+    where: {
+      dataName: params.csvName,
+      gentsn: record.getsn,
+      type: record.deviceType,
+      mode: record.mode,
+    },
   });
+  if (oldData) {
+    oldData.update({
+      type: record.deviceType,
+      gentsn: record.getsn,
+      dataName: params.csvName || `${record.getsn}_${dayjs(new Date()).format('YYYYMMDDHHmmss')}`,
+      startTime: dayjs(record.firstRecordTime),
+      dataCount: todo.length,
+      temperature: JSON.stringify(result.c),
+      fahrenheit: JSON.stringify(result.f),
+      humidity: JSON.stringify(result.humi),
+      dataStorage_type: 0,
+      otherData: JSON.stringify(other_data),
+      alarm: result.c.max > record.highHumi ? 1 : 0,
+      mode: record.mode,
+    });
+    return oldData.toJSON();
+  } else {
+    const data = await Device.create({
+      type: record.deviceType,
+      gentsn: record.getsn,
+      dataName: params.csvName || `${record.getsn}_${dayjs(new Date()).format('YYYYMMDDHHmmss')}`,
+      startTime: dayjs(record.firstRecordTime),
+      dataCount: todo.length,
+      temperature: JSON.stringify(result.c),
+      fahrenheit: JSON.stringify(result.f),
+      humidity: JSON.stringify(result.humi),
+      dataStorage_type: 0,
+      otherData: JSON.stringify(other_data),
+      alarm: result.c.max > record.highHumi ? 1 : 0,
+      mode: record.mode,
+      timeZone: record.timeZone,
+    });
 
-  //   保存数据源
-  //   const jsonData = JSON.stringify(todo, null, 2);
-  const jsonData = convertToCSV(todo);
-  const encryptText = encrypt(jsonData);
-  const jsonName = `${record.getsn}_${new Date().getTime()}`;
-  const jsonPath = path.join(dbPath, `${jsonName}.dewav`);
-  fs.writeFileSync(jsonPath, encryptText);
-  await FileData.create({
-    path: jsonPath,
-    name: jsonName,
-    deviceId: data.toJSON().id,
-  });
-  return data.toJSON();
+    //   保存数据源
+    //   const jsonData = JSON.stringify(todo, null, 2);
+    const jsonData = convertToCSV(todo);
+    const encryptText = encrypt(jsonData);
+    const jsonName = `${record.getsn}_${new Date().getTime()}`;
+    const jsonPath = path.join(dbPath, `${jsonName}.dewav`);
+    fs.writeFileSync(jsonPath, encryptText);
+    await FileData.create({
+      path: jsonPath,
+      name: jsonName,
+      deviceId: data.toJSON().id,
+    });
+    return data.toJSON();
+  }
 };
 
 export const queryDevice = async params => {

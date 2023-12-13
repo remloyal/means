@@ -27,6 +27,7 @@ import HistoryRight from '../History/historyRight';
 import { DataExport } from './DataExport';
 import { c2f, secondsToTime } from '@/utils/utils';
 import { DataFilter } from './DataFilter';
+import dayjs from 'dayjs';
 
 // 温度单位
 const MultidUnit = {
@@ -35,6 +36,7 @@ const MultidUnit = {
 };
 
 const Summary: React.FC = () => {
+  const { t } = useTranslation();
   const device = useRecoilValue(equipment);
   const [dataState, setDataState] = useState(true);
   const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
@@ -69,7 +71,7 @@ const Summary: React.FC = () => {
         margin: '0 auto',
       }}
     >
-      <h3>请插入Frigga记录仪</h3>
+      <h3>{t('home.friggaRecorder')}</h3>
     </div>
   );
 };
@@ -108,9 +110,15 @@ const SummaryMain: React.FC = () => {
           },
         }}
       >
-        <Tabs defaultActiveKey="1" items={items} destroyInactiveTabPane={false} />
-        <ExportData></ExportData>
+        <Tabs
+          style={{ width: '100%', height: '100%' }}
+          className="summary-chart"
+          defaultActiveKey="1"
+          items={items}
+          destroyInactiveTabPane={false}
+        />
       </ConfigProvider>
+      <ExportData></ExportData>
     </MainBody>
   );
 };
@@ -161,7 +169,11 @@ const SummaryGraph: React.FC = () => {
       const humiLists: number[] = [];
       const indexList: string[] = [];
       todo.forEach((item, index) => {
-        dateLists.push(item.timeStamp);
+        dateLists.push(
+          dayjs(item.timeStamp).format(
+            `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+          )
+        );
         valueLists.push(MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? item.f : item.c);
         power.includes('setHighHumi') && humiLists.push(item.humi);
         indexList.push((index + 1).toString());

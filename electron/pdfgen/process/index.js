@@ -1,3 +1,4 @@
+/* eslint-disable */
 const PDFDocument = require('pdfkit');
 import fs from 'fs';
 import getStream from 'get-stream';

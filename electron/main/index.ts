@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, dialog, Menu, Tray } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog, Menu, Tray, screen } from 'electron';
 import { release } from 'node:os';
 import { join } from 'node:path';
 import { deviceInit } from './device';
@@ -89,7 +89,10 @@ export async function createWindow() {
   });
   win.once('ready-to-show', () => {
     // 限制窗口最小尺寸（int整形）, 无边框模式下，不考虑标题栏高度
-    win!.setMinimumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
+    win!.setMinimumSize(
+      parseInt((WINDOW_PARAM.WIDTH / 1.1).toString()),
+      parseInt((WINDOW_PARAM.HEIGHT / 1.1).toString())
+    );
     win!.show();
   });
   win.setAspectRatio(WINDOW_PARAM.RATIO);

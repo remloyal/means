@@ -72,22 +72,22 @@ const HistoryMain = () => {
       align: 'center',
       render: (text, record, index) => `${index + 1}`,
     },
-    {
-      title: <span style={{ fontSize: '12px' }}>{t('history.cloudStorage')}</span>,
-      dataIndex: 'cloudStorage',
-      width: 60,
-      align: 'center',
-      render(value, record, index) {
-        return (
-          <Tooltip title={t('history.uploadPlatform')} destroyTooltipOnHide={true}>
-            <i
-              className="iconfont icon-yunduanshangchuan"
-              style={{ fontSize: '20px', color: 'var(--bg-to-color)' }}
-            ></i>
-          </Tooltip>
-        );
-      },
-    },
+    // {
+    //   title: <span style={{ fontSize: '12px' }}>{t('history.cloudStorage')}</span>,
+    //   dataIndex: 'cloudStorage',
+    //   width: 60,
+    //   align: 'center',
+    //   render(value, record, index) {
+    //     return (
+    //       <Tooltip title={t('history.uploadPlatform')} destroyTooltipOnHide={true}>
+    //         <i
+    //           className="iconfont icon-yunduanshangchuan"
+    //           style={{ fontSize: '20px', color: 'var(--bg-to-color)' }}
+    //         ></i>
+    //       </Tooltip>
+    //     );
+    //   },
+    // },
     {
       title: <span style={{ fontSize: '12px' }}>{t('left.equipmentModel')}</span>,
       dataIndex: 'type',

@@ -1,4 +1,11 @@
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+import { UTC_PARAM } from '../../config';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const pdfData = (data, monitors) => {
   const { record } = data;
   const { param } = data;
@@ -69,16 +76,16 @@ const pdfData = (data, monitors) => {
             {
               type: 'humi',
               unit: 'RH',
-              min: record.lowHumi,
+              min: parseFloat(record.lowHumi),
               receiveAlert: true,
-              max: record.highHumi,
+              max: parseFloat(record.highHumi),
             },
             {
               type: 'temp',
               unit: param.tempUnit,
-              min: param.lowtEmp || record.lowtEmp,
+              min: parseFloat(param.lowtEmp || record.lowtEmp),
               receiveAlert: true,
-              max: param.hightEmp || record.hightEmp,
+              max: parseFloat(param.hightEmp || record.hightEmp),
             },
           ],
           read: parseInt(record.tempPeriod) / 60,
@@ -95,20 +102,29 @@ export const setPdfData = async data => {
   const csvData = await data.csvData.filter(
     item => item.timeStamp >= data.param.startTime && item.timeStamp <= data.param.endTime
   );
-  const monitors = await setMonitorData(csvData, data.param);
+  const monitors = await setMonitorData(csvData, data);
   const record = pdfData(data, monitors);
   return record;
 };
-
+const format = 'YYYY-MM-DD HH:mm:ss';
 // 定义一个名为setMonitorData的函数，接收data和param两个参数
-const setMonitorData = (data, param) => {
+const setMonitorData = (data, todo) => {
+  const { param, database, record: information } = todo;
   const tempData: any = [];
   const tempDataF: any = [];
   const humiData: any = [];
   const record = {};
+  const oldTimeZone = UTC_PARAM[database.timeZone];
+  const newTimeZone = UTC_PARAM[information.timeZone];
   for (let index = 0; index < data.length; index++) {
     const item = data[index];
-    const time = dayjs(item.timeStamp).valueOf();
+    // 转换时区时间
+    const utcTime = dayjs.utc(item.timeStamp).utcOffset(database.timeZone.replace('UTC', ''));
+    // console.log('utcTime ==>', utcTime.toString(), utcTime.format(format));
+    const convertedTime = utcTime.tz(newTimeZone);
+    // console.log('convertedTime ==>', convertedTime.toString(), convertedTime.format(format));
+    // const time = convertedTime.valueOf();
+    const time = dayjs(convertedTime.format(format)).valueOf();
     tempData.push({ timestamp: time, val: parseFloat(item.c), lbstime: time });
     humiData.push({ timestamp: time, val: parseFloat(item.humi), lbstime: time });
     tempDataF.push({ timestamp: time, val: parseFloat(item.humi), lbstime: time });

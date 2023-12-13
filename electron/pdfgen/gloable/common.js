@@ -59,15 +59,15 @@ export const subString = function (str, size, isEncode) {
  * @param {*} mask
  */
 export const formatDate = function (timestamp, timeZone, mask = 'YY-MM-DD HH:mm:ss') {
-  if (!timestamp) return '--';
-  const tz = getTz(timeZone);
-  if (timestamp instanceof Date) {
-    timestamp = timestamp.getTime();
-  } else if (typeof timestamp === 'string') {
-    timestamp = new Date(timestamp).getTime();
-  }
-  // 根据传入时间 + 相应时间戳 毫秒数
-  const date = new Date(timestamp + tz * 60 * 60 * 1000);
+  // if (!timestamp) return '--';
+  // const tz = getTz(timeZone);
+  // if (timestamp instanceof Date) {
+  //   timestamp = timestamp.getTime();
+  // } else if (typeof timestamp === 'string') {
+  //   timestamp = new Date(timestamp).getTime();
+  // }
+  // // 根据传入时间 + 相应时间戳 毫秒数
+  // const date = new Date(timestamp + tz * 60 * 60 * 1000);
 
   return dayjs(timestamp).format(mask || 'YY-MM-DD HH:mm:ss');
 };

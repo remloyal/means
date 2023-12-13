@@ -5,7 +5,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { useTranslation } from 'react-i18next';
 
-const WIDTH = 220;
+const WIDTH = 200;
 
 // 高级参数
 export const DeployAdvanced = ({ state }: { state: boolean }) => {
