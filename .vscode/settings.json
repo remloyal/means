@@ -1,4 +1,5 @@
 {
     "editor.inlineSuggest.showToolbar": "onHover",
-    "commentTranslate.source": "DarkCWK.youdao-youdao"
+    "commentTranslate.source": "DarkCWK.youdao-youdao",
+    "prettier.endOfLine": "auto"
 }

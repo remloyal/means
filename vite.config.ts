@@ -99,5 +99,8 @@ export default defineConfig(({ command }) => {
         },
       },
     },
+    esbuild: {
+      drop: ['console', 'debugger'],
+    },
   };
 });

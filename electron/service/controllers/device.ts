@@ -46,6 +46,7 @@ export const handleDeviceData = async params => {
       alarm: result.c.max > record.highHumi ? 1 : 0,
       mode: record.mode,
     });
+    await oldData.save();
     return oldData.toJSON();
   } else {
     const data = await Device.create({

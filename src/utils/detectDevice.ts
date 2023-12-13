@@ -104,6 +104,12 @@ export const loadUsbData = async data => {
         operation.record.stopMode = csvData[3].split(' ')[0];
         const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
         operation.database = data;
+
+        // 获取PDF UTC
+        const oldData = await ipcRenderer.invoke('deviceUtcUpdate', Object.assign({}, operation));
+        if (oldData) {
+          operation.database = oldData;
+        }
         console.log(operation);
         window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
         window.eventBus.emit('loadingCompleted');

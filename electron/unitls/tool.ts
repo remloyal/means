@@ -163,3 +163,36 @@ export const secondsToTime = (seconds: number) => {
   }
   return `${hours}H ${minutes}M`;
 };
+
+// 格式化UTC
+export function formatUtc(utcStr) {
+  if (utcStr == '' || utcStr == null || utcStr == undefined) {
+    return utcStr;
+  }
+  const regex = /UTC([+-]\d{1,2}):(\d{2})/;
+  const match = utcStr.match(regex);
+
+  if (!match) {
+    throw new Error(`Invalid UTC format: ${utcStr}`);
+  }
+
+  let sign = '+';
+
+  let hours = match[1];
+  let minutes = match[2];
+  if (hours.includes('+')) {
+    sign = '+';
+  } else {
+    sign = '-';
+  }
+
+  hours = parseInt(hours).toString();
+  if (hours.length === 1) {
+    hours = `0${hours}`;
+  }
+  if (minutes.length === 1) {
+    minutes = `0${minutes}`;
+  }
+
+  return `UTC${sign}${hours}:${minutes}`;
+}

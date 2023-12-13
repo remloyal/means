@@ -3,7 +3,7 @@ import fs from 'fs';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { pdfType } from './pdfType';
-import { c2f, f2c } from '../../unitls/tool';
+import { c2f, f2c, formatUtc } from '../../unitls/tool';
 import pdfjsLib from 'pdfjs-dist';
 dayjs.extend(customParseFormat);
 import log from '../../unitls/log';
@@ -79,6 +79,9 @@ export const importPDFFile = async (filePath: string) => {
   deviceInstance.csvData = csvData;
   const threshold = await getThreshold(deviceInstance.threshold, deviceInstance.type);
   //   console.log(deviceInstance, csvData.length);
+  if (deviceInstance.timeZone) {
+    deviceInstance.timeZone = formatUtc(deviceInstance.timeZone);
+  }
   return { ...deviceInstance, ...threshold };
   // console.log(csvData);
 };

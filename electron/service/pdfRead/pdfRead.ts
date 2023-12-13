@@ -45,6 +45,8 @@ const handlePdf = async params => {
     dataStorage_type: 0,
     otherData: JSON.stringify(other_data),
     alarm: result.c.max > record.highHumi ? 1 : 0,
+    mode: record.mode || 5,
+    timeZone: record.timeZone,
   });
   //   保存数据源
   //   const jsonData = JSON.stringify(todo, null, 2);
@@ -149,4 +151,37 @@ const openFile = (): Promise<string | boolean> => {
         }
       });
   });
+};
+
+// 查询PDF UTC
+export const deviceUtcUpdate = async param => {
+  // console.log(param);
+  const { drive, database } = param;
+  if (drive.drivePath) {
+    const files = fs.readdirSync(drive.drivePath);
+    console.log(files);
+    const pdfFiles = files.filter(file => file.endsWith('.pdf'));
+    if (pdfFiles.length == 0 || !pdfFiles) {
+      return false;
+    }
+    const pdfFile = pdfFiles[0];
+    const filePath = path.join(drive.drivePath, pdfFile);
+    const pdfReadData = await importPDFFile(filePath as string);
+    if (pdfReadData.timeZone) {
+      const oldData = await Device.findOne({
+        where: {
+          gentsn: database.gentsn,
+          type: database.type,
+          id: database.id,
+        },
+      });
+      if (!oldData) return false;
+      oldData.update({
+        timeZone: pdfReadData.timeZone,
+      });
+      await oldData.save();
+      return oldData.toJSON();
+    }
+  }
+  return false;
 };
