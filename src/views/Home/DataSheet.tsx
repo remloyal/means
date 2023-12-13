@@ -62,10 +62,7 @@ const DataSheet = () => {
   function setHight() {
     const element = document.querySelector('.summary-main');
     const height: any = window.getComputedStyle(element!)['height'];
-    console.log(height);
-
     const axleHight = parseInt(height) - 180;
-    console.log(axleHight);
     setAxle(axleHight);
   }
 

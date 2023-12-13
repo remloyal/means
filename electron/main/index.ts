@@ -89,7 +89,10 @@ export async function createWindow() {
   });
   win.once('ready-to-show', () => {
     // 限制窗口最小尺寸（int整形）, 无边框模式下，不考虑标题栏高度
-    win!.setMinimumSize(WINDOW_PARAM.WIDTH / 1.2, WINDOW_PARAM.HEIGHT / 1.2);
+    win!.setMinimumSize(
+      parseInt((WINDOW_PARAM.WIDTH / 1.1).toString()),
+      parseInt((WINDOW_PARAM.HEIGHT / 1.1).toString())
+    );
     win!.show();
   });
   win.setAspectRatio(WINDOW_PARAM.RATIO);
