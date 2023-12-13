@@ -99,8 +99,11 @@ export default defineConfig(({ command }) => {
         },
       },
     },
-    esbuild: {
-      drop: ['console', 'debugger'],
-    },
+    esbuild:
+      sourcemap == true
+        ? {}
+        : {
+            drop: ['console', 'debugger'],
+          },
   };
 });

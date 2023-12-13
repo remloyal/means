@@ -16,7 +16,7 @@ import { win } from '../../main/index';
 
 export const importPDF = async () => {
   const filePath: string | boolean = await openFile();
-  if (!filePath) return false;
+  if (!filePath) return 'nopath';
   try {
     const pdfReadData = await importPDFFile(filePath as string);
     const pdfFormatData = await setFormatData(pdfReadData);

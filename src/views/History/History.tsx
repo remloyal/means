@@ -207,6 +207,9 @@ const HistoryMain = () => {
     // } else {
     //   setUnit('\u2103');
     // }
+    setTimeout(() => {
+      setSelectedRowKeys(deviceListKey);
+    });
   };
   const handleRowClick = event => {
     const index = selectedRowKeys.findIndex(item => item == event.id);
@@ -431,6 +434,7 @@ const HistoryLift = () => {
     const importPDF = async () => {
       const todo = await ipcRenderer.invoke('importPDF');
       console.log(todo);
+      if (todo == 'nopath') return;
       if (todo) {
         queryDevice();
         message.success(t('history.importSuccess'));
