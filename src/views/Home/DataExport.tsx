@@ -44,13 +44,16 @@ export const DataExport = ({ onCancel }) => {
   const initTime = () => {
     const startTime = device?.record.firstRecordTime;
     const endTime = device?.record.lastRecordedTime;
+    let data: string[] = [];
     if (power.includes('setHighHumi')) {
       setOptions([
         { label: t('home.temperature'), value: 'temp' },
         { label: t('home.humidity'), value: 'humi' },
       ]);
+      data = ['temp', 'humi'];
     } else {
       setOptions([{ label: t('home.temperature'), value: 'temp' }]);
+      data = ['temp'];
     }
     setRegionalTime({
       startTime,
@@ -63,6 +66,7 @@ export const DataExport = ({ onCancel }) => {
       startTime,
       endTime,
       tempUnit,
+      data,
       pdfTongue: lang,
       hightEmp:
         device?.record.multidUnit == 0 ? device?.record.hightEmp : c2f(device?.record.hightEmp),
@@ -187,6 +191,7 @@ export const DataExport = ({ onCancel }) => {
     }
     const res = await ipcRenderer.invoke('exportDevice', data);
     if (res) {
+      message.success(t('home.exportSuccess'));
       onCancel();
     } else {
       message.error(t('home.exportFailed'));

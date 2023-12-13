@@ -35,9 +35,9 @@
     "errotText": "Device reading error, please reinsert the device!",
     "reading": "Data Reading",
     "saving": "Data Saving",
-    "exitPrompt":"Turn off prompts",
-    "minimizeTray":"Minimize to tray",
-    "exitApp":"Exit the application"
+    "exitPrompt": "Turn off prompts",
+    "minimizeTray": "Minimize to tray",
+    "exitApp": "Exit the application"
   },
   "home": {
     "graph": "Graph",
@@ -72,14 +72,15 @@
     "sensorData": "Sensor Data",
     "exportAs": "Export As",
     "language": "Language",
-    "confirm":"Confirm",
+    "confirm": "Confirm",
     "cancellation": "Cancellation",
-    "screen":"Screen",
+    "screen": "Screen",
     "exportFailed": "Export Failed",
     "exportSuccess": "Export Success",
     "processing": "Processing",
-    "startTime":"Start Time",
-    "endTime":"End Time"
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "friggaRecorder": "Please insert the Frigga recorder"
   },
   "deploy": {
     "basicParameters": "Basic parameters",
@@ -110,7 +111,7 @@
     "startTime": "Start Time",
     "currentNumberEntries": "Number",
     "localSave": "Local save",
-    "storeWay":"Store Way",
+    "storeWay": "Store Way",
     "timeOptions": "Time Options",
     "quickView": "Quick View",
     "uploadPlatform": "Upload to cloud platform?",
@@ -147,9 +148,9 @@
     "import": "Import",
     "importSuccess": "Import was successful",
     "importFailed": "Import failed",
-    "local":"Local",
-    "clouds":"Clouds",
-    "dataEditing":"Data Editing"
+    "local": "Local",
+    "clouds": "Clouds",
+    "dataEditing": "Data Editing"
   },
   "device": {
     "initialstate": "Initial state",

@@ -20,7 +20,7 @@ export const secondsToTime = (seconds: number) => {
   }
   if (seconds < 3600 && seconds > 0) {
     const minutes = Math.floor(seconds / 60);
-    return `${minutes} m`;
+    return `${minutes} M`;
   }
   let hours = Math.floor(seconds / 3600);
   const remainder = seconds % 3600;

@@ -21,7 +21,7 @@ try {
     console.log('detach ==>', data);
     setTimeout(() => {
       win?.webContents.send('deviceRemoval', data);
-    }, 1500);
+    }, 1000);
   });
 } catch (error) {
   console.log(error);

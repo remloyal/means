@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   --text-color: #ffffff;
-  --text-title-color:#F4860F;
+  --text-title-color: #f4860f;
   --bg-color: #f8dcc4;
   --bg-to-color: #fb6601;
   --bg-right-color: #f5b986;
@@ -34,8 +34,9 @@ a:hover {
 body {
   margin: 0;
   padding: 0;
-  min-width: 320px;
-  min-height: 100vh;
+  min-width: 1440px;
+  min-height: 900px;
+  overflow: hidden;
 }
 
 h1 {

@@ -1,4 +1,4 @@
-import { ConfigProvider, Button } from 'antd';
+import { ConfigProvider, Button, message } from 'antd';
 import React, { Suspense, useEffect, useState } from 'react';
 import appTheme from '@/theme/App';
 import '@/App.scss';
@@ -27,6 +27,7 @@ const App: React.FC = () => {
   const [date, setDate] = useRecoilState(dateFormat);
 
   useEffect(() => {
+    message.config({ prefixCls: 'antd-message', maxCount: 3, duration: 2 });
     setTongue(localStorage.getItem('language') || 'zh_CN');
     setDate(localStorage.getItem('dateFormat') || 'YYYY-MM-DD');
   }, []);

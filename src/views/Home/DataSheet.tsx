@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Segmented, Space, Switch, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { useRecoilValue } from 'recoil';
@@ -12,9 +12,13 @@ interface RecordType {
   heat: string | number;
 }
 
+// @ts-nocheck
+const MutationObserver = window.MutationObserver;
+let observer;
 const DataSheet = () => {
   const { t } = useTranslation();
   const device = useRecoilValue(equipment);
+  const handle = useThrottle(setHight, 500);
   const MultidUnit = {
     0: '\u2103',
     1: '\u2109',
@@ -50,12 +54,41 @@ const DataSheet = () => {
   }, [device]);
 
   const [axle, setAxle] = useState<number>(500);
-  const resizeData = useRecoilValue(resize);
-  useEffect(() => {
-    const num = 500 + (resizeData.width - 1424) / 6;
-    setAxle(num);
-  }, [resizeData]);
+  // const resizeData = useRecoilValue(resize);
+  // useEffect(() => {
+  //   const num = 500 + (resizeData.width - 1424) / 6;
+  //   setAxle(num);
+  // }, [resizeData]);
+  function setHight() {
+    const element = document.querySelector('.summary-main');
+    const height: any = window.getComputedStyle(element!)['height'];
+    console.log(height);
 
+    const axleHight = parseInt(height) - 180;
+    console.log(axleHight);
+    setAxle(axleHight);
+  }
+
+  useEffect(() => {
+    const element = document.querySelector('.ant-tabs-content-holder');
+    observer = new MutationObserver(mutationList => {
+      // console.log(mutationList);
+      // useThrottle(setHight, 500);
+      handle();
+    });
+
+    observer.observe(element, {
+      childList: true, // 子节点的变动（新增、删除或者更改）
+      attributes: true, // 属性的变动
+      attributeFilter: ['style'],
+      characterData: false, // 节点内容或节点文本的变动
+      subtree: true, // 是否将观察器应用于该节点的所有后代节点
+    });
+    return () => {
+      observer.disconnect();
+      observer = null;
+    };
+  }, []);
   const getData = (list: any = null) => {
     const todo = list || device?.csvData;
     if (todo) {
@@ -100,7 +133,7 @@ const DataSheet = () => {
         virtual
         size="small"
         columns={columns}
-        scroll={{ x: 100, y: axle || 500 }}
+        scroll={{ y: axle }}
         rowKey="id"
         dataSource={csvData}
         pagination={false}
@@ -109,5 +142,30 @@ const DataSheet = () => {
     </div>
   );
 };
+
+/**
+ * 函数节流
+ * @param fn 执行函数 需要防抖的函数也就是你处理逻辑的地方
+ * @param time 时间间隔
+ * @param params 执行函数需要的参数
+ * @param dep useCallback的依赖项
+ * @returns
+ */
+export function useThrottle(fn, delay, dep = []) {
+  const defaultData: { fn: any; pre: number } = { fn, pre: 0 };
+  const { current = { fn: null, pre: 0 } } = useRef(defaultData);
+  useEffect(() => {
+    current.fn = fn;
+  }, [fn]);
+  return useCallback((...args) => {
+    // 用时间间隔做限制
+    const now = new Date().getTime();
+    const timeDiff = now - (current?.pre || 0);
+    if (timeDiff > delay) {
+      current.pre = now;
+      current.fn?.(...args);
+    }
+  }, dep);
+}
 
 export default DataSheet;

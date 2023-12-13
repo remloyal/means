@@ -102,6 +102,7 @@ const Left: React.FC = () => {
       });
 
       window.eventBus.on('updateDevice', deviceData => {
+        message.success(t('history.dataUpdateSuccessful'));
         setDevice(deviceData);
         setSaving(false);
       });

@@ -28,7 +28,7 @@ const readCSVFilesFromDrive = async drive => {
       dataParsed = todo;
       stopMode = mode;
     }
-    return [drive, dataParsed, csvName, stopMode];
+    return [drive, dataParsed, csvName.split('.')[0], stopMode];
   } catch (error) {
     return [drive, [], drive.name, '--'];
   }
@@ -98,12 +98,10 @@ export const loadUsbData = async data => {
     try {
       const operation = await createDeviceInstance(data);
       operation.getData().then(async res => {
-        if (csvData.length > 0) {
-          operation.drive = csvData[0];
-          await operation.setCsvData(csvData[1]);
-          operation.csvName = csvData[2];
-          operation.record.stopMode = csvData[3].split(' ')[0];
-        }
+        operation.drive = csvData[0];
+        await operation.setCsvData(csvData[1]);
+        operation.csvName = csvData[2];
+        operation.record.stopMode = csvData[3].split(' ')[0];
         const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
         operation.database = data;
         console.log(operation);
