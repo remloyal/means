@@ -125,6 +125,7 @@ const setFormatData = async data => {
     actionList: [],
     csvData,
     csvName: '',
+    markList: [],
     drive: {},
     param: '',
   };

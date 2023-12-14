@@ -106,6 +106,7 @@ export const PDF_INFO = {
     LINE_COLORS: [[0, 0, 255], [0, 255, 0], '#00FFE7'],
     THRESH_LINE_COLORS: [[255, 0, 0], [255, 0, 255], '#E800FF'],
     XY_LINE_COLOR: [211, 211, 211], // light gray
+    MARK_DATA_LINE_COLOR: [250, 112, 250],
   },
   /*source contents原始数据打印*/
   TEMPS_PARTS_MAX = (sensors = [], sensorsPdfSupported = []) => {
@@ -164,7 +165,7 @@ export const PDF_INFO = {
           if (lan !== 'zh') {
             units = '\xb0C'; // ℃
             if (unit === TEMP_UNIT.FAHR) {
-              units = `\xb0F`;
+              units = '\xb0F';
             }
           } else {
             units = '℃'; //

@@ -18,19 +18,21 @@ const readCSVFilesFromDrive = async drive => {
     let dataParsed: TimeType[] = [];
     let csvName = '';
     let stopMode = '';
+    let markList = [];
     for (const csvFile of csvFiles) {
       csvName = csvFile;
       const filePath = path.join(drivePath, csvFile);
       const data = fs.readFileSync(filePath, 'utf-8');
       // console.log(`读取到CSV文件 ${csvFile} 的内容：`);
       // console.log(data);
-      const { data: todo, stopMode: mode } = parseCSVData(data);
+      const { data: todo, stopMode: mode, markList: mark } = parseCSVData(data);
       dataParsed = todo;
       stopMode = mode;
+      markList = mark;
     }
-    return [drive, dataParsed, csvName.split('.')[0], stopMode];
+    return { drive, csvData: dataParsed, csvName: csvName.split('.')[0], stopMode, markList };
   } catch (error) {
-    return [drive, [], drive.name, '--'];
+    return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [] };
   }
 };
 
@@ -77,8 +79,34 @@ const parseCSVData = csvString => {
       humi: humi || 0,
     });
   }
-
-  return { data, stopMode: stopMode[1] };
+  const markList: any = [];
+  const markIndex = lines.indexOf('Mark Event Output,');
+  if (markIndex != -1) {
+    for (let i = markIndex + 1; i < lines.length; i++) {
+      const line: string = lines[i].trim();
+      if (!line) continue; // 跳过空行
+      const fields = line.split(',');
+      const date = fields[0];
+      const celsius = parseFloat(fields[2]);
+      const temperature = parseFloat(fields[3]);
+      const humi = parseFloat(fields[4]);
+      // 合并日期和时间为一个时间戳字符串
+      const dateTime = date.split('/');
+      /* eslint-disable */
+      // const dateTimeParts = dateTimeString.split(/[\/ :]/).map(Number);
+      console.log(dateTime);
+      const timeStamp = dayjs(`${dateTime[2]}-${dateTime[1]}-${dateTime[0]} ${fields[1]}`).format(
+        'YYYY-MM-DD HH:mm:ss'
+      );
+      markList.push({
+        timeStamp,
+        c: celsius,
+        f: temperature,
+        humi: humi || 0,
+      });
+    }
+  }
+  return { data, stopMode: stopMode[1], markList };
 };
 
 export let usbData;
@@ -98,10 +126,11 @@ export const loadUsbData = async data => {
     try {
       const operation = await createDeviceInstance(data);
       operation.getData().then(async res => {
-        operation.drive = csvData[0];
-        await operation.setCsvData(csvData[1]);
-        operation.csvName = csvData[2];
-        operation.record.stopMode = csvData[3].split(' ')[0];
+        operation.drive = csvData.drive;
+        await operation.setCsvData(csvData.csvData);
+        operation.csvName = csvData.csvName;
+        operation.record.stopMode = csvData.stopMode.split(' ')[0];
+        operation.markList = csvData.markList;
         const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
         operation.database = data;
 
