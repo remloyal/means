@@ -177,5 +177,12 @@
   "language": {
     "chinese": "Chinese",
     "english": "English"
+  },
+  "cfr": {
+    "module": "Module",
+    "cfrText1": "What is FDA 21 CFR Part 11 compliance?",
+    "cfrText2": "The United States Food and Drug Administration (FDA) issued (21 CFR Part 11, 21FR Pat 11) in 1997, and in 2003, the relevant rules for the Nanlaization of the Customs Industry were established. In 21FR Pat 11, electronic records are considered to have the same legal effect as written records and handwritten signatures, and are applicable to any computer created, modified, maintained, archived, retrieved, or managed by existing FDA regulations Records transmitted or stored in persistent storage media.",
+    "cfrText3": "21 Pat 11 is widely accepted and licensed by biopharmaceutical companies, hospitals, research, and laboratories in the United States. Since its establishment, it has been widely accepted and used globally. Although it is not mandatory, it is widely accepted and used by countries in Europe, Asia, and other regions. Drugs, biopharmaceutical related equipment, or information systems exported to the United States should comply with the provisions of 21 CFR Pat 11. If violated, the FDA will deprive the right to export to the United States according to the regulations.",
+    "cfrEnable": "Enable FDA 21 CFR Part 11 module"
   }
 }
