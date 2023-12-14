@@ -76,6 +76,7 @@ class DeviceInstance {
   csvData: TimeType[] = [];
   // csv名称
   csvName: string = '';
+  markList: any[] = [];
   // 驱动
   drive: any = null;
   // 参数

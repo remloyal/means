@@ -7,6 +7,7 @@
   "arrowParens": "avoid",
   "trailingComma": "es5",
   "eslintIntegration": true,
+  "endOfLine": "auto",
   "overrides": [
     {
       "files": ".prettierrc",
