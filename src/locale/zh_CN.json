@@ -148,6 +148,7 @@
     "import": "导入",
     "importSuccess": "导入成功",
     "importFailed": "导入失败",
+    "importListMsg": "{{success}}条导入成功，{{error}}条导入失败",
     "local": "本地",
     "clouds": "云端",
     "dataEditing": "数据编辑"

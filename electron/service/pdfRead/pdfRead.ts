@@ -15,13 +15,25 @@ import log from '../../unitls/log';
 import { win } from '../../main/index';
 
 export const importPDF = async () => {
-  const filePath: string | boolean = await openFile();
-  if (!filePath) return 'nopath';
+  const filePaths: string[] | boolean = await openFile();
+  if (!filePaths) return 'nopath';
+  if (filePaths instanceof Array && filePaths.length == 0) return 'nopath';
   try {
-    const pdfReadData = await importPDFFile(filePath as string);
-    const pdfFormatData = await setFormatData(pdfReadData);
-    const pdfData = await handlePdf(pdfFormatData);
-    return pdfData;
+    const fileList = filePaths as string[];
+    const message = { success: 0, error: 0 };
+    for (let i = 0; i < fileList.length; i++) {
+      const filePath = filePaths[i];
+      try {
+        const pdfReadData = await importPDFFile(filePath);
+        const pdfFormatData = await setFormatData(pdfReadData);
+        await handlePdf(pdfFormatData);
+        message.success++;
+      } catch (error) {
+        message.error++;
+        log.error(`PDF导入失败： ${filePath}`, error);
+      }
+    }
+    return message;
   } catch (error) {
     log.error('PDF导入失败：', error);
     return false;
@@ -131,11 +143,11 @@ const setFormatData = async data => {
   };
 };
 
-const openFile = (): Promise<string | boolean> => {
+const openFile = (): Promise<string[] | boolean> => {
   return new Promise((resolve, reject) => {
     dialog
       .showOpenDialog(win!, {
-        properties: ['openFile'],
+        properties: ['openFile', 'multiSelections'],
         filters: [
           {
             name: '',
@@ -145,7 +157,7 @@ const openFile = (): Promise<string | boolean> => {
       })
       .then(result => {
         if (!result.canceled) {
-          resolve(result.filePaths[0]);
+          resolve(result.filePaths);
         } else {
           resolve(false);
           console.log('取消选择===>', result);

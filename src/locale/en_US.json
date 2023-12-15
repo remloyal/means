@@ -148,6 +148,7 @@
     "import": "Import",
     "importSuccess": "Import was successful",
     "importFailed": "Import failed",
+    "importListMsg": "{{success}} Import successful,{{error}} import failed",
     "local": "Local",
     "clouds": "Clouds",
     "dataEditing": "Data Editing"

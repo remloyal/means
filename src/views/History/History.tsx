@@ -16,6 +16,7 @@ import {
   RadioChangeEvent,
   Select,
   Space,
+  Spin,
   Table,
   TableProps,
   Tooltip,
@@ -431,16 +432,23 @@ const HistoryLift = () => {
       setPageState(false);
     };
 
+    const [loading, setLoading] = useState(false);
+
     const importPDF = async () => {
+      setLoading(true);
       const todo = await ipcRenderer.invoke('importPDF');
       console.log(todo);
       if (todo == 'nopath') return;
       if (todo) {
         queryDevice();
-        message.success(t('history.importSuccess'));
+        const msg = todo as { success: number; error: number };
+        message.success(t('history.importListMsg', { success: msg.success, error: msg.error }));
       } else {
         message.error(t('history.importFailed'));
       }
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     };
     return (
       <>
@@ -495,6 +503,17 @@ const HistoryLift = () => {
           width={300}
         >
           <p>{t('history.deleteThisData')}</p>
+        </Modal>
+        <Modal open={loading} centered width={200} closeIcon={null} footer={null}>
+          <div
+            style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <div style={{ height: 100, width: 100 }}>
+              <Spin size="large" tip={`${t('left.reading')}...`} style={{ height: 100 }}>
+                <div className="content" />
+              </Spin>
+            </div>
+          </div>
         </Modal>
       </>
     );
