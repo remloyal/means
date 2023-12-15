@@ -1,3 +1,4 @@
+/* eslint-disable */
 const PDFDocument = require('pdfkit');
 import fs from 'fs';
 import getStream from 'get-stream';
@@ -127,27 +128,17 @@ export const buildPdf = async function (info, monitors) {
     // fs.unlinkSync(file);
     _log.info('generate type : blob ,  no downloadLink');
   } else {
-    downloadLink = _util.getDownloadUrl(EXPORT_TYPE.PDF, archiveFolder, pdfName, downloadHost);
-    _log.info('downloadLink :', downloadLink);
+    // downloadLink = _util.getDownloadUrl(EXPORT_TYPE.PDF, archiveFolder, pdfName, downloadHost);
+    // _log.info('downloadLink :', downloadLink);
   }
 
   return {
     ...CODES_COMMON.SUCCESS,
-    data: Object.assign(
-      generateType === PDF_CONFIG.GENERATE_TYPE.BLOB
-        ? {
-            result: { data: blob },
-            fileName: pdfName,
-          }
-        : {
-            result: { data: blob },
-            fileName: pdfName,
-            downloadLink,
-          },
-      needInfo ? { pdfApiInfo: pdfApiInfo || {} } : {},
-      needBtPrintnfo ? { pdfBtPrintInfo: pdfBtPrintInfo || {} } : {},
-      needFilePath ? { file } : {}
-    ),
+    data: {
+      result: { data: blob },
+      fileName: pdfName,
+      path: file,
+    },
   };
 };
 

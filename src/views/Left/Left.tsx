@@ -102,6 +102,7 @@ const Left: React.FC = () => {
       });
 
       window.eventBus.on('updateDevice', deviceData => {
+        message.success(t('history.dataUpdateSuccessful'));
         setDevice(deviceData);
         setSaving(false);
       });
@@ -131,7 +132,10 @@ const Left: React.FC = () => {
     useEffect(() => {
       if (deviceTime) {
         terval = setInterval(() => {
-          const present = dayjs(deviceTime).valueOf();
+          const present = dayjs(
+            deviceTime,
+            `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+          ).valueOf();
           setDeviceTime(
             dayjs(present + 1000).format(
               `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
@@ -254,7 +258,7 @@ const Left: React.FC = () => {
                 ? 'image-alarm'
                 : device?.database.alarm == 1
                   ? 'image-alarm image-alarm-red'
-                  : 'image-alarm image-alarm-blue'
+                  : 'image-alarm image-alarm-green'
             }
           />
         </div>

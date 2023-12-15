@@ -49,6 +49,8 @@ export const Device = database.define(
     },
     notes: { type: STRING, allowNull: true },
     alarm: { type: INTEGER, allowNull: true },
+    mode: { type: STRING, allowNull: true },
+    timeZone: { type: STRING, allowNull: true },
     createdAt: {
       type: DATE,
       get() {

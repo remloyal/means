@@ -163,7 +163,7 @@ const drawPdf = function (pdf, info, monitors) {
  * @param {*} monitors
  */
 const init = (info, monitors) => {
-  const { filter } = info || {};
+  const { filter, markList = [] } = info || {};
   const { needInfo = false, needBtPrintnfo = false } = filter || {};
 
   const globalInfo = initGlobalInfo(info);
@@ -191,7 +191,7 @@ const init = (info, monitors) => {
   _log.info('====【1.7】==== initBtPrintInfo ok');
   const endorsementInfo = initEndorsementInfo(info);
   _log.info('====【1.8】==== initEndorsementInfo ok');
-
+  sensorInfo.markList = markList;
   return {
     sensorInfo,
     deviceInfo,
@@ -2411,14 +2411,14 @@ const printChart = (pdf, { sensorInfo, pdfInfo, deviceInfo, globalInfo }) => {
   });
 
   //* 绘制X轴的竖线与X坐标轴线的label分布
-  printChartXLineAndLabel(pdf, {
+  const yAxisHeight = printChartXLineAndLabel(pdf, {
     globalInfo,
     pdfInfo,
     deviceInfo,
     startX: chartStartX,
     startY: chartStartY,
   });
-
+  sensorInfo.yAxisHeight = yAxisHeight;
   //* 画Y轴label :Temperature( ℃)
   posY += 174;
   pdf
@@ -2495,7 +2495,7 @@ const printChart = (pdf, { sensorInfo, pdfInfo, deviceInfo, globalInfo }) => {
  */
 const printThresholdLegend = (pdf, { startX, startY, sensorInfo, pdfInfo, globalInfo }) => {
   const { LANGUAGE = 'en' } = globalInfo || {};
-  const { sensors } = sensorInfo || {};
+  const { sensors, markList = [] } = sensorInfo || {};
   const {
     TEMP_DATA_LINE_COLOR,
     TEMP_THRESH_LINE_COLOR,
@@ -2505,6 +2505,7 @@ const printThresholdLegend = (pdf, { startX, startY, sensorInfo, pdfInfo, global
     HUMI_THRESH_LINE_COLOR,
     LINE_COLORS,
     THRESH_LINE_COLORS,
+    MARK_DATA_LINE_COLOR,
   } = CHART_COLORS;
 
   const legendLineWidth = 35;
@@ -2602,9 +2603,21 @@ const printThresholdLegend = (pdf, { startX, startY, sensorInfo, pdfInfo, global
           });
         break;
       default:
-      // do nothing
     }
   });
+  if (markList.length > 0) {
+    pdf.undash();
+    posY += deltaY;
+    drawLine(pdf, [startX, posY], [lineEndX, posY], {
+      color: MARK_DATA_LINE_COLOR,
+    });
+    pdf
+      .fontSize(FONT_SIZE_SMALLER)
+      .fillColor(DEFAULT_FONT_COLOR)
+      .text('MARK', textPosX, posY - textDeltaY, {
+        lineBreak: false,
+      });
+  }
 };
 
 /**
@@ -2786,7 +2799,8 @@ const printChartXLineAndLabel = (pdf, { globalInfo, pdfInfo, startX, startY, dev
   const labelDeltaY = 5;
   const lableDeltaX = 4;
   const X_LINE_CNT = CHART_X_PARTS + 1;
-
+  // 记录 y轴高度
+  let yAxisHeight = [];
   pdf.fontSize(FONT_SIZE_SMALLER).fillColor(DEFAULT_FONT_COLOR);
   // 从左往右,从上往下 绘制竖线
   for (let index = 0; index < X_LINE_CNT; index++) {
@@ -2799,6 +2813,10 @@ const printChartXLineAndLabel = (pdf, { globalInfo, pdfInfo, startX, startY, dev
         color: DEFAULT_FONT_COLOR,
         undash: true,
       });
+      yAxisHeight = [
+        [posX, posY],
+        [posX, endY],
+      ];
     }
     // 除了绘制label对应的虚线
     else {
@@ -2837,6 +2855,7 @@ const printChartXLineAndLabel = (pdf, { globalInfo, pdfInfo, startX, startY, dev
       }
     }
   }
+  return yAxisHeight;
 };
 
 /**
@@ -2845,7 +2864,7 @@ const printChartXLineAndLabel = (pdf, { globalInfo, pdfInfo, startX, startY, dev
  * @param {*} param1 
  */
 const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo }) => {
-  const { LINE_COLORS } = CHART_COLORS;
+  const { LINE_COLORS, MARK_DATA_LINE_COLOR } = CHART_COLORS;
   const { UNIT } = globalInfo;
   const {
     chartParams: {
@@ -2860,7 +2879,7 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
       widthDeltaPerXPart,
     },
   } = pdfInfo || {};
-  const { sensors, datas, thresholds } = sensorInfo || {};
+  const { sensors, datas, thresholds, yAxisHeight = [], markList = [] } = sensorInfo || {};
 
   let posX = undefined;
   let posY = undefined;
@@ -2868,7 +2887,8 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
   const isAlert = (val, min, max) => {
     return val < min || val > max;
   };
-
+  // 记录曲线 x轴 绘制长度
+  let xAxisLength = 0;
   // 防止之前有绘制dash的
   pdf.undash();
   sensors.forEach((type, index) => {
@@ -2956,7 +2976,7 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
           // 按照第几个值来算x轴距离
           posX = getPos(chartStartPosX, lengthPerValueX, index, 0);
           posY = getPos(chartStartPosY, lengthPerValueY, topPosYValue, valAfterPop);
-
+          xAxisLength = posX;
           if (posX && posY) pdf.lineTo(posX, posY).stroke();
         } else {
           // 仅仅记录异常值变为正常值时的posX，posY，
@@ -2974,6 +2994,7 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
 
           posX = getPos(startPosX, lengthPerValueX, index, startPosIndex);
           posY = getPos(chartStartPosY, lengthPerValueY, topPosYValue, valAfterPop);
+          xAxisLength = posX;
         }
       } else {
         posX = undefined;
@@ -2981,6 +3002,49 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
       }
     }
   });
+
+  // 绘制Make线
+  /**
+   * 需要参数： x 与 y 轴 原点坐标  、 y轴高度  、绘制的 x轴长度
+   * x轴长度 转换为 时间长度     算出每一秒的x轴长度
+   *  Mark点 的坐标  =  Mark的时间长度 减去 开始时间   *  每一秒的 x轴时间刻度
+   */
+  const accuracy = 100000000;
+  if (markList.length > 0) {
+    const sensorDatas = datas['temp'];
+    const timeOn = sensorDatas[0].timestamp;
+    const timeOff = sensorDatas[sensorDatas.length - 1].timestamp;
+    const timeDifference = (timeOff - timeOn) * accuracy;
+    const xScale = (((xAxisLength - startX) * accuracy) / timeDifference) * accuracy;
+    let markTextX = startX + 20;
+    const markTextY = yAxisHeight[0][1] - 12;
+    markList.forEach((item, index) => {
+      pdf.undash();
+      let itemX = ((item.timestamp - timeOn) * xScale) / accuracy + startX;
+      // 防止最后x轴长度 偏移
+      if (itemX > xAxisLength) {
+        itemX = xAxisLength;
+      }
+      // 预防首位
+      if (!itemX) {
+        itemX = startX;
+      }
+      drawLine(pdf, [itemX, yAxisHeight[0][1]], [itemX, yAxisHeight[1][1]], {
+        color: MARK_DATA_LINE_COLOR,
+      });
+      pdf.undash();
+      // 绘制头部引线
+      drawLine(pdf, [markTextX, markTextY], [itemX, yAxisHeight[0][1]], {
+        color: MARK_DATA_LINE_COLOR,
+      });
+      // 绘制数字
+      pdf
+        .fillColor(MARK_DATA_LINE_COLOR)
+        .fontSize(10)
+        .text(index + 1, markTextX, markTextY - 13);
+      markTextX += 30;
+    });
+  }
 };
 
 /**

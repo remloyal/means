@@ -1,7 +1,13 @@
 import dayjs from 'dayjs';
-const pdfData = (data, monitors) => {
-  const { record } = data;
-  const { param } = data;
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+import { UTC_PARAM } from '../../config';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const pdfData = (data, monitors, markList) => {
+  const { record, param } = data;
   const deviceInfo = data.database;
   const bounded = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss:SSS');
   const unit = param.tempUnit == '℃' ? 'cels' : 'fahr';
@@ -69,16 +75,16 @@ const pdfData = (data, monitors) => {
             {
               type: 'humi',
               unit: 'RH',
-              min: record.lowHumi,
+              min: parseFloat(record.lowHumi),
               receiveAlert: true,
-              max: record.highHumi,
+              max: parseFloat(record.highHumi),
             },
             {
               type: 'temp',
               unit: param.tempUnit,
-              min: param.lowtEmp || record.lowtEmp,
+              min: parseFloat(param.lowtEmp),
               receiveAlert: true,
-              max: param.hightEmp || record.hightEmp,
+              max: parseFloat(param.hightEmp),
             },
           ],
           read: parseInt(record.tempPeriod) / 60,
@@ -86,6 +92,7 @@ const pdfData = (data, monitors) => {
         },
       },
       customer: { name: 'frigga', filePath: data.filePath },
+      markList: markList || [],
     },
     monitors,
   };
@@ -95,20 +102,36 @@ export const setPdfData = async data => {
   const csvData = await data.csvData.filter(
     item => item.timeStamp >= data.param.startTime && item.timeStamp <= data.param.endTime
   );
-  const monitors = await setMonitorData(csvData, data.param);
-  const record = pdfData(data, monitors);
+  const monitors = await setMonitorData(csvData, data);
+  const record = pdfData(data, monitors.record, monitors.markData);
   return record;
 };
-
+const format = 'YYYY-MM-DD HH:mm:ss';
 // 定义一个名为setMonitorData的函数，接收data和param两个参数
-const setMonitorData = (data, param) => {
+const setMonitorData = (data, todo) => {
+  const { param, database, record: information, markList = [] } = todo;
   const tempData: any = [];
   const tempDataF: any = [];
   const humiData: any = [];
   const record = {};
+  const oldTimeZone = UTC_PARAM[database.timeZone];
+  const newTimeZone = UTC_PARAM[information.timeZone];
+  const timeZoneState = oldTimeZone == newTimeZone ? true : false;
   for (let index = 0; index < data.length; index++) {
+    let time;
     const item = data[index];
-    const time = dayjs(item.timeStamp).valueOf();
+    if (timeZoneState) {
+      time = dayjs(item.timeStamp).valueOf();
+    } else {
+      const utcTime = dayjs.utc(item.timeStamp).utcOffset(database.timeZone.replace('UTC', ''));
+      // console.log('utcTime ==>', utcTime.toString(), utcTime.format(format));
+      const convertedTime = utcTime.tz(newTimeZone);
+      // console.log('convertedTime ==>', convertedTime.toString(), convertedTime.format(format));
+      // const time = convertedTime.valueOf();
+      time = dayjs(convertedTime.format(format)).valueOf();
+    }
+
+    // 转换时区时间
     tempData.push({ timestamp: time, val: parseFloat(item.c), lbstime: time });
     humiData.push({ timestamp: time, val: parseFloat(item.humi), lbstime: time });
     tempDataF.push({ timestamp: time, val: parseFloat(item.humi), lbstime: time });
@@ -121,6 +144,22 @@ const setMonitorData = (data, param) => {
   if (param.data.includes('humi')) {
     record['humi'] = humiData;
   }
-  return record;
+  const markData: any = [];
+  if (markList.length > 0) {
+    for (let index = 0; index < markList.length; index++) {
+      const item = markList[index];
+      let time;
+      if (timeZoneState) {
+        time = dayjs(item.timeStamp).valueOf();
+      } else {
+        const utcTime = dayjs.utc(item.timeStamp).utcOffset(database.timeZone.replace('UTC', ''));
+        const convertedTime = utcTime.tz(newTimeZone);
+        time = dayjs(convertedTime.format(format)).valueOf();
+      }
+      // 转换时区时间
+      markData.push({ timestamp: time, val: parseFloat(item.c), lbstime: time });
+    }
+  }
+  return { record, markData };
 };
 // c : 25.2  f: 77.3  humi:  64 timeStamp :  "2023-11-09 20:07:19"

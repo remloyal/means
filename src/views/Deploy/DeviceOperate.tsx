@@ -1,3 +1,4 @@
+import { OPERATE_CONFIG } from '@/config';
 import { deviceConfigParam, equipment } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { c2f, f2c } from '@/utils/utils';
@@ -17,9 +18,9 @@ const getTimeOptions = (index: number = 12) => {
   return option;
 };
 
-const getMinuteOptions = () => {
+const getMinuteOptions = (startIndex = 0) => {
   const option: { value: string | number; label: string | number }[] = [];
-  for (let i = 0; i < 60; i++) {
+  for (let i = startIndex; i < 60; i++) {
     option.push({
       value: i * 60,
       label: i,
@@ -49,7 +50,7 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   const [minute, setMinute] = useState(0);
   const [minuteState, setMinuteState] = useState(false);
   const timeOptions = getTimeOptions();
-  const minuteOptions = getMinuteOptions();
+  const minuteOptions = getMinuteOptions(1);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
   const initTime = (data = null) => {
@@ -376,6 +377,7 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
         <InputNumber
           size="small"
           min={deviceConfig.lowtEmp}
+          max={unit == '\u2109' ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
           onChange={empChange}
           value={emp}
           style={{ width: '80%' }}
@@ -457,6 +459,7 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
         <InputNumber
           size="small"
           max={deviceConfig.hightEmp}
+          min={unit == '\u2109' ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
           onChange={empChange}
           value={emp}
           style={{ width: '80%' }}
@@ -517,7 +520,14 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.humiUpperLimit')}</div>
       <div className="deploy-select">
-        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <InputNumber
+          size="small"
+          min={deviceConfig.lowHumi}
+          max={OPERATE_CONFIG.MAX_HUMI}
+          onChange={empChange}
+          value={emp}
+          style={{ width: '80%' }}
+        />
         <span className="deploy-span">RH</span>
       </div>
     </Col>
@@ -573,7 +583,14 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.humiLowerLimit')}</div>
       <div className="deploy-select">
-        <InputNumber size="small" onChange={empChange} value={emp} style={{ width: '80%' }} />
+        <InputNumber
+          size="small"
+          min={OPERATE_CONFIG.MIN_HUMI}
+          max={deviceConfig.highHumi}
+          onChange={empChange}
+          value={emp}
+          style={{ width: '80%' }}
+        />
         <span className="deploy-span">RH</span>
       </div>
     </Col>

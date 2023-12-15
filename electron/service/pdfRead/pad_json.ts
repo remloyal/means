@@ -1,32 +1,30 @@
+import log from '../../unitls/log';
+import PDFParser from 'pdf2json';
 export const parsePDF = async (file, size) => {
   return new Promise(async (resolve, reject) => {
-    // const pdfParser = new PDFParser();
-    // pdfParser.on('pdfParser_dataError', errData => {
-    //   resolve(false);
-    // });
-    // pdfParser.on('pdfParser_dataReady', async pdfData => {
-    //   const list = pdfData.Pages;
-    //   const data = await getList(list);
-    //   resolve(data);
-    // });
-
-    // pdfParser.loadPDF(file);
-    const { PdfReader } = await import('pdfreader');
-    const textList: any = [];
-    let index = 1;
-    new PdfReader(null).parseFileItems(file, (err, item) => {
-      if (err) console.error('error:', err);
-      else if (!item) {
-        resolve(textList);
-      } else if (item.text) {
-        const page = `${index}/${size}`;
-        if (item.text.indexOf(page) != -1) {
-          index++;
-        } else {
-          textList[index - 1] += item.text;
+    try {
+      log.info('pdf2json', '开始读取');
+      const textList: any = [];
+      let index = 1;
+      parseFileItems({}, file, (err, item) => {
+        if (err) {
+          log.error('parsePDF', err);
+        } else if (!item) {
+          log.info('pdf2json', '读取成功');
+          resolve(textList);
+        } else if (item.text) {
+          const page = `${index}/${size}`;
+          if (item.text.indexOf(page) != -1) {
+            index++;
+          } else {
+            textList[index - 1] += item.text;
+          }
         }
-      }
-    });
+      });
+    } catch (error) {
+      resolve([]);
+      log.error('parsePDF', error);
+    }
   });
 };
 
@@ -43,3 +41,60 @@ function getList(list) {
   }
   return textList;
 }
+
+function forEachItem(pdf, handler) {
+  let pageNumber = 0;
+  // pdf.formImage was removed in pdf2json@2, but we keep backward compatibility too
+  const Pages = pdf.Pages || pdf.formImage.Pages;
+  for (const p in Pages) {
+    const page = Pages[p];
+    const number = ++pageNumber;
+    handler(null, {
+      page: number,
+      width: page.Width || (pdf.formImage ? pdf.formImage.Width : 0),
+      height: page.Height || (pdf.formImage ? pdf.formImage.Pages[number - 1].Height : 0),
+    });
+    for (const t in page.Texts) {
+      const item = page.Texts[t];
+      item.text = decodeURIComponent(item.R[0].T);
+      handler(null, item);
+    }
+  }
+  handler();
+}
+
+// 路径读取
+const parseFileItems = function (options, pdfFilePath, itemHandler) {
+  itemHandler(null, { file: { path: pdfFilePath } });
+  let pdfParser;
+  if (options.password) {
+    pdfParser = new PDFParser(null, null as any, options.password);
+  } else {
+    pdfParser = new PDFParser();
+  }
+
+  pdfParser.on('pdfParser_dataError', itemHandler);
+  pdfParser.on('pdfParser_dataReady', pdfData => {
+    forEachItem(pdfData, itemHandler);
+  });
+  const verbosity = options.debug ? 1 : 0;
+  pdfParser.loadPDF(pdfFilePath, verbosity);
+};
+
+// Buffer 读取
+const parseBuffer = function (options, pdfBuffer, itemHandler) {
+  itemHandler(null, { file: { buffer: pdfBuffer } });
+  let pdfParser;
+  if (options.password) {
+    pdfParser = new PDFParser(null, null as any, options.password);
+  } else {
+    pdfParser = new PDFParser();
+  }
+
+  pdfParser.on('pdfParser_dataError', itemHandler);
+  pdfParser.on('pdfParser_dataReady', pdfData => {
+    forEachItem(pdfData, itemHandler);
+  });
+  const verbosity = options.debug ? 1 : 0;
+  pdfParser.parseBuffer(pdfBuffer, verbosity);
+};

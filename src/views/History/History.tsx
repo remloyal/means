@@ -16,6 +16,7 @@ import {
   RadioChangeEvent,
   Select,
   Space,
+  Spin,
   Table,
   TableProps,
   Tooltip,
@@ -72,22 +73,22 @@ const HistoryMain = () => {
       align: 'center',
       render: (text, record, index) => `${index + 1}`,
     },
-    {
-      title: <span style={{ fontSize: '12px' }}>{t('history.cloudStorage')}</span>,
-      dataIndex: 'cloudStorage',
-      width: 60,
-      align: 'center',
-      render(value, record, index) {
-        return (
-          <Tooltip title={t('history.uploadPlatform')} destroyTooltipOnHide={true}>
-            <i
-              className="iconfont icon-yunduanshangchuan"
-              style={{ fontSize: '20px', color: 'var(--bg-to-color)' }}
-            ></i>
-          </Tooltip>
-        );
-      },
-    },
+    // {
+    //   title: <span style={{ fontSize: '12px' }}>{t('history.cloudStorage')}</span>,
+    //   dataIndex: 'cloudStorage',
+    //   width: 60,
+    //   align: 'center',
+    //   render(value, record, index) {
+    //     return (
+    //       <Tooltip title={t('history.uploadPlatform')} destroyTooltipOnHide={true}>
+    //         <i
+    //           className="iconfont icon-yunduanshangchuan"
+    //           style={{ fontSize: '20px', color: 'var(--bg-to-color)' }}
+    //         ></i>
+    //       </Tooltip>
+    //     );
+    //   },
+    // },
     {
       title: <span style={{ fontSize: '12px' }}>{t('left.equipmentModel')}</span>,
       dataIndex: 'type',
@@ -207,6 +208,9 @@ const HistoryMain = () => {
     // } else {
     //   setUnit('\u2103');
     // }
+    setTimeout(() => {
+      setSelectedRowKeys(deviceListKey);
+    });
   };
   const handleRowClick = event => {
     const index = selectedRowKeys.findIndex(item => item == event.id);
@@ -428,15 +432,28 @@ const HistoryLift = () => {
       setPageState(false);
     };
 
+    const [loading, setLoading] = useState(false);
+
     const importPDF = async () => {
+      setLoading(true);
       const todo = await ipcRenderer.invoke('importPDF');
       console.log(todo);
+      if (todo == 'nopath') {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        return;
+      }
       if (todo) {
         queryDevice();
-        message.success(t('history.importSuccess'));
+        const msg = todo as { success: number; error: number };
+        message.success(t('history.importListMsg', { success: msg.success, error: msg.error }));
       } else {
         message.error(t('history.importFailed'));
       }
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     };
     return (
       <>
@@ -491,6 +508,17 @@ const HistoryLift = () => {
           width={300}
         >
           <p>{t('history.deleteThisData')}</p>
+        </Modal>
+        <Modal open={loading} centered width={200} closeIcon={null} footer={null}>
+          <div
+            style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <div style={{ height: 100, width: 100 }}>
+              <Spin size="large" tip={`${t('left.reading')}...`} style={{ height: 100 }}>
+                <div className="content" />
+              </Spin>
+            </div>
+          </div>
         </Modal>
       </>
     );

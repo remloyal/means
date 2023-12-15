@@ -28,7 +28,7 @@ export default defineConfig(({ command }) => {
         promiseExportName: '__tla',
         promiseImportName: i => `__tla_${i}`,
       }),
-      eslint({ fix: true }),
+      eslint({ fix: false }),
       react(),
       electron([
         {
@@ -48,6 +48,10 @@ export default defineConfig(({ command }) => {
               outDir: 'dist-electron/main',
               rollupOptions: {
                 external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+                output: {
+                  chunkFileNames: 'dist-electron/main/[name]-[hash].js',
+                  assetFileNames: 'dist-electron/main/[name]-[hash][extname]',
+                },
               },
             },
           },
@@ -99,5 +103,11 @@ export default defineConfig(({ command }) => {
         },
       },
     },
+    esbuild:
+      sourcemap == true
+        ? {}
+        : {
+            drop: ['console', 'debugger'],
+          },
   };
 });

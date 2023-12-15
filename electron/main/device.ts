@@ -19,8 +19,9 @@ try {
   usb.on('detach', async device => {
     const data = await filterUsbList();
     console.log('detach ==>', data);
-    win?.webContents.send('deviceRemoval', data);
-    return data;
+    setTimeout(() => {
+      win?.webContents.send('deviceRemoval', data);
+    }, 1000);
   });
 } catch (error) {
   console.log(error);

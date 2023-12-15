@@ -8,7 +8,7 @@ const UrlList = {
   externalNetwork: 'https://cms.dw.ifrigga.com:7665/',
 };
 
-export const BASE_URL = UrlList['test_url'];
+export const BASE_URL = UrlList['intranet'];
 
 export const DYNAMIC_CONFIG = {
   ver: '1.0.0',
@@ -80,4 +80,38 @@ export const LOG_PARAM = {
   DATABASE_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/database/db'),
   APPLICATION_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/application/application'),
   RESPONSES_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/responses/responses'),
+};
+
+// UTC 对应时区
+export const UTC_PARAM = {
+  'UTC-12:00': 'Etc/GMT+12',
+  'UTC-11:00': 'Pacific/Midway',
+  'UTC-10:00': 'Pacific/Honolulu',
+  'UTC-09:30': 'Pacific/Marquesas',
+  'UTC-09:00': 'America/Anchorage',
+  'UTC-08:00': 'America/Los_Angeles',
+  'UTC-07:00': 'America/Denver',
+  'UTC-06:00': 'America/Chicago',
+  'UTC-05:00': 'America/New_York',
+  'UTC-04:00': 'America/Puerto_Rico',
+  'UTC-03:00': 'America/Argentina/Buenos_Aires',
+  'UTC-02:00': 'Atlantic/South_Georgia',
+  'UTC-01:00': 'Atlantic/Cape_Verde',
+  'UTC-00:00': 'Europe/London',
+  'UTC00:00': 'Europe/London',
+  'UTC+00:00': 'Europe/London',
+  'UTC+01:00': 'Europe/Paris',
+  'UTC+02:00': 'Europe/Istanbul',
+  'UTC+03:00': 'Europe/Moscow',
+  'UTC+04:00': 'Asia/Dubai',
+  'UTC+05:00': 'Asia/Yekaterinburg',
+  'UTC+06:00': 'Asia/Dhaka',
+  'UTC+07:00': 'Asia/Bangkok',
+  'UTC+08:00': 'Asia/Shanghai',
+  'UTC+09:00': 'Asia/Tokyo',
+  'UTC+10:00': 'Australia/Sydney',
+  'UTC+11:00': 'Pacific/Guadalcanal',
+  'UTC+12:00': 'Pacific/Auckland',
+  'UTC+13:00': 'Pacific/Tongatapu',
+  'UTC+14:00': 'Pacific/Kiritimati',
 };

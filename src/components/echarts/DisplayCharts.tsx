@@ -40,24 +40,29 @@ export const ShareChart = forwardRef((props: Chart, ref) => {
         (view: any) => view.type == 'dataZoom.slider'
       );
       if (sliderZoom) {
-        let leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
-        let rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
-        sliderZoom._displayables.handleLabels[0].x = option.dataZoom.start < 10 ? leftP : 0;
-        sliderZoom._displayables.handleLabels[1].x = option.dataZoom.start > 90 ? rightP : 0;
+        let leftP;
+        let rightP;
+        if (sliderZoom._displayables?.handleLabels) {
+          leftP = sliderZoom._displayables?.handleLabels[0]?.style.text.length * 8;
+          rightP = -sliderZoom._displayables?.handleLabels[1]?.style.text.length * 8;
+          sliderZoom._displayables.handleLabels[0].x = option.dataZoom.start < 10 ? leftP : 0;
+          sliderZoom._displayables.handleLabels[1].x = option.dataZoom.start > 90 ? rightP : 0;
+        }
         chart.current.on('datazoom', (e: any) => {
-          console.log(e);
-          if (e.start < 10) {
-            leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
-          } else {
-            leftP = 0;
+          if (sliderZoom._displayables?.handleLabels) {
+            if (e.start < 10) {
+              leftP = sliderZoom._displayables.handleLabels[0].style.text.length * 8;
+            } else {
+              leftP = 0;
+            }
+            if (e.end > 90) {
+              rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
+            } else {
+              rightP = 0;
+            }
+            sliderZoom._displayables.handleLabels[0].x = leftP;
+            sliderZoom._displayables.handleLabels[1].x = rightP;
           }
-          if (e.end > 90) {
-            rightP = -sliderZoom._displayables.handleLabels[1].style.text.length * 8;
-          } else {
-            rightP = 0;
-          }
-          sliderZoom._displayables.handleLabels[0].x = leftP;
-          sliderZoom._displayables.handleLabels[1].x = rightP;
         });
       }
     }
@@ -89,8 +94,11 @@ export const foldLine = (
   valueList: string[] | number[],
   lines: StandardLine[],
   humiList: string[] | number[],
-  legend: string[]
+  legend: string[],
+  temp: string[]
 ) => {
+  const tempValue = temp;
+
   return {
     tooltip: {
       show: true,
@@ -103,6 +111,7 @@ export const foldLine = (
       {
         data: xList,
         type: 'category',
+        boundaryGap: false,
         splitLine: {
           show: true, // 显示横向网格线
           lineStyle: {
@@ -123,9 +132,15 @@ export const foldLine = (
           },
         },
         max(value) {
+          if (tempValue[0] > value.max) {
+            return Math.ceil(parseFloat(tempValue[0]) + 5);
+          }
           return Math.ceil(value.max + 10);
         },
         min(value) {
+          if (tempValue[1] < value.min) {
+            return Math.ceil(parseFloat(tempValue[1]) - 5);
+          }
           return Math.ceil(value.min - 10);
         },
       },
@@ -260,6 +275,12 @@ export const createFoldLine = (seriesList: CreateSeries[]) => {
     // 设置 y 轴的类型为值轴
     yAxis: {
       type: 'value',
+      max(value) {
+        return Math.ceil(value.max + 10);
+      },
+      min(value) {
+        return Math.ceil(value.min - 10);
+      },
       splitLine: {
         show: true, // 显示横向网格线
         lineStyle: {

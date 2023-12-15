@@ -10,7 +10,7 @@ import {
 } from './controllers/device';
 import { exportDevicePdf } from './controllers/exportDevice';
 import { exportHistory } from './controllers/exportHistory';
-import { importPDF } from './pdfRead/pdfRead';
+import { deviceUtcUpdate, importPDF } from './pdfRead/pdfRead';
 import log from '../unitls/log';
 
 ipcMain.handle('createDevice', (event, params) => {
@@ -21,6 +21,19 @@ ipcMain.handle('createDevice', (event, params) => {
     } catch (error) {
       log.error(error);
       reject(false);
+    }
+  });
+});
+
+// 查询PDF UTC
+ipcMain.handle('deviceUtcUpdate', (event, params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await deviceUtcUpdate(params);
+      resolve(data);
+    } catch (error) {
+      log.error(error);
+      resolve(false);
     }
   });
 });
