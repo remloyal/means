@@ -82,9 +82,9 @@ const pdfData = (data, monitors, markList) => {
             {
               type: 'temp',
               unit: param.tempUnit,
-              min: parseFloat(param.lowtEmp || record.lowtEmp),
+              min: parseFloat(param.lowtEmp),
               receiveAlert: true,
-              max: parseFloat(param.hightEmp || record.hightEmp),
+              max: parseFloat(param.hightEmp),
             },
           ],
           read: parseInt(record.tempPeriod) / 60,

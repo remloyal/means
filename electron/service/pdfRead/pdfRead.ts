@@ -26,7 +26,7 @@ export const importPDF = async () => {
       try {
         const pdfReadData = await importPDFFile(filePath);
         const pdfFormatData = await setFormatData(pdfReadData);
-        await handlePdf(pdfFormatData);
+        await handlePdf(pdfFormatData, filePath);
         message.success++;
       } catch (error) {
         message.error++;
@@ -40,7 +40,8 @@ export const importPDF = async () => {
   }
 };
 
-const handlePdf = async params => {
+const handlePdf = async (params, filePath) => {
+  const filename = path.basename(filePath);
   const todo = params.csvData;
   const { record } = params;
   const { result } = params;
@@ -48,7 +49,8 @@ const handlePdf = async params => {
   const data = await Device.create({
     type: record.deviceType,
     gentsn: record.getsn,
-    dataName: `${record.getsn}_${dayjs(new Date()).format('YYYYMMDDHHmmss')}`,
+    dataName:
+      filename.split('.')[0] || `${record.getsn}_${dayjs(new Date()).format('YYYYMMDDHHmmss')}`,
     startTime: dayjs(record.firstRecordTime),
     dataCount: todo.length || 0,
     temperature: JSON.stringify(result.c),

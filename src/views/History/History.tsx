@@ -438,7 +438,12 @@ const HistoryLift = () => {
       setLoading(true);
       const todo = await ipcRenderer.invoke('importPDF');
       console.log(todo);
-      if (todo == 'nopath') return;
+      if (todo == 'nopath') {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        return;
+      }
       if (todo) {
         queryDevice();
         const msg = todo as { success: number; error: number };
