@@ -133,6 +133,7 @@ export async function createWindow() {
   tray = new Tray(join(process.env.VITE_PUBLIC, 'favicon.ico'));
   tray.on('double-click', () => {
     win?.show();
+    win?.center();
   });
 
   // Apply electron-updater
@@ -269,6 +270,7 @@ const setTray = lan => {
       label: lan == 1 ? 'view' : '显示',
       click: () => {
         win?.show();
+        win?.center();
       },
     },
     {

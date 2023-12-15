@@ -111,6 +111,7 @@ export const foldLine = (
       {
         data: xList,
         type: 'category',
+        boundaryGap: false,
         splitLine: {
           show: true, // 显示横向网格线
           lineStyle: {
@@ -274,6 +275,12 @@ export const createFoldLine = (seriesList: CreateSeries[]) => {
     // 设置 y 轴的类型为值轴
     yAxis: {
       type: 'value',
+      max(value) {
+        return Math.ceil(value.max + 10);
+      },
+      min(value) {
+        return Math.ceil(value.min - 10);
+      },
       splitLine: {
         show: true, // 显示横向网格线
         lineStyle: {

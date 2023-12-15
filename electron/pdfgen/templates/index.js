@@ -3025,6 +3025,10 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
       if (itemX > xAxisLength) {
         itemX = xAxisLength;
       }
+      // 预防首位
+      if (!itemX) {
+        itemX = startX;
+      }
       drawLine(pdf, [itemX, yAxisHeight[0][1]], [itemX, yAxisHeight[1][1]], {
         color: MARK_DATA_LINE_COLOR,
       });

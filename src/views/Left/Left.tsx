@@ -255,7 +255,7 @@ const Left: React.FC = () => {
                 ? 'image-alarm'
                 : device?.database.alarm == 1
                   ? 'image-alarm image-alarm-red'
-                  : 'image-alarm image-alarm-blue'
+                  : 'image-alarm image-alarm-green'
             }
           />
         </div>
