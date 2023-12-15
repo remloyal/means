@@ -132,7 +132,10 @@ const Left: React.FC = () => {
     useEffect(() => {
       if (deviceTime) {
         terval = setInterval(() => {
-          const present = dayjs(deviceTime).valueOf();
+          const present = dayjs(
+            deviceTime,
+            `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+          ).valueOf();
           setDeviceTime(
             dayjs(present + 1000).format(
               `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`

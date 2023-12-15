@@ -25,6 +25,11 @@ const Language = {
 };
 
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
+const setTimeFormat = (time: string): string => {
+  return dayjs(time, `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`).format(
+    dateFormat
+  );
+};
 export const DataExport = ({ onCancel }) => {
   const { t } = useTranslation();
   const device = useRecoilValue(equipment);
@@ -42,8 +47,8 @@ export const DataExport = ({ onCancel }) => {
     { label: t('home.humidity'), value: 'humi' },
   ]);
   const initTime = () => {
-    const startTime = device?.record.firstRecordTime;
-    const endTime = device?.record.lastRecordedTime;
+    const startTime = setTimeFormat(device?.record.firstRecordTime);
+    const endTime = setTimeFormat(device?.record.lastRecordedTime);
     let data: string[] = [];
     if (power.includes('setHighHumi')) {
       setOptions([
@@ -74,7 +79,6 @@ export const DataExport = ({ onCancel }) => {
         device?.record.multidUnit == 0 ? device?.record.lowtEmp : c2f(device?.record.lowtEmp),
     }));
     setTime([dayjs(startTime), dayjs(endTime)]);
-    console.log(startTime, endTime);
   };
 
   const onChange = checkedValues => {
@@ -151,11 +155,11 @@ export const DataExport = ({ onCancel }) => {
   });
   const [time, setTime] = useState<any>();
   const timeChange = data => {
-    setTime(data);
+    setTime(data || [dayjs(regionalTime.startTime), dayjs(regionalTime.endTime)]);
     setParam(item => ({
       ...item,
-      startTime: data[0].format(dateFormat),
-      endTime: data[1].format(dateFormat),
+      startTime: data ? data[0].format(dateFormat) : regionalTime.startTime,
+      endTime: data ? data[1].format(dateFormat) : regionalTime.endTime,
     }));
   };
 
