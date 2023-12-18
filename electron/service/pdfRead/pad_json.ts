@@ -1,12 +1,12 @@
 import log from '../../unitls/log';
 import PDFParser from 'pdf2json';
-export const parsePDF = async (file, size) => {
+export const parsePDF = async (file, size, password = '') => {
   return new Promise(async (resolve, reject) => {
     try {
       log.info('pdf2json', '开始读取');
       const textList: any = [];
       let index = 1;
-      parseFileItems({}, file, (err, item) => {
+      parseFileItems({ password }, file, (err, item) => {
         if (err) {
           log.error('parsePDF', err);
         } else if (!item) {

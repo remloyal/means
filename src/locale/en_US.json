@@ -151,7 +151,11 @@
     "importListMsg": "{{success}}Import successful,{{error}} import failed",
     "local": "Local",
     "clouds": "Clouds",
-    "dataEditing": "Data Editing"
+    "dataEditing": "Data Editing",
+    "fileName": "File Name",
+    "password": "Password",
+    "passwordError": "Password error",
+    "enterPassword": "Please enter password"
   },
   "device": {
     "initialstate": "Initial state",

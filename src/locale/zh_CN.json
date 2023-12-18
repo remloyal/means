@@ -151,7 +151,11 @@
     "importListMsg": "{{success}}条导入成功，{{error}}条导入失败",
     "local": "本地",
     "clouds": "云端",
-    "dataEditing": "数据编辑"
+    "dataEditing": "数据编辑",
+    "fileName": "文件名",
+    "password": "密码",
+    "passwordError": "密码错误",
+    "enterPassword": "请输入密码"
   },
   "device": {
     "initialstate": "初始状态",

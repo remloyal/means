@@ -8,6 +8,9 @@ import pdfjsLib from 'pdfjs-dist';
 dayjs.extend(customParseFormat);
 import log from '../../unitls/log';
 import { parsePDF } from './pad_json';
+import { ipcMain, ipcRenderer } from 'electron';
+import { win } from '../../main/index';
+import path from 'path';
 
 // let pdfjsLib;
 export const importPDFFile = async (filePath: string) => {
@@ -20,6 +23,30 @@ export const importPDFFile = async (filePath: string) => {
   let type = pdfType[lang];
   let list: any = [];
   let total = 0;
+  const fileName = path.basename(filePath).split('.')[0];
+  let password = '';
+  loadingTask.onPassword = async (updatePassword, reason) => {
+    // 取消
+    ipcMain.handle('callPassword', (event, params) => {
+      password = '';
+      ipcMain.removeHandler('callPassword');
+      ipcMain.removeHandler('pdfPassword');
+      ipcMain.removeHandler('pdfEnterPassword');
+      updatePassword('');
+      loadingTask.onPassword = Function;
+      return;
+    });
+    await win?.webContents.send('pdfPassword', { fileName, reason });
+    ipcMain.handle('pdfEnterPassword', (event, params) => {
+      console.log(params);
+      password = params;
+      ipcMain.removeHandler('callPassword');
+      ipcMain.removeHandler('pdfPassword');
+      ipcMain.removeHandler('pdfEnterPassword');
+      updatePassword(params);
+      return;
+    });
+  };
   await loadingTask.promise.then(
     async pdf => {
       total = pdf.numPages;
@@ -60,7 +87,7 @@ export const importPDFFile = async (filePath: string) => {
   //   console.log(list);
   if (list.length > 1 && list[1] == '') {
     // 乱码解析
-    const data = await parsePDF(filePath, list.length);
+    const data = await parsePDF(filePath, list.length, password);
     if (data) {
       list = data;
     }
