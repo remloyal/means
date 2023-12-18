@@ -1,12 +1,13 @@
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
-import electron, { app, BrowserWindow, ipcMain } from 'electron';
+import electron, { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import log from '../unitls/log';
 import { createWindow, preload, setUpdateState } from './index';
 import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl, judgingSpaces } from '../unitls/unitls';
 import { listenUpdater } from './update';
+import { isOnline } from '../unitls/request';
 
 const baseUrl = `${path.resolve('./')}/resources/`;
 const AdmZip = require('adm-zip');
@@ -18,8 +19,19 @@ const cachePath = `${baseUrl}app_old.asar`;
 const updatePath = `${baseUrl}update`;
 let renewtimer: NodeJS.Timeout | null = null;
 const createTimer = () => {
-  renewtimer = setInterval(() => {
-    CheckForUpdates(win);
+  renewtimer = setInterval(async () => {
+    const state = await isOnline();
+    if (state) {
+      CheckForUpdates(win);
+      // 如果网络连接状态不正常，则显示错误提示框，并退出应用
+    } else {
+      log.error('Network connection failed');
+      dialog.showErrorBox(
+        'Network connection failed',
+        'Please check your network connection or try again later!'
+      );
+      app.exit();
+    }
     // clearInterval(renewtimer!);
   }, 1800000);
 };

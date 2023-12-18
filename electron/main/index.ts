@@ -160,23 +160,23 @@ app.whenReady().then(async () => {
     app.exit();
   }
   // 创建一个IsOnlineService实例
-  const online = new IsOnlineService();
-  // 监听网络连接状态的变化
-  online.on('status', res => {
-    console.log(res);
-    // 如果网络连接状态不正常，则关闭窗口，并退出应用
-    if (res == false) {
-      win?.close();
-      mainWindow?.close();
-      log.error('Network connection failed');
-      dialog.showMessageBoxSync(win!, {
-        type: 'error',
-        title: 'Network connection failed',
-        message: 'Please check your network connection or try again later!',
-      });
-      app.exit();
-    }
-  });
+  // const online = new IsOnlineService();
+  // // 监听网络连接状态的变化
+  // online.on('status', res => {
+  //   console.log(res);
+  //   // 如果网络连接状态不正常，则关闭窗口，并退出应用
+  //   if (res == false) {
+  //     win?.close();
+  //     mainWindow?.close();
+  //     log.error('Network connection failed');
+  //     dialog.showMessageBoxSync(win!, {
+  //       type: 'error',
+  //       title: 'Network connection failed',
+  //       message: 'Please check your network connection or try again later!',
+  //     });
+  //     app.exit();
+  //   }
+  // });
 });
 
 app.on('window-all-closed', () => {
