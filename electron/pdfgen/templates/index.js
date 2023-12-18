@@ -2442,7 +2442,7 @@ const printChart = (pdf, { sensorInfo, pdfInfo, deviceInfo, globalInfo }) => {
       .fillColor(DEFAULT_FONT_COLOR)
       .rotate(-90, { origin: [posX, posY] })
       .text(
-        `${text('PDF_HUMI_Y_LABEL', LANGUAGE)}( ${SIGN.UNIT(SENSORS.HUMI, LANGUAGE)})`,
+        `${text('PDF_HUMI_Y_LABEL', LANGUAGE)}( %${SIGN.UNIT(SENSORS.HUMI, LANGUAGE)})`,
         posX,
         posY
       );
@@ -2614,7 +2614,7 @@ const printThresholdLegend = (pdf, { startX, startY, sensorInfo, pdfInfo, global
     pdf
       .fontSize(FONT_SIZE_SMALLER)
       .fillColor(DEFAULT_FONT_COLOR)
-      .text('MARK', textPosX, posY - textDeltaY, {
+      .text('Mark', textPosX, posY - textDeltaY, {
         lineBreak: false,
       });
   }

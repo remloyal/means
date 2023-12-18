@@ -157,7 +157,10 @@ const SummaryGraph: React.FC = () => {
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
         power.includes('setHighHumi') ? t('home.humidity') : '',
       ],
-      [device?.record.hightEmp, device?.record.lowtEmp]
+      [
+        Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
+        Math.min(device?.record.lowtEmp, device?.record.lowHumi || device?.record.lowtEmp),
+      ]
     );
     setLine(lines);
     setOption(chat);
@@ -235,7 +238,10 @@ const SummaryGraph: React.FC = () => {
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
         power.includes('setHighHumi') ? t('home.humidity') : '',
       ],
-      [device?.record.hightEmp, device?.record.lowtEmp]
+      [
+        Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
+        Math.min(device?.record.lowtEmp, device?.record.lowHumi || device?.record.lowtEmp),
+      ]
     );
     setOption(chat);
   };

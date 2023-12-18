@@ -95,7 +95,7 @@ export const foldLine = (
   lines: StandardLine[],
   humiList: string[] | number[],
   legend: string[],
-  temp: string[]
+  temp: number[]
 ) => {
   const tempValue = temp;
 
@@ -133,13 +133,13 @@ export const foldLine = (
         },
         max(value) {
           if (tempValue[0] > value.max) {
-            return Math.ceil(parseFloat(tempValue[0]) + 5);
+            return Math.ceil(tempValue[0] + 5);
           }
           return Math.ceil(value.max + 10);
         },
         min(value) {
           if (tempValue[1] < value.min) {
-            return Math.ceil(parseFloat(tempValue[1]) - 5);
+            return Math.ceil(tempValue[1] - 5);
           }
           return Math.ceil(value.min - 10);
         },

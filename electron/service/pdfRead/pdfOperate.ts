@@ -141,7 +141,7 @@ const readFirst = (text, type) => {
           todo[key] = result.replace('[', '').replace(']', '');
         }
       } catch (error) {
-        log.error(`正则匹配错误===》 ${item} `, error);
+        console.error(`正则匹配错误===》 ${item}  ${error}`);
       }
     });
   });
