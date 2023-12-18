@@ -2,7 +2,7 @@ import { net } from 'electron';
 import http from 'http';
 import https from 'https';
 import { EventEmitter } from 'events';
-import { PING_TIMEOUT, PING_URL } from '../config';
+import { PING_TIMEOUT, PING_URL_LIST } from '../config';
 
 export const request = async (url, method?, headers?, data?) => {
   let todo: any = null;
@@ -75,20 +75,22 @@ function httpsRequest(url, method?, headers?, data?) {
 }
 
 // 检测网络连接状态
-export function isOnline(url = PING_URL): Promise<boolean> {
+export function isOnline(url = PING_URL_LIST[0]): Promise<boolean> {
   return new Promise(resolve => {
     const request = net.request(url);
-
     request.on('response', () => {
       resolve(true);
       request.abort();
     });
 
     request.on('error', () => {
-      resolve(false);
       request.abort();
+      resolve(false);
     });
-
+    setTimeout(() => {
+      request.abort();
+      resolve(false);
+    }, PING_TIMEOUT);
     request.end();
   });
 }
@@ -103,7 +105,7 @@ export class IsOnlineService extends EventEmitter {
    */
   constructor(
     options = {
-      authority: PING_URL,
+      authority: PING_URL_LIST[0],
       rate: PING_TIMEOUT,
     }
   ) {
@@ -122,3 +124,15 @@ export class IsOnlineService extends EventEmitter {
     setImmediate(checkForever);
   }
 }
+
+export const isNetworkState = async () => {
+  let state = false;
+  for (let i = 0; i < PING_URL_LIST.length; i++) {
+    const url = PING_URL_LIST[i];
+    state = await isOnline(url);
+    if (state) {
+      break;
+    }
+  }
+  return state;
+};

@@ -5,10 +5,12 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { DYNAMIC_CONFIG, LANGUAGE, WINDOW_PARAM } from '../config';
-import { IsOnlineService, isOnline } from '../unitls/request';
+import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, WINDOW_PARAM } from '../config';
+import { IsOnlineService, isNetworkState } from '../unitls/request';
 import log from '../unitls/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
+import { text } from '../pdfgen/gloable/language';
+
 // The built directory structure
 //
 // ├─┬ dist-electron
@@ -145,8 +147,9 @@ export async function createWindow() {
 
 // 当应用准备就绪时，执行下面的函数
 app.whenReady().then(async () => {
+  DYNAMIC_CONFIG.language = LANGUAGE_PDF[app.getLocale() || 'default'] || 'en';
   // 调用isOnline函数，获取网络连接状态
-  const state = await isOnline();
+  const state = await isNetworkState();
   // 如果网络连接状态正常，则创建窗口
   if (state) {
     createWindow();
@@ -154,8 +157,8 @@ app.whenReady().then(async () => {
   } else {
     log.error('Network connection failed');
     dialog.showErrorBox(
-      'Network connection failed',
-      'Please check your network connection or try again later!'
+      text('NETWORK_CONNECTION_FAILED', DYNAMIC_CONFIG.language),
+      text('NETWORK_PROMPT', DYNAMIC_CONFIG.language)
     );
     app.exit();
   }

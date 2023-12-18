@@ -363,4 +363,8 @@ export const en = {
   EXCEL_DEVICE_NUMBER: 'Journey Number',
   EXCEL_DEVICE_NOTES: 'Travel Notes',
   EXCEL_DEVICE_TIME: 'Time',
+
+  NETWORK_CONNECTION_FAILED: 'Network connection failed',
+  NETWORK_PROMPT: 'Please check your network connection or try again later!',
+  APP_UPDATE: 'App update',
 };

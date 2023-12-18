@@ -7,7 +7,9 @@ import { createWindow, preload, setUpdateState } from './index';
 import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl, judgingSpaces } from '../unitls/unitls';
 import { listenUpdater } from './update';
-import { isOnline } from '../unitls/request';
+import { isNetworkState } from '../unitls/request';
+import { DYNAMIC_CONFIG, UPDATE_PARAM } from '../config';
+import { text } from '../pdfgen/gloable/language';
 
 const baseUrl = `${path.resolve('./')}/resources/`;
 const AdmZip = require('adm-zip');
@@ -20,20 +22,23 @@ const updatePath = `${baseUrl}update`;
 let renewtimer: NodeJS.Timeout | null = null;
 const createTimer = () => {
   renewtimer = setInterval(async () => {
-    const state = await isOnline();
+    const state = await isNetworkState();
     if (state) {
       CheckForUpdates(win);
       // 如果网络连接状态不正常，则显示错误提示框，并退出应用
     } else {
       log.error('Network connection failed');
       dialog.showErrorBox(
-        'Network connection failed',
-        'Please check your network connection or try again later!'
+        text('NETWORK_CONNECTION_FAILED', DYNAMIC_CONFIG.language),
+        text('NETWORK_PROMPT', DYNAMIC_CONFIG.language)
       );
-      app.exit();
+      const state = await isNetworkState();
+      if (!state) {
+        app.exit();
+      }
     }
     // clearInterval(renewtimer!);
-  }, 1800000);
+  }, UPDATE_PARAM.INSPECTION_TIME);
 };
 createTimer();
 
@@ -245,7 +250,7 @@ const createRenew = (data?, callback?) => {
     autoHideMenuBar: true,
     // backgroundColor:"#F9B882",
     // titleBarStyle:"hidden",
-    title: '鼎为数据中心',
+    // title: '鼎为数据中心',
     icon: path.join(process.env.VITE_PUBLIC, 'favicon.ico'),
     alwaysOnTop: true,
     webPreferences: {
@@ -254,6 +259,7 @@ const createRenew = (data?, callback?) => {
       contextIsolation: false,
     },
   });
+  newWindow.title = text('APP_UPDATE', DYNAMIC_CONFIG.language);
   newWindow.setMenuBarVisibility(false);
   if (process.env.VITE_DEV_SERVER_URL) {
     newWindow.loadURL(`${process.env.VITE_DEV_SERVER_URL}renewIndex.html`);

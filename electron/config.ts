@@ -14,6 +14,7 @@ export const DYNAMIC_CONFIG = {
   ver: '1.0.0',
   lan: 1,
   env: 1,
+  language: 'en',
 };
 
 export const LANGUAGE = {
@@ -21,8 +22,18 @@ export const LANGUAGE = {
   'en-US': 'en_US',
 };
 
-export const PING_URL = 'https://www.friggatech.com/';
-export const PING_TIMEOUT = 5000;
+export const LANGUAGE_PDF = {
+  'zh-CN': 'zh',
+  'en-US': 'en',
+  default: 'en',
+};
+export const PING_TIMEOUT = 2000;
+export const PING_URL_LIST = [
+  'https://www.friggatech.com/',
+  'https://www.google.com/',
+  'https://www.baidu.com/',
+  'https://www.bing.com/',
+];
 
 // 系统
 export const SYSTEM = {
@@ -33,12 +44,13 @@ export const SYSTEM = {
 };
 
 // 更新
-// export const UPDATE_PARAM = {
-//   version: '1.0.0',
-//   update_url: 'http://172.16.18.206:3004/',
-//   update_time: '2020-07-01 12:00:00',
-//   update_desc: '1.0.0',
-// };
+export const UPDATE_PARAM = {
+  // version: '1.0.0',
+  // update_url: 'http://172.16.18.206:3004/',
+  // update_time: '2020-07-01 12:00:00',
+  // update_desc: '1.0.0',
+  INSPECTION_TIME: 3600000,
+};
 
 // 窗口
 export const WINDOW_PARAM = {

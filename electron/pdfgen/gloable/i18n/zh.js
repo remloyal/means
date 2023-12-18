@@ -208,7 +208,7 @@ export const zh = {
 
   PDF_DEVICE_CONFIG: '设备配置',
   PDF_DEVICE_START_DELAY: '启动延时：',
-  PDF_DEVICE_LOG: '日志间隔：',
+  PDF_DEVICE_LOG: '存储间隔：',
   PDF_DEVICE_START_TIME: '开始时间：',
   PDF_DEVICE_END_TIME: '结束时间：',
   PDF_DEVICE_DATA_POINT: '数据点：',
@@ -313,4 +313,8 @@ export const zh = {
   EXCEL_DEVICE_NUMBER: '行程编号',
   EXCEL_DEVICE_NOTES: '行程备注',
   EXCEL_DEVICE_TIME: '时间',
+
+  NETWORK_CONNECTION_FAILED: '网络连接失败',
+  NETWORK_PROMPT: '请检查您的网络连接，或者稍后再试！',
+  APP_UPDATE: '应用更新',
 };
