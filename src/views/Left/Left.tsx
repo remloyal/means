@@ -23,7 +23,9 @@ const DeviceImg = {
   M1H,
   M2D,
 };
-
+const setTimeFormat = (time: string): string => {
+  return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
+};
 const Left: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -192,11 +194,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.firstRecordTime'),
-      children: device != null ? device?.record.firstRecordTime : '---',
+      children: device != null ? setTimeFormat(device?.record.firstRecordTime) : '---',
     },
     {
       label: t('left.lastRecordedTime'),
-      children: device != null ? device?.record.lastRecordedTime : '---',
+      children: device != null ? setTimeFormat(device?.record.lastRecordedTime) : '---',
     },
     {
       label: t('left.maximumValue'),

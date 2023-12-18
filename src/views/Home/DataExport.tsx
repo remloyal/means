@@ -7,6 +7,7 @@ import { c2f, f2c } from '../../utils/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilValue } from 'recoil';
+import { OPERATE_CONFIG } from '@/config';
 
 const range = (start: number, end: number) => {
   const result: number[] = [];
@@ -275,6 +276,7 @@ export const DataExport = ({ onCancel }) => {
         <label htmlFor="">{t('deploy.heatLowerLimit')}：</label>
         <InputNumber
           max={param.hightEmp}
+          min={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
           onChange={lowtEmpChange}
           value={param.lowtEmp}
           style={{ width: 200 }}
@@ -286,6 +288,7 @@ export const DataExport = ({ onCancel }) => {
         <label htmlFor="">{t('deploy.heatUpperLimit')}：</label>
         <InputNumber
           min={param.lowtEmp}
+          max={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
           onChange={hightEmpChange}
           value={param.hightEmp}
           style={{ width: 200 }}
