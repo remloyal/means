@@ -148,7 +148,7 @@
     "import": "Import",
     "importSuccess": "Import was successful",
     "importFailed": "Import failed",
-    "importListMsg": "{{success}} Import successful,{{error}} import failed",
+    "importListMsg": "{{success}}Import successful,{{error}} import failed",
     "local": "Local",
     "clouds": "Clouds",
     "dataEditing": "Data Editing"
@@ -161,7 +161,7 @@
     "recordingstate": "Recording state",
     "stopstate": "Stop state",
     "pausestate": "Pause state",
-    "keyon": "Key on",
+    "keyon": "Button start",
     "timingon": "Timing on",
     "temperaturerange": "temperature range"
   },

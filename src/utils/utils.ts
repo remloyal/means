@@ -16,7 +16,7 @@ export const c2f = c => {
 // 传入秒数 转换成 时 分
 export const secondsToTime = (seconds: number) => {
   if (seconds <= 0) {
-    return '0 m';
+    return '0 M';
   }
   if (seconds < 3600 && seconds > 0) {
     const minutes = Math.floor(seconds / 60);

@@ -242,7 +242,7 @@ export const ScreenOffTimeDom = ({ state }: { state: boolean }) => {
 const timeOption = () => {
   const options: { label: string; value: number }[] = [];
   for (let i = 5; i <= 60; i++) {
-    options.push({ label: `${i}s`, value: i });
+    options.push({ label: `${i} S`, value: i });
   }
   return options;
 };

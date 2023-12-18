@@ -3016,7 +3016,7 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
     const timeOff = sensorDatas[sensorDatas.length - 1].timestamp;
     const timeDifference = (timeOff - timeOn) * accuracy;
     const xScale = (((xAxisLength - startX) * accuracy) / timeDifference) * accuracy;
-    let markTextX = startX + 20;
+    let markTextX = startX + 40;
     const markTextY = yAxisHeight[0][1] - 12;
     markList.forEach((item, index) => {
       pdf.undash();

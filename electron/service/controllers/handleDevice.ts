@@ -146,8 +146,12 @@ const setMonitorData = (data, todo) => {
   }
   const markData: any = [];
   if (markList.length > 0) {
-    for (let index = 0; index < markList.length; index++) {
-      const item = markList[index];
+    const markFilterList = markList.filter(
+      item => item.timeStamp >= param.startTime && item.timeStamp <= param.endTime
+    );
+
+    for (let index = 0; index < markFilterList.length; index++) {
+      const item = markFilterList[index];
       let time;
       if (timeZoneState) {
         time = dayjs(item.timeStamp).valueOf();

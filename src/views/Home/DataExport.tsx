@@ -27,9 +27,7 @@ const Language = {
 
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 const setTimeFormat = (time: string): string => {
-  return dayjs(time, `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`).format(
-    dateFormat
-  );
+  return dayjs(time).format(dateFormat);
 };
 export const DataExport = ({ onCancel }) => {
   const { t } = useTranslation();
