@@ -174,10 +174,12 @@
     "restartUpdatenow": "Restart update now!",
     "currentVersion": "current version",
     "latestVersion": "Latest version",
-    "updat": "UPDATE",
+    "updat": "Update content",
     "downloadProgress": "Download progress",
     "startUpdating": "Start updating",
-    "updateAgain": "An error occurred during the update. Please try again or contact the administrator!"
+    "updateAgain": "An error occurred during the update. Please try again or contact the administrator!",
+    "exitInstall": "Exit and install the program",
+    "remoteVersion": "Remote version is"
   },
   "language": {
     "chinese": "Chinese",

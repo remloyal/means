@@ -211,7 +211,7 @@ export const zh = {
   PDF_DEVICE_LOG: '存储间隔：',
   PDF_DEVICE_START_TIME: '开始时间：',
   PDF_DEVICE_END_TIME: '结束时间：',
-  PDF_DEVICE_DATA_POINT: '数据点：',
+  PDF_DEVICE_DATA_POINT: '数据条数：',
 
   PDF_ORDER_INFO: '订单信息',
   PDF_COMPANY_NAME: '公司名称：',

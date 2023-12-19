@@ -76,10 +76,11 @@ export const CheckForUpdates = (winData: Electron.BrowserWindow | null) => {
       // 强制更新关闭主程序
       if (data.forceUpdate == 1) {
         setUpdateState(true);
+        win?.show();
         setTimeout(() => {
           win && win?.close();
           win = null;
-        }, 1000);
+        }, 2000);
       }
       // if (fs.existsSync(baseUrl + 'app.asar')) {
       //   if (!fs.existsSync(baseUrl + 'app_old.asar')) {
@@ -242,8 +243,8 @@ async function _unzip(zipPath, topath?) {
 
 const createRenew = (data?, callback?) => {
   if (mainWindow) return;
-  const width = 400;
-  const height = 350;
+  const width = 720;
+  const height = 450;
   let newWindow: BrowserWindow | null = new BrowserWindow({
     width,
     height,
@@ -272,16 +273,7 @@ const createRenew = (data?, callback?) => {
   newWindow.setSize(width, height);
   newWindow.setMaximumSize(width, height);
   newWindow.setMinimumSize(width, height);
-  newWindow.webContents.on('did-finish-load', () => {
-    setTimeout(() => {
-      newWindow?.webContents.send('version', {
-        new: data.version,
-        old: app.getVersion(),
-        data,
-      });
-    }, 1000);
-  });
-  newWindow.setAlwaysOnTop(true);
+  newWindow.setAlwaysOnTop(true, 'status');
   // 监听窗口退出
   newWindow.on('closed', () => {
     newWindow?.destroy();
@@ -293,16 +285,28 @@ const createRenew = (data?, callback?) => {
     callback(mainWindow);
   }
 
+  ipcMain.handle('versionData', (event, params) => {
+    return {
+      new: data.version,
+      old: app.getVersion(),
+      data,
+    };
+  });
+
   ipcMain.handle('startUpdate', (event, params) => {
-    if (data.updateType == 1) {
-      setUpdateState(true);
-      listenUpdater(mainWindow!, data);
-      setTimeout(() => {
-        win?.close();
-      }, 5000);
-      // 强制更新，全量升级
-    } else {
-      downLoad(data);
+    try {
+      if (data.updateType == 1) {
+        setUpdateState(true);
+        listenUpdater(mainWindow!, data);
+        setTimeout(() => {
+          win?.close();
+        }, 5000);
+        // 强制更新，全量升级
+      } else {
+        downLoad(data);
+      }
+    } catch (error) {
+      log.error(error);
     }
   });
 

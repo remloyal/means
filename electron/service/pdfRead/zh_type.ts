@@ -18,7 +18,7 @@ const ZHTYPE = {
     logInterval: [/日志间隔：(.*?)开始时间/],
     minsStartTime: [/开始时间： (.*?)结束时间/],
     endTime: [/结束时间： (.*?)记录概要/],
-    threshold: [/阈值(.*?)数据点/],
+    threshold: [/阈值(.*?)数据条数/, /阈值(.*?)数据点/],
     highestTemperature: [/最高温度： (.*?)最低温度：/],
     lowestTemperature: [/最低温度： (.*?)最高湿度：/],
     highestHumidity: [/最高湿度： (.*?)最低湿度：/],

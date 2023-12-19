@@ -177,7 +177,9 @@
     "updat": "更新内容",
     "downloadProgress": "下载进度",
     "startUpdating": "开始更新",
-    "updateAgain": "更新发生错误，请重试或请联系管理员！"
+    "updateAgain": "更新发生错误，请重试或请联系管理员！",
+    "exitInstall": "退出并安装程序",
+    "remoteVersion": "远程版本为"
   },
   "language": {
     "chinese": "中文",
