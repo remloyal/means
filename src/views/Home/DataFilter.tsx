@@ -7,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
+const setTimeFormat = (time: string): string => {
+  return dayjs(time).format(dateFormat);
+};
 const range = (start: number, end: number) => {
   const result: number[] = [];
   for (let i = start; i < end; i++) {
@@ -29,8 +32,8 @@ export const DataFilter = ({ onCancel }) => {
   }, []);
 
   const initTime = () => {
-    const startTime = device?.record.firstRecordTime;
-    const endTime = device?.record.lastRecordedTime;
+    const startTime = setTimeFormat(device?.record.firstRecordTime);
+    const endTime = setTimeFormat(device?.record.lastRecordedTime);
     setRegionalTime({
       startTime,
       endTime,
@@ -101,11 +104,11 @@ export const DataFilter = ({ onCancel }) => {
   });
   const [time, setTime] = useState<any>([dayjs(), dayjs()]);
   const timeChange = data => {
-    setTime(data);
+    setTime(data || [dayjs(regionalTime.startTime), dayjs(regionalTime.endTime)]);
     setParam(item => ({
       ...item,
-      startTime: data[0].format(dateFormat),
-      endTime: data[1].format(dateFormat),
+      startTime: data ? data[0].format(dateFormat) : regionalTime.startTime,
+      endTime: data ? data[1].format(dateFormat) : regionalTime.endTime,
     }));
   };
   const onConfirm = () => {

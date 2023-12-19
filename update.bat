@@ -16,6 +16,6 @@ del /f /q /a %target_file%
 
 ren %update_file%  app.asar
 
-start /b %app_path%
+start /b "Frigga Data Center.exe"  %app_path%
 
 exit

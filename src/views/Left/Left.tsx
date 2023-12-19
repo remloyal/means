@@ -23,7 +23,9 @@ const DeviceImg = {
   M1H,
   M2D,
 };
-
+const setTimeFormat = (time: string): string => {
+  return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
+};
 const Left: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -132,7 +134,10 @@ const Left: React.FC = () => {
     useEffect(() => {
       if (deviceTime) {
         terval = setInterval(() => {
-          const present = dayjs(deviceTime).valueOf();
+          const present = dayjs(
+            deviceTime,
+            `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+          ).valueOf();
           setDeviceTime(
             dayjs(present + 1000).format(
               `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
@@ -189,11 +194,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.firstRecordTime'),
-      children: device != null ? device?.record.firstRecordTime : '---',
+      children: device != null ? setTimeFormat(device?.record.firstRecordTime) : '---',
     },
     {
       label: t('left.lastRecordedTime'),
-      children: device != null ? device?.record.lastRecordedTime : '---',
+      children: device != null ? setTimeFormat(device?.record.lastRecordedTime) : '---',
     },
     {
       label: t('left.maximumValue'),
@@ -255,7 +260,7 @@ const Left: React.FC = () => {
                 ? 'image-alarm'
                 : device?.database.alarm == 1
                   ? 'image-alarm image-alarm-red'
-                  : 'image-alarm image-alarm-blue'
+                  : 'image-alarm image-alarm-green'
             }
           />
         </div>

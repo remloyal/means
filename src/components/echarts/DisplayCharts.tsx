@@ -95,7 +95,7 @@ export const foldLine = (
   lines: StandardLine[],
   humiList: string[] | number[],
   legend: string[],
-  temp: string[]
+  temp: number[]
 ) => {
   const tempValue = temp;
 
@@ -111,6 +111,7 @@ export const foldLine = (
       {
         data: xList,
         type: 'category',
+        boundaryGap: false,
         splitLine: {
           show: true, // 显示横向网格线
           lineStyle: {
@@ -132,13 +133,13 @@ export const foldLine = (
         },
         max(value) {
           if (tempValue[0] > value.max) {
-            return Math.ceil(parseFloat(tempValue[0]) + 5);
+            return Math.ceil(tempValue[0] + 5);
           }
           return Math.ceil(value.max + 10);
         },
         min(value) {
           if (tempValue[1] < value.min) {
-            return Math.ceil(parseFloat(tempValue[1]) - 5);
+            return Math.ceil(tempValue[1] - 5);
           }
           return Math.ceil(value.min - 10);
         },
@@ -159,33 +160,33 @@ export const foldLine = (
     dataZoom: [
       {
         type: 'inside', // 放大和缩小
-        orient: 'vertical',
+        orient: 'horizontal',
       },
-      {
-        type: 'inside',
-      },
-      {
-        // start: 0,//默认为0
-        // end: 100,//默认为100
-        type: 'slider',
-        show: false,
-        // xAxisIndex: [0],
-        handleSize: 0, //滑动条的 左右2个滑动条的大小
-        startValue: 0, // 初始显示值
-        endValue: 500000, // 结束显示值,自己定
-        height: 5, //组件高度
-        left: '10%', //左边的距离
-        right: '10%', //右边的距离
-        bottom: 15, //底边的距离
-        borderColor: '#ccc',
-        fillerColor: '#4cccfe',
-        borderRadius: 5,
-        backgroundColor: '#efefef', //两边未选中的滑动条区域的颜色
-        showDataShadow: false, //是否显示数据阴影 默认auto
-        showDetail: false, //即拖拽时候是否显示详细数值信息 默认true
-        realtime: true, //是否实时更新
-        filterMode: 'filter',
-      },
+      // {
+      //   type: 'inside',
+      // },
+      // {
+      //   // start: 0,//默认为0
+      //   // end: 100,//默认为100
+      //   type: 'slider',
+      //   show: true,
+      //   // xAxisIndex: [0],
+      //   handleSize: 0, //滑动条的 左右2个滑动条的大小
+      //   startValue: 0, // 初始显示值
+      //   endValue: 500000, // 结束显示值,自己定
+      //   height: 5, //组件高度
+      //   left: '10%', //左边的距离
+      //   right: '10%', //右边的距离
+      //   bottom: 15, //底边的距离
+      //   borderColor: '#ccc',
+      //   fillerColor: '#4cccfe',
+      //   borderRadius: 5,
+      //   backgroundColor: '#efefef', //两边未选中的滑动条区域的颜色
+      //   showDataShadow: false, //是否显示数据阴影 默认auto
+      //   showDetail: false, //即拖拽时候是否显示详细数值信息 默认true
+      //   realtime: true, //是否实时更新
+      //   filterMode: 'filter',
+      // },
     ],
     series: [
       {
@@ -201,6 +202,10 @@ export const foldLine = (
         markLine: {
           symbol: 'none',
           data: [...lines],
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}:{c}',
+          },
         },
       },
       {
@@ -216,6 +221,10 @@ export const foldLine = (
         markLine: {
           symbol: 'none',
           data: [...lines],
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}:{c}',
+          },
         },
       },
     ],
@@ -274,6 +283,12 @@ export const createFoldLine = (seriesList: CreateSeries[]) => {
     // 设置 y 轴的类型为值轴
     yAxis: {
       type: 'value',
+      max(value) {
+        return Math.ceil(value.max + 10);
+      },
+      min(value) {
+        return Math.ceil(value.min - 10);
+      },
       splitLine: {
         show: true, // 显示横向网格线
         lineStyle: {
@@ -285,16 +300,16 @@ export const createFoldLine = (seriesList: CreateSeries[]) => {
     dataZoom: [
       {
         type: 'inside', // 放大和缩小
-        orient: 'vertical',
+        orient: 'horizontal',
       },
-      {
-        type: 'inside',
-      },
+      // {
+      //   type: 'inside',
+      // },
       {
         type: 'slider',
         show: true,
         height: 30, //组件高度
-        left: 14, //左边的距离
+        left: 16, //左边的距离
         right: 14, //右边的距离
         bottom: 15, //底边的距离
         borderRadius: 5,

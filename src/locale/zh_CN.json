@@ -19,13 +19,13 @@
   },
   "left": {
     "equipmentModel": "设备型号",
-    "serialNumber": "序列号",
+    "serialNumber": "设备 ID",
     "deviceTime": "设备时间",
     "batteryLevel": "电池电量",
     "DeviceStatus": "设备状态",
     "recordPoints": "记录点数",
-    "firstRecordTime": "首记录时间",
-    "lastRecordedTime": "末记录时间",
+    "firstRecordTime": "开始时间",
+    "lastRecordedTime": "结束时间",
     "maximumValue": "最大值",
     "minimumValue": "最小值",
     "stopRecording": "停止记录",
@@ -148,9 +148,14 @@
     "import": "导入",
     "importSuccess": "导入成功",
     "importFailed": "导入失败",
+    "importListMsg": "{{success}}条导入成功，{{error}}条导入失败",
     "local": "本地",
     "clouds": "云端",
-    "dataEditing": "数据编辑"
+    "dataEditing": "数据编辑",
+    "fileName": "文件名",
+    "password": "密码",
+    "passwordError": "密码错误",
+    "enterPassword": "请输入密码"
   },
   "device": {
     "initialstate": "初始状态",
@@ -172,7 +177,9 @@
     "updat": "更新内容",
     "downloadProgress": "下载进度",
     "startUpdating": "开始更新",
-    "updateAgain": "更新发生错误，请重试或请联系管理员！"
+    "updateAgain": "更新发生错误，请重试或请联系管理员！",
+    "exitInstall": "退出并安装程序",
+    "remoteVersion": "远程版本为"
   },
   "language": {
     "chinese": "中文",

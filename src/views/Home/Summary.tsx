@@ -147,17 +147,22 @@ const SummaryGraph: React.FC = () => {
   }, [device]);
 
   useEffect(() => {
+    const lines = setLines();
     const chat = foldLine(
       dateList,
       valueList,
-      line,
+      lines,
       humiList,
       [
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
         power.includes('setHighHumi') ? t('home.humidity') : '',
       ],
-      [device?.record.hightEmp, device?.record.lowtEmp]
+      [
+        Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
+        Math.min(device?.record.lowtEmp, device?.record.lowHumi || device?.record.lowtEmp),
+      ]
     );
+    setLine(lines);
     setOption(chat);
   }, [tongue]);
 
@@ -197,16 +202,18 @@ const SummaryGraph: React.FC = () => {
     const record = device?.record;
     const lines: StandardLine[] = [];
     if (record?.highHumi) {
-      lines.push(standardLine(record.highHumi, '湿度阈值上限', '#FF0000'));
+      lines.push(standardLine(record.highHumi, t('deploy.humiUpperLimit'), '#FF0000'));
     }
     if (record?.lowHumi) {
-      lines.push(standardLine(record.lowHumi, '湿度阈值下限', '#0000FF'));
+      lines.push(standardLine(record.lowHumi, t('deploy.humiLowerLimit'), '#0000FF'));
     }
     if (record?.hightEmp) {
-      lines.push(standardLine(setTempValue(record.hightEmp), '温度阈值上限', '#FF0000'));
+      lines.push(
+        standardLine(setTempValue(record.hightEmp), t('deploy.heatUpperLimit'), '#FF0000')
+      );
     }
     if (record?.lowtEmp) {
-      lines.push(standardLine(setTempValue(record.lowtEmp), '温度阈值下限', '#0000FF'));
+      lines.push(standardLine(setTempValue(record.lowtEmp), t('deploy.heatLowerLimit'), '#0000FF'));
     }
     return lines;
   };
@@ -231,7 +238,10 @@ const SummaryGraph: React.FC = () => {
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
         power.includes('setHighHumi') ? t('home.humidity') : '',
       ],
-      [device?.record.hightEmp, device?.record.lowtEmp]
+      [
+        Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
+        Math.min(device?.record.lowtEmp, device?.record.lowHumi || device?.record.lowtEmp),
+      ]
     );
     setOption(chat);
   };

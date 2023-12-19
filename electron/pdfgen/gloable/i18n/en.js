@@ -256,7 +256,7 @@ export const en = {
   PDF_DEVICE_START_DELAY: 'Start delay:',
   PDF_DEVICE_LOG: 'Log interval:',
   PDF_DEVICE_START_TIME: 'Start Time:',
-  PDF_DEVICE_END_TIME: 'End time:',
+  PDF_DEVICE_END_TIME: 'End Time:',
   PDF_DEVICE_DATA_POINT: 'Data Points:',
 
   PDF_ORDER_INFO: 'Order Information',
@@ -363,4 +363,8 @@ export const en = {
   EXCEL_DEVICE_NUMBER: 'Journey Number',
   EXCEL_DEVICE_NOTES: 'Travel Notes',
   EXCEL_DEVICE_TIME: 'Time',
+
+  NETWORK_CONNECTION_FAILED: 'Network connection failed',
+  NETWORK_PROMPT: 'Please check your network connection or try again later!',
+  APP_UPDATE: 'App update',
 };

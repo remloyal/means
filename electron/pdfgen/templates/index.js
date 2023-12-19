@@ -2442,7 +2442,7 @@ const printChart = (pdf, { sensorInfo, pdfInfo, deviceInfo, globalInfo }) => {
       .fillColor(DEFAULT_FONT_COLOR)
       .rotate(-90, { origin: [posX, posY] })
       .text(
-        `${text('PDF_HUMI_Y_LABEL', LANGUAGE)}( ${SIGN.UNIT(SENSORS.HUMI, LANGUAGE)})`,
+        `${text('PDF_HUMI_Y_LABEL', LANGUAGE)}( %${SIGN.UNIT(SENSORS.HUMI, LANGUAGE)})`,
         posX,
         posY
       );
@@ -2614,7 +2614,7 @@ const printThresholdLegend = (pdf, { startX, startY, sensorInfo, pdfInfo, global
     pdf
       .fontSize(FONT_SIZE_SMALLER)
       .fillColor(DEFAULT_FONT_COLOR)
-      .text('MARK', textPosX, posY - textDeltaY, {
+      .text('Mark', textPosX, posY - textDeltaY, {
         lineBreak: false,
       });
   }
@@ -3016,7 +3016,7 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
     const timeOff = sensorDatas[sensorDatas.length - 1].timestamp;
     const timeDifference = (timeOff - timeOn) * accuracy;
     const xScale = (((xAxisLength - startX) * accuracy) / timeDifference) * accuracy;
-    let markTextX = startX + 20;
+    let markTextX = startX + 40;
     const markTextY = yAxisHeight[0][1] - 12;
     markList.forEach((item, index) => {
       pdf.undash();
@@ -3024,6 +3024,10 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
       // 防止最后x轴长度 偏移
       if (itemX > xAxisLength) {
         itemX = xAxisLength;
+      }
+      // 预防首位
+      if (!itemX) {
+        itemX = startX;
       }
       drawLine(pdf, [itemX, yAxisHeight[0][1]], [itemX, yAxisHeight[1][1]], {
         color: MARK_DATA_LINE_COLOR,

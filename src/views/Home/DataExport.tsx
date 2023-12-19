@@ -7,6 +7,7 @@ import { c2f, f2c } from '../../utils/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilValue } from 'recoil';
+import { OPERATE_CONFIG } from '@/config';
 
 const range = (start: number, end: number) => {
   const result: number[] = [];
@@ -25,6 +26,9 @@ const Language = {
 };
 
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
+const setTimeFormat = (time: string): string => {
+  return dayjs(time).format(dateFormat);
+};
 export const DataExport = ({ onCancel }) => {
   const { t } = useTranslation();
   const device = useRecoilValue(equipment);
@@ -42,8 +46,8 @@ export const DataExport = ({ onCancel }) => {
     { label: t('home.humidity'), value: 'humi' },
   ]);
   const initTime = () => {
-    const startTime = device?.record.firstRecordTime;
-    const endTime = device?.record.lastRecordedTime;
+    const startTime = setTimeFormat(device?.record.firstRecordTime);
+    const endTime = setTimeFormat(device?.record.lastRecordedTime);
     let data: string[] = [];
     if (power.includes('setHighHumi')) {
       setOptions([
@@ -74,7 +78,6 @@ export const DataExport = ({ onCancel }) => {
         device?.record.multidUnit == 0 ? device?.record.lowtEmp : c2f(device?.record.lowtEmp),
     }));
     setTime([dayjs(startTime), dayjs(endTime)]);
-    console.log(startTime, endTime);
   };
 
   const onChange = checkedValues => {
@@ -151,11 +154,11 @@ export const DataExport = ({ onCancel }) => {
   });
   const [time, setTime] = useState<any>();
   const timeChange = data => {
-    setTime(data);
+    setTime(data || [dayjs(regionalTime.startTime), dayjs(regionalTime.endTime)]);
     setParam(item => ({
       ...item,
-      startTime: data[0].format(dateFormat),
-      endTime: data[1].format(dateFormat),
+      startTime: data ? data[0].format(dateFormat) : regionalTime.startTime,
+      endTime: data ? data[1].format(dateFormat) : regionalTime.endTime,
     }));
   };
 
@@ -271,6 +274,7 @@ export const DataExport = ({ onCancel }) => {
         <label htmlFor="">{t('deploy.heatLowerLimit')}：</label>
         <InputNumber
           max={param.hightEmp}
+          min={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
           onChange={lowtEmpChange}
           value={param.lowtEmp}
           style={{ width: 200 }}
@@ -282,6 +286,7 @@ export const DataExport = ({ onCancel }) => {
         <label htmlFor="">{t('deploy.heatUpperLimit')}：</label>
         <InputNumber
           min={param.lowtEmp}
+          max={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
           onChange={hightEmpChange}
           value={param.hightEmp}
           style={{ width: 200 }}
