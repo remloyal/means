@@ -13,28 +13,55 @@ import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 
 import { useRecoilState } from 'recoil';
-import { dateFormat, language } from './stores';
+import { dateFormat, language, pageHeight } from './stores';
 import { Locale } from 'antd/es/locale';
+import { useThrottle } from './utils/tool';
 
 const languageData = {
   zh_CN: zhCN,
   en_US: enUS,
 };
-
+let observer;
 const App: React.FC = () => {
+  const handle = useThrottle(getHight, 200);
   const [tongue, setTongue] = useRecoilState(language);
   const [locale, setLocal] = useState<Locale>(enUS);
   const [date, setDate] = useRecoilState(dateFormat);
+  const [height, setHight] = useRecoilState(pageHeight);
 
   useEffect(() => {
     message.config({ prefixCls: 'antd-message', maxCount: 3, duration: 2 });
     setTongue(localStorage.getItem('language') || 'zh_CN');
     setDate(localStorage.getItem('dateFormat') || 'YYYY-MM-DD');
+    const element = document.getElementById('main');
+    observer = new MutationObserver(mutationList => {
+      handle();
+    });
+
+    observer.observe(element, {
+      childList: true, // 子节点的变动（新增、删除或者更改）
+      attributes: true, // 属性的变动
+      attributeFilter: ['style'],
+      characterData: false, // 节点内容或节点文本的变动
+      subtree: true, // 是否将观察器应用于该节点的所有后代节点
+    });
+    return () => {
+      observer.disconnect();
+      observer = null;
+    };
   }, []);
 
   useEffect(() => {
     setLocal(languageData[tongue] || zhCN);
   }, [tongue]);
+
+  function getHight() {
+    const element = document.getElementById('main');
+    const height: any = window.getComputedStyle(element!)['height'];
+    const axleHight = parseInt(height);
+    console.log(axleHight);
+    setHight(axleHight);
+  }
 
   return (
     <ConfigProvider theme={appTheme} locale={locale}>
@@ -45,6 +72,7 @@ const App: React.FC = () => {
             padding: '14px',
             display: 'flex',
           }}
+          id="main"
         >
           <Left></Left>
           <Suspense>

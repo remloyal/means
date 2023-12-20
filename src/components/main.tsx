@@ -15,7 +15,11 @@ export const MainBody = ({
 };
 
 export const MainRight = ({ children }) => {
-  return <div className="summary-right">{children}</div>;
+  return (
+    <ConfigProvider theme={Theme}>
+      <div className="summary-right">{children}</div>
+    </ConfigProvider>
+  );
 };
 
 export const MainLeft = ({ children }) => {

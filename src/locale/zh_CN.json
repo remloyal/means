@@ -190,6 +190,23 @@
     "cfrText1": "什么是 FDA 21 CFR Part 11 合规?",
     "cfrText2": "美国食品药品理局(FDA) 于 1997 年布了(联邦规章典》第 21 童第 11 部分21FR Pat 11) ，并于 2003 年布关行业南来化有关规则在21FR Pat 11 规定中,电子记录被认为具有与书面记录和手写签名同等的效力，适用于任何由现有的 FDA 规管理的、使用计算机创建、修改、维护、存挡、检索、传输的或保存于持久存介质中的记录。",
     "cfrText3": "21 Pat 11 被美国的生物药企业、医院、研究和实验室广泛接受和遭照执行。自布以来已被准广至全球，虽然没有强制性，但被洲、亚洲等地国家普遍接受和使用，出口到美的药物、生物医药相关设备或者信息系统，都应该符合 21 CFR Pat 11 的规定如若违反，FDA 将根据规定剥夺出口到美国的权利。",
-    "cfrEnable": "启用 FDA 21 CFR Part 11 模块"
+    "cfrEnable": "启用 FDA 21 CFR Part 11 模块",
+    "userInfo": "用户信息",
+    "userManage": "用户管理",
+    "powerManage": "权限管理",
+    "endorsementManage": "签注管理",
+    "securityPolicy": "安全策略",
+    "auditLog": "审计日志",
+    "userName": "用户名",
+    "realName": "真实姓名",
+    "position": "职位",
+    "type": "类型",
+    "state": "状态",
+    "details": "详情",
+    "categoryView": "分类查看",
+    "operationType": "操作类型",
+    "systemAuditTraces": "系统审计痕迹",
+    "analyzeAuditTraces": "分析审计痕迹",
+    "systemEvent": "系统事件"
   }
 }

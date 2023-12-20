@@ -133,3 +133,8 @@ export const screenList = selector<any[]>({
     return device?.csvData || [];
   },
 });
+
+export const pageHeight = atom<number>({
+  key: 'pageHeight',
+  default: 960,
+});
