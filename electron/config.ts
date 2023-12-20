@@ -1,6 +1,6 @@
 import { app } from 'electron';
 import path from 'path';
-
+import dayjs from 'dayjs';
 const UrlList = {
   test_url: 'http://172.16.18.206:3004/',
   intranet: 'http://172.16.22.82:3004/',
@@ -67,6 +67,7 @@ export const RESOURCES_NAME = SYSTEM.IS_WIN
   : SYSTEM.IS_MAC
     ? 'Resources'
     : 'resources';
+export const CACHE_PATH = 'Property';
 
 // 路径
 export const PATH_PARAM = {
@@ -75,23 +76,21 @@ export const PATH_PARAM = {
   THREAD: SYSTEM.IS_DEV
     ? path.join(process.cwd(), './public/thread.js')
     : path.join(process.cwd(), RESOURCES_NAME, './app.asar/dist/thread.js'),
-  CACHE_PATH: path.join(process.cwd(), RESOURCES_NAME, 'cache'),
+  CACHE_PATH: path.join(process.cwd(), CACHE_PATH, 'cache'),
   STATIC_PATH: path.join(process.cwd(), RESOURCES_NAME, 'static'),
 };
 
 // 数据库
 export const DB_PARAM = {
-  DB_PATH: path.join(process.cwd(), RESOURCES_NAME, 'database.db'),
+  DB_PATH: path.join(process.cwd(), CACHE_PATH, 'database/frigga.db'),
+  DB_USER_PATH: path.join(process.cwd(), CACHE_PATH, 'database/friggaUser.db'),
   DB_PASSWORD: 'frigga',
 };
 
+export const DATE = dayjs().format('YYYY-MM-DD').split('-');
 // 日志
 export const LOG_PARAM = {
-  INFO_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/info/info'),
-  ERROR_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/error/error'),
-  DATABASE_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/database/db'),
-  APPLICATION_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/application/application'),
-  RESPONSES_PATH: path.join(process.cwd(), RESOURCES_NAME, 'logs/responses/responses'),
+  LOG_PATH: path.join(process.cwd(), CACHE_PATH, `logs/${DATE[0]}/${DATE[1]}/work`),
 };
 
 // UTC 对应时区
