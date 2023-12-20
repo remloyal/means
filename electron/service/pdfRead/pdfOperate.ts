@@ -13,7 +13,8 @@ import { win } from '../../main/index';
 import path from 'path';
 
 // let pdfjsLib;
-export const importPDFFile = async (filePath: string) => {
+const attempts = 5;
+export const importPDFFile = async (filePath: string, pdfPassword = '') => {
   // if (!pdfjsLib) {
   //   pdfjsLib = await import('pdfjs-dist');
   // }
@@ -25,7 +26,22 @@ export const importPDFFile = async (filePath: string) => {
   let total = 0;
   const fileName = path.basename(filePath).split('.')[0];
   let password = '';
+  let passwordNumber = 0;
   loadingTask.onPassword = async (updatePassword, reason) => {
+    if (pdfPassword) {
+      // pdf 使用设备密码读取，次数限制
+      if (passwordNumber > attempts) {
+        updatePassword('');
+        loadingTask.onPassword = Function;
+        return;
+      }
+      passwordNumber++;
+      updatePassword(pdfPassword);
+      ipcMain.removeHandler('callPassword');
+      ipcMain.removeHandler('pdfPassword');
+      ipcMain.removeHandler('pdfEnterPassword');
+      return;
+    }
     // 取消
     ipcMain.handle('callPassword', (event, params) => {
       password = '';
@@ -87,7 +103,7 @@ export const importPDFFile = async (filePath: string) => {
   //   console.log(list);
   if (list.length > 1 && list[1] == '') {
     // 乱码解析
-    const data = await parsePDF(filePath, list.length, password);
+    const data = await parsePDF(filePath, list.length, pdfPassword || password);
     if (data) {
       list = data;
     }

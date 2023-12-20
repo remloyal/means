@@ -171,7 +171,7 @@ const openFile = (): Promise<string[] | boolean> => {
 // 查询PDF UTC
 export const deviceUtcUpdate = async param => {
   // console.log(param);
-  const { drive, database } = param;
+  const { drive, database, record } = param;
   if (drive.drivePath) {
     const files = fs.readdirSync(drive.drivePath);
     console.log(files);
@@ -181,7 +181,7 @@ export const deviceUtcUpdate = async param => {
     }
     const pdfFile = pdfFiles[0];
     const filePath = path.join(drive.drivePath, pdfFile);
-    const pdfReadData = await importPDFFile(filePath as string);
+    const pdfReadData = await importPDFFile(filePath as string, record.pdfPwd || '');
     if (pdfReadData.timeZone) {
       const oldData = await Device.findOne({
         where: {
