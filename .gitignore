@@ -35,3 +35,4 @@ yarn.lock
 /resources/*
 !/resources/static
 .vscode
+Property
