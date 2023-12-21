@@ -29,7 +29,7 @@ const pdfData = (data, monitors, markList) => {
       product: {
         alertStrategy: 1,
         hardwareVersion: 'DW_V02',
-        pdfChartType: 1,
+        pdfChartType: param.data.length == 1 ? 0 : 1,
         pdfLanguage: param.pdfTongue,
         pdfLogoColor: '',
         pdfLogoText: '',

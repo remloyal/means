@@ -2638,13 +2638,14 @@ const printThresholdLegend = (pdf, { startX, startY, sensorInfo, pdfInfo, global
           .text(text('PDF_HUMI_THRESH_LEGEND', LANGUAGE), textPosX, posY - textDeltaY, {
             lineBreak: false,
           });
+        posY += deltaY;
         break;
       default:
     }
   });
   if (markList.length > 0) {
     pdf.undash();
-    posY += deltaY;
+    // posY += deltaY;
     drawLine(pdf, [startX, posY], [lineEndX, posY], {
       color: MARK_DATA_LINE_COLOR,
     });
