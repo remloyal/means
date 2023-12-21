@@ -51,7 +51,7 @@
     "temperatureUnit": "温度单位",
     "recordInterval": "记录间隔",
     "sensorType": "传感器类型",
-    "startDelay": "启动延时",
+    "startDelay": "延时开始",
     "repetitionPriming": "重复启动",
     "displayTime": "显示时间",
     "temporaryPDF": "临时 PDF",

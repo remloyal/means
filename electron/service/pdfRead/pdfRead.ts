@@ -181,7 +181,7 @@ export const deviceUtcUpdate = async param => {
     }
     const pdfFile = pdfFiles[0];
     const filePath = path.join(drive.drivePath, pdfFile);
-    const pdfReadData = await importPDFFile(filePath as string, record.pdfPwd || '');
+    const pdfReadData = await importPDFFile(filePath as string, record.pdfPwd || '', true);
     if (pdfReadData.timeZone) {
       const oldData = await Device.findOne({
         where: {
