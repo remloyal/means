@@ -40,9 +40,9 @@ export function convertTZ(timezone: string): string {
     time = `0${time}`;
   }
   if (!time) {
-    time = '00';
+    time = '0000';
   }
-  return `UTC${sign}${time.substring(0, 2)}:00`;
+  return `UTC${sign}${time.substring(0, 2)}:${time.substring(2, 4) || 0o0}`;
 }
 
 // UTC==> TZ
