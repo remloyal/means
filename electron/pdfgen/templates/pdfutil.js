@@ -488,6 +488,8 @@ const calcuteSummary = ({
   // 计算average、mkt等，是计算有效值的个数，而不是所有数据的个数
   let valideDataCnt = 0;
   let firstValideDataIndex = -1; // 为了MKT
+  const priceList = [];
+
   data.forEach((m, i) => {
     if (m.val === SENSOR_EXC_DEFAULT) alarm = true; // 如果存在异常数据 设备存在异常
     // 更新最高温度 与 最高温报警温度时间
@@ -574,6 +576,7 @@ const calcuteSummary = ({
         beforeStatus = curStatus;
         beforeSensor = m;
       }
+      priceList.push(Math.round(m.val * 10));
     }
     timestampBefore = m.timestamp;
   });
@@ -609,6 +612,15 @@ const calcuteSummary = ({
     const sec = Math.floor(seconds % 60);
     return `${hour ? `${hour}h` : ''}${min ? `${min}m` : ''}${sec}s`;
   };
+  if (priceList.length > 0) {
+    const mean =
+      priceList.reduce((a, b) => {
+        return a + b;
+      }) /
+      priceList.length /
+      10;
+    mkt = Math.floor(mean * 10) / 10;
+  }
   return {
     alarm,
     alarms: {
