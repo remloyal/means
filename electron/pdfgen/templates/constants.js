@@ -89,8 +89,8 @@ export const PDF_INFO = {
   THREE_SENSOR_DELTAY_DATA_SUMMARY = 5,
   DELTA_Y_LABEL_LINE = 18, // 每个大写label与下面横线的距离
   CHART_INNER_HEIG = (padding = 228) => padding, //Record Chart坐标轴边框高度 要满足CHART_Y_PARTS均分
-  CHART_X_PARTS = 12, //Record Chart X轴分多少块
-  CHART_Y_PARTS = 12, //Record Chart Y轴分多少块
+  CHART_X_PARTS = 8, //Record Chart X轴分多少块
+  CHART_Y_PARTS = 10, //Record Chart Y轴分多少块
   CHART_Y_PARTS_YIYAO_HUMI = 10,
   CHART_Y_PARTS_SHENGSHENG = 10,
   ALARM_COLOR = [255, 0, 0],
@@ -106,6 +106,7 @@ export const PDF_INFO = {
     LINE_COLORS: [[0, 0, 255], [0, 255, 0], '#00FFE7'],
     THRESH_LINE_COLORS: [[255, 0, 0], [255, 0, 255], '#E800FF'],
     XY_LINE_COLOR: [211, 211, 211], // light gray
+    CHAT_LINE_COLOR: [153, 153, 153],
     MARK_DATA_LINE_COLOR: [250, 112, 250],
   },
   /*source contents原始数据打印*/

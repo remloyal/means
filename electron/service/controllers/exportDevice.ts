@@ -2,11 +2,14 @@ import { dialog } from 'electron';
 import { setPdfData } from './handleDevice';
 import { createPdf } from '../../pdfgen/pdf';
 import { win } from '../../main/index';
+import dayjs from 'dayjs';
 
 export const exportDevicePdf = params => {
   return new Promise(async (resolve, reject) => {
     try {
-      const dataPath = await selectSavePath();
+      const time = dayjs(new Date()).format('YYYYMMDDHHmmss');
+      const csvName = `${params.record.deviceType}_${params.record.getsn}_${time}`;
+      const dataPath = await selectSavePath(`${params.csvName}_${time}` || csvName);
       params.filePath = dataPath;
       const pdfData = await setPdfData(params);
       const data = createPdf(pdfData.info, pdfData.monitors);
@@ -19,16 +22,18 @@ export const exportDevicePdf = params => {
 };
 
 // 选择保存路径
-export const selectSavePath = () => {
+export const selectSavePath = (name = '') => {
   return new Promise((resolve, reject) => {
     dialog
-      .showOpenDialog(win!, {
-        properties: ['openDirectory', 'createDirectory'],
+      .showSaveDialog(win!, {
+        defaultPath: `${name}.pdf`,
+        // properties: ['openDirectory', 'createDirectory'],
+        filters: [{ name: name || '', extensions: ['pdf'] }],
       })
       .then(result => {
         console.log(result);
         if (result.canceled == false) {
-          resolve(result.filePaths[0]);
+          resolve(result.filePath);
         } else {
           reject(false);
         }

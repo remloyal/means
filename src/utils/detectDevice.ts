@@ -19,6 +19,9 @@ const readCSVFilesFromDrive = async drive => {
     let csvName = '';
     let stopMode = '';
     let markList = [];
+    if (csvFiles.length === 0) {
+      return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [] };
+    }
     for (const csvFile of csvFiles) {
       csvName = csvFile;
       const filePath = path.join(drivePath, csvFile);

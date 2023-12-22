@@ -14,7 +14,7 @@ import path from 'path';
 
 // let pdfjsLib;
 const attempts = 5;
-export const importPDFFile = async (filePath: string, pdfPassword = '') => {
+export const importPDFFile = async (filePath: string, pdfPassword = '', deviceRead = false) => {
   // if (!pdfjsLib) {
   //   pdfjsLib = await import('pdfjs-dist');
   // }
@@ -28,7 +28,7 @@ export const importPDFFile = async (filePath: string, pdfPassword = '') => {
   let password = '';
   let passwordNumber = 0;
   loadingTask.onPassword = async (updatePassword, reason) => {
-    if (pdfPassword) {
+    if (deviceRead) {
       // pdf 使用设备密码读取，次数限制
       if (passwordNumber > attempts) {
         updatePassword('');
