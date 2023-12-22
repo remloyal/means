@@ -22,7 +22,7 @@ export const exportDevicePdf = params => {
 };
 
 // 选择保存路径
-export const selectSavePath = name => {
+export const selectSavePath = (name = '') => {
   return new Promise((resolve, reject) => {
     dialog
       .showSaveDialog(win!, {

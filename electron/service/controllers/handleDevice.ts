@@ -9,7 +9,9 @@ dayjs.extend(timezone);
 const pdfData = (data, monitors, markList) => {
   const { record, param } = data;
   const deviceInfo = data.database;
-  const bounded = dayjs(record.lastRecordedTime).format('YYYY-MM-DD HH:mm:ss:SSS');
+  const bounded = dayjs(monitors.temp[monitors.temp.length - 1].timestamp).format(
+    'YYYY-MM-DD HH:mm:ss:SSS'
+  );
   const unit = param.tempUnit == '℃' ? 'cels' : 'fahr';
   return {
     info: {
