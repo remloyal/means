@@ -117,6 +117,15 @@ const Left: React.FC = () => {
         }, 10000);
       });
     }
+    return () => {
+      window.eventBus.removeAllListeners('friggaDevice:in');
+      window.eventBus.removeAllListeners('friggaDevice:out');
+      window.eventBus.removeAllListeners('typePower');
+      window.eventBus.removeAllListeners('loading');
+      window.eventBus.removeAllListeners('loadingCompleted');
+      window.eventBus.removeAllListeners('updateDevice');
+      window.eventBus.removeAllListeners('saving');
+    };
   }, []);
 
   const Time = ({ data }) => {

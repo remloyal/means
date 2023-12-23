@@ -24,7 +24,7 @@ import * as _util from '../unitl';
 import * as _common from '../gloable/common';
 import { text } from '../gloable/language';
 import { isTempSenosr, transFahr } from '../unitl';
-
+import { tempMkT } from '../../unitls/tool';
 /**
  pdf坐标
 (0,0)
@@ -456,7 +456,7 @@ const calcuteSummary = ({
   timeZone,
   mask = null,
 }) => {
-  const { minOrigin = 0, maxOrigin = 0 } = threshold || {};
+  const { minOrigin = 0, maxOrigin = 0, type } = threshold || {};
   const { pdfMktShow = false } = product || {};
 
   let alarm = false;
@@ -576,7 +576,7 @@ const calcuteSummary = ({
         beforeStatus = curStatus;
         beforeSensor = m;
       }
-      priceList.push(Math.round(m.val * 10));
+      priceList.push(m.val);
     }
     timestampBefore = m.timestamp;
   });
@@ -612,14 +612,8 @@ const calcuteSummary = ({
     const sec = Math.floor(seconds % 60);
     return `${hour ? `${hour}h` : ''}${min ? `${min}m` : ''}${sec}s`;
   };
-  if (priceList.length > 0) {
-    const mean =
-      priceList.reduce((a, b) => {
-        return a + b;
-      }) /
-      priceList.length /
-      10;
-    mkt = Math.floor(mean * 10) / 10;
+  if (type == 'temp' && priceList.length > 0) {
+    mkt = tempMkT(priceList);
   }
   return {
     alarm,

@@ -30,7 +30,7 @@ const pdfData = (data, monitors, markList) => {
       },
       product: {
         alertStrategy: 1,
-        hardwareVersion: 'DW_V02',
+        hardwareVersion: 'M2MR21',
         pdfChartType: param.data.length == 1 ? 0 : 1,
         pdfLanguage: param.pdfTongue,
         pdfLogoColor: '',
