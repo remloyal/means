@@ -3052,41 +3052,41 @@ const printDataLine = (pdf, { pdfInfo, sensorInfo, startX, startY, globalInfo })
    *  Mark点 的坐标  =  Mark的时间长度 减去 开始时间   *  每一秒的 x轴时间刻度
    */
   const accuracy = 100000000;
-  if (markList.length > 0) {
-    const sensorDatas = datas['temp'];
-    const timeOn = sensorDatas[0].timestamp;
-    const timeOff = sensorDatas[sensorDatas.length - 1].timestamp;
-    const timeDifference = (timeOff - timeOn) * accuracy;
-    const xScale = (((xAxisLength - startX) * accuracy) / timeDifference) * accuracy;
-    let markTextX = startX + 40;
-    const markTextY = yAxisHeight[0][1] - 12;
-    markList.forEach((item, index) => {
-      pdf.undash();
-      let itemX = ((item.timestamp - timeOn) * xScale) / accuracy + startX;
-      // 防止最后x轴长度 偏移
-      if (itemX > xAxisLength) {
-        itemX = xAxisLength;
-      }
-      // 预防首位
-      if (!itemX) {
-        itemX = startX;
-      }
-      drawLine(pdf, [itemX, yAxisHeight[0][1]], [itemX, yAxisHeight[1][1]], {
-        color: MARK_DATA_LINE_COLOR,
-      });
-      pdf.undash();
-      // 绘制头部引线
-      drawLine(pdf, [markTextX, markTextY], [itemX, yAxisHeight[0][1]], {
-        color: MARK_DATA_LINE_COLOR,
-      });
-      // 绘制数字
-      pdf
-        .fillColor(MARK_DATA_LINE_COLOR)
-        .fontSize(10)
-        .text(index + 1, markTextX, markTextY - 13);
-      markTextX += 30;
+  // if (markList.length > 0) {
+  const sensorDatas = datas['temp'];
+  const timeOn = sensorDatas[0].timestamp;
+  const timeOff = sensorDatas[sensorDatas.length - 1].timestamp;
+  const timeDifference = (timeOff - timeOn) * accuracy;
+  const xScale = (((xAxisLength - startX) * accuracy) / timeDifference) * accuracy;
+  let markTextX = startX + 40;
+  const markTextY = yAxisHeight[0][1] - 12;
+  markList.forEach((item, index) => {
+    pdf.undash();
+    let itemX = ((item.timestamp - timeOn) * xScale) / accuracy + startX;
+    // 防止最后x轴长度 偏移
+    if (itemX > xAxisLength) {
+      itemX = xAxisLength;
+    }
+    // 预防首位
+    if (!itemX) {
+      itemX = startX;
+    }
+    drawLine(pdf, [itemX, yAxisHeight[0][1]], [itemX, yAxisHeight[1][1]], {
+      color: MARK_DATA_LINE_COLOR,
     });
-  }
+    pdf.undash();
+    // 绘制头部引线
+    drawLine(pdf, [markTextX, markTextY], [itemX, yAxisHeight[0][1]], {
+      color: MARK_DATA_LINE_COLOR,
+    });
+    // 绘制数字
+    pdf
+      .fillColor(MARK_DATA_LINE_COLOR)
+      .fontSize(10)
+      .text(index + 1, markTextX, markTextY - 13);
+    markTextX += 30;
+  });
+  // }
 };
 
 /**

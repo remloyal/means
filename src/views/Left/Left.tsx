@@ -267,9 +267,11 @@ const Left: React.FC = () => {
             className={
               device == null
                 ? 'image-alarm'
-                : device?.database.alarm == 1
-                  ? 'image-alarm image-alarm-red'
-                  : 'image-alarm image-alarm-green'
+                : device?.record.lowtEmp == 0 && device?.record.highHumi == 0
+                  ? 'image-alarm image-alarm-green'
+                  : device?.database.alarm == 1
+                    ? 'image-alarm image-alarm-red'
+                    : 'image-alarm image-alarm-green'
             }
           />
         </div>
