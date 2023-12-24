@@ -70,6 +70,11 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
     const minute = timePart % 60;
     setTime(hour * 3600);
     setMinute(minute * 60);
+    if (times >= 3600) {
+      setMinuteOptions(getMinuteOptions());
+    } else {
+      setMinuteOptions(getMinuteOptions(1));
+    }
   };
 
   const timeChange = val => {

@@ -296,7 +296,11 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
   }, []);
 
   const setOperation = async () => {
-    if (!checked) return;
+    if (!checked) {
+      await deviceOperate.setPdfPwd('');
+      setStartValue('');
+      return;
+    }
     if (startValue != device?.record.pdfPwd) {
       await deviceOperate.setPdfPwd(startValue);
     }
