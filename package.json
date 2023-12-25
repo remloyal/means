@@ -1,9 +1,9 @@
 {
   "name": "frigga",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "dist-electron/main/index.js",
-  "description": "Electron Vite React boilerplate.",
-  "author": "wade",
+  "description": "Frigga Data Center",
+  "author": "Frigga",
   "license": "MIT",
   "private": true,
   "debug": {

@@ -78,21 +78,18 @@ ipcMain.handle('hidClose', (event, params: HidEventData) => {
 });
 
 function stringToUint8Array(str): number[] {
-  const tmpUint8Array = str.split('').map(e => e.charCodeAt(0));
-  tmpUint8Array.unshift(1);
-  return tmpUint8Array;
+  const buffer = Buffer.from(str, 'utf8');
+  return [1, ...buffer];
 }
 
 let timeout: any = {};
 const errorCount: any = {};
-
 // hidWrite函数用于执行HID写入操作
 const hidWrite = async (params): Promise<{ key: string; value: string } | boolean> => {
   // 如果hidProcess不存在，则创建线程
   if (!hidProcess) {
     await createThread();
   }
-
   return new Promise(async (resolve, reject) => {
     try {
       // 发送hidWrite事件和参数给hidProcess线程
@@ -108,13 +105,12 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
           // 收到hidData事件时，解析数据并返回
           resolve(msg.data);
         }
-
         // 清除对应key的超时定时器
         clearTimeout(timeout[params.key]);
         timeout[params.key] = null;
       });
 
-      // 设置超时定时器，5秒后执行超时处理逻辑
+      // 设置超时定时器，1秒后执行超时处理逻辑
       const handleTimeout = () => {
         // 如果该错误已经发生三次，则执行超时处理逻辑
         if (errorCount[params.key] >= 3) {
@@ -133,7 +129,7 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
           hidWrite(params).then(resolve).catch(reject);
         }
       };
-      timeout[params.key] = setTimeout(handleTimeout, 5000);
+      timeout[params.key] = setTimeout(handleTimeout, 1000);
     } catch (error) {
       resolve(false);
     }

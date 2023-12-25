@@ -438,14 +438,14 @@ const SummaryRight: React.FC = () => {
       label: t('home.lowTemperatureAlarm'),
       children: device != null ? setTempValue(device?.record.lowtEmp) : '---',
     },
-    // {
-    //   label: t('home.runLengthCoding'),
-    //   children: device != null ? device?.record.runLengthCoding : '---',
-    // },
-    // {
-    //   label: t('home.journeyDescription'),
-    //   children: device != null ? device?.record.journeyDescription : '---',
-    // },
+    {
+      label: t('home.runLengthCoding'),
+      children: device != null ? device?.record.shipmentId : '---',
+    },
+    {
+      label: t('home.journeyDescription'),
+      children: device != null ? device?.record.shipment : '---',
+    },
   ];
 
   return (

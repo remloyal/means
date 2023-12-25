@@ -189,10 +189,10 @@ const Left: React.FC = () => {
           '---'
         ),
     },
-    // {
-    //   label: t('left.batteryLevel'),
-    //   children: device != null ? device?.record.batteryLevel : '---',
-    // },
+    {
+      label: t('left.batteryLevel'),
+      children: device != null ? device?.record.batvol : '---',
+    },
     {
       label: t('left.DeviceStatus'),
       children: device != null ? DeviceStatus[device?.record.mode] : '---',
