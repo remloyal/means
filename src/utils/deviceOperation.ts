@@ -229,7 +229,7 @@ class DeviceInstance {
     if (!this.record.hardwareVersion) {
       this.record.hardwareVersion = 'M2MR21';
     }
-    if (this.record.shipment1) {
+    if (this.record.shipment1 || this.record.shipment) {
       this.record.shipment =
         this.record.shipment1 +
         this.record.shipment2 +
@@ -295,7 +295,7 @@ const updateDevice = () => {
   timeout = setTimeout(() => {
     deviceExample.setCsvData(deviceExample.csvData);
     window.eventBus.emit('updateDevice', Object.assign({}, deviceExample));
-  }, 1500);
+  }, 3000);
 };
 
 // 操作父类
@@ -413,5 +413,35 @@ export const deviceOperate = {
     tempPeriod.param = value;
     const data = await setOperateDevice(tempPeriod, instructRead.keyStopEnableget);
     return data;
+  },
+  /** 设置行程id*/
+  setShipmentId: async value => {
+    const tempPeriod = instructSetup.setShipmentId;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.shipmentId);
+    return data;
+  },
+  /** 设置行程描述*/
+  setShipmentDescribe: async (val: string[]) => {
+    const readList = [
+      instructRead.shipment1,
+      instructRead.shipment2,
+      instructRead.shipment3,
+      instructRead.shipment4,
+      instructRead.shipment5,
+      instructRead.shipment6,
+      instructRead.shipment7,
+    ];
+    for (let i = 0; i < 7; i++) {
+      const str = val[i] || ' ';
+      const tempPeriod = instructSetup[`setShipment${i + 1}`];
+      tempPeriod.param = str;
+      await setOperateDevice(tempPeriod);
+    }
+    for (let i = 0; i < readList.length; i++) {
+      const read = readList[i];
+      read && (await deviceExample.write(read));
+      await updateDevice();
+    }
   },
 };

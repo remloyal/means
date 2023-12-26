@@ -172,7 +172,7 @@ export const getNewInstruct = () => {
       },
     },
     setShipmentId: {
-      key: 'shipmentId',
+      key: 'setShipmentId',
       name: '设置Shipment ID',
       order: str => `AT+SETMULTID:SID:${str}`,
       getData: data => {

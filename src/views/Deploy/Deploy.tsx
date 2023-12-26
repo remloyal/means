@@ -16,6 +16,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceConfigParam, typePower } from '@/stores';
 import { TimeZone } from './Timezone';
 import { DeployAdvanced } from './DeployAdvanced';
+import { ShipmentDescribeDom, ShipmentIdDom } from './Shipment';
 
 const Deploy: React.FC = () => {
   return (
@@ -102,6 +103,8 @@ const DeployBasic = ({ state }: { state: boolean }) => {
     StartDelayDom,
     power.includes('setLowHumi') ? LowHumiDom : null,
     power.includes('setHighHumi') ? HightHumiDom : null,
+    power.includes('setShipmentId') ? ShipmentIdDom : null,
+    power.includes('setShipment1') ? ShipmentDescribeDom : null,
   ];
   return (
     <div style={{ padding: '0 20px' }}>

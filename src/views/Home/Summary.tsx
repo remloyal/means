@@ -440,11 +440,7 @@ const SummaryRight: React.FC = () => {
     },
     {
       label: t('home.runLengthCoding'),
-      children: device != null ? device?.record.shipmentId : '---',
-    },
-    {
-      label: t('home.journeyDescription'),
-      children: device != null ? device?.record.shipment : '---',
+      children: device != null ? device?.record.shipmentId || '---' : '---',
     },
   ];
 
@@ -462,6 +458,27 @@ const SummaryRight: React.FC = () => {
             }}
             contentStyle={{
               color: '#000000',
+            }}
+            size="small"
+          />
+        </div>
+        <div className="record">
+          <Descriptions
+            items={[
+              {
+                label: t('home.journeyDescription'),
+                children: device != null ? device?.record.shipment || '---' : '---',
+              },
+            ]}
+            column={1}
+            labelStyle={{
+              color: '#000000',
+              marginLeft: '16px',
+            }}
+            layout="vertical"
+            contentStyle={{
+              color: '#000000',
+              marginLeft: '16px',
             }}
             size="small"
           />

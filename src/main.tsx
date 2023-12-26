@@ -9,6 +9,7 @@ import './assets/icon/iconfont.css';
 import { RecoilRoot } from 'recoil';
 
 window.eventBus = new EventEmitter();
+window.eventBus.setMaxListeners(100);
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <RecoilRoot>
