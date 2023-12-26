@@ -444,4 +444,18 @@ export const deviceOperate = {
       await updateDevice();
     }
   },
+  /** 设置重复启动*/
+  setMultIdMulton: async value => {
+    const tempPeriod = instructSetup.setMultIdMulton;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.multIdMulton);
+    return data;
+  },
+  /** 设置PDF语言*/
+  setPdfLan: async value => {
+    const tempPeriod = instructSetup.setPdfLan;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.pdfLan);
+    return data;
+  },
 };

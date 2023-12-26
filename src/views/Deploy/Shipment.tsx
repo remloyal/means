@@ -81,7 +81,7 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     init();
     window.eventBus.on('deviceConfig', deviceData => {
-      setText(deviceData.shipmentId || text);
+      setText(deviceData.shipment || text);
     });
     return () => {
       window.eventBus.removeAllListeners('deviceConfig');

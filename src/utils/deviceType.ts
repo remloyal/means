@@ -158,7 +158,7 @@ export const getNewInstruct = () => {
       name: '读取PDF语言',
       order: () => 'AT+GETPDFLAN:',
       getData: data => {
-        return data.replaceAll(';', '').split(':')[2];
+        return data.replaceAll(';', '').split(':')[1];
       },
     },
   };
