@@ -13,6 +13,7 @@ const pdfData = (data, monitors, markList) => {
     'YYYY-MM-DD HH:mm:ss:SSS'
   );
   const unit = param.tempUnit == '℃' ? 'cels' : 'fahr';
+  const mold = record.batvol && record.batvol != '' ? 'device' : 'index';
   return {
     info: {
       filter: {
@@ -56,6 +57,8 @@ const pdfData = (data, monitors, markList) => {
         usage: 1,
         firmwareVersion: record.firmwareVersion,
         model: record.deviceType,
+        shipmentID: record.shipmentId || '',
+        shipmentNote: record.shipment || '',
         params: {
           assetId: '',
           content: '',
@@ -95,6 +98,7 @@ const pdfData = (data, monitors, markList) => {
       },
       customer: { name: 'frigga', filePath: data.filePath },
       markList: markList || [],
+      mold,
     },
     monitors,
   };

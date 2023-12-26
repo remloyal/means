@@ -22,6 +22,7 @@ export const PADDING_TOP_DATA_TABLE = padding => PADDING_BOTTOM_FOOT(padding);
 export const PADDING_TOP_ENDORSEMENT = padding => PADDING_BOTTOM_FOOT(padding);
 const simsunPath = filePath('/static/font/simsun.ttf');
 const arialPath = filePath('/static/font/arial.ttf');
+const GB18030 = filePath('/static/font/GB18030.ttf');
 
 export const PDF_INFO = {
     SIZE: 'A4',
@@ -29,7 +30,7 @@ export const PDF_INFO = {
     VERSION: '1.4',
     SUBJECT: 'Platform PDF',
   },
-  FONT_SIMSUN = simsunPath, // 中文字体 宋体
+  FONT_SIMSUN = GB18030, // 中文字体 黑体
   FONT_ARIAL = arialPath, // 俄语会用到，葡萄牙语应该也会用到
   FONT_HELVETICA = 'Helvetica', // 英文字体 常规
   FONT_HELVETICA_BOLD = 'Helvetica-Bold', // 英文字体 粗体

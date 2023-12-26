@@ -317,4 +317,6 @@ export const zh = {
   NETWORK_CONNECTION_FAILED: '网络连接失败',
   NETWORK_PROMPT: '请检查您的网络连接，或者稍后再试！',
   APP_UPDATE: '应用更新',
+  PDF_IDFO_TRIP_ID: '行程 ID：',
+  PDF_IDFO_TRIP_NOTE: '行程描述：',
 };

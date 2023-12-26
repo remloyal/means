@@ -113,7 +113,7 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
       // 设置超时定时器，1秒后执行超时处理逻辑
       const handleTimeout = () => {
         // 如果该错误已经发生三次，则执行超时处理逻辑
-        if (errorCount[params.key] >= 3) {
+        if (errorCount[params.key] >= 1) {
           log.error(`子进程读取超时==> ${params.key} ${params.value}`);
           hidProcess?.kill();
           hidProcess = null;
