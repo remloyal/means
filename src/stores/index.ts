@@ -4,7 +4,7 @@ import { RecoilState, atom, selector } from 'recoil';
 // 应用语言
 export const language = atom({
   key: 'language',
-  default: 'zh_CN',
+  default: 'zh',
 });
 
 // 设备信息主体

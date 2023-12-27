@@ -232,12 +232,12 @@ ipcMain.on('window-reset', () => {
 
 ipcMain.handle('lang', (_, data) => {
   const lang = {
-    en_US: 1,
-    zh_CN: 2,
+    en: 1,
+    zh: 2,
   };
   DYNAMIC_CONFIG.lan = lang[data] || 1;
   setTray(DYNAMIC_CONFIG.lan);
-  return LANGUAGE[app.getLocale()];
+  return LANGUAGE_PDF[app.getLocale()];
 });
 
 // 处理获取版本号的事件
