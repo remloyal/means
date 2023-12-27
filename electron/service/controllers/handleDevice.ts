@@ -13,7 +13,10 @@ const pdfData = (data, monitors, markList) => {
     'YYYY-MM-DD HH:mm:ss:SSS'
   );
   const unit = param.tempUnit == '℃' ? 'cels' : 'fahr';
-  const mold = record.batvol && record.batvol != '' ? 'device' : 'index';
+  let mold = record.batvol && record.batvol != '' ? 'device' : 'index';
+  if (record.shipmentId && record.shipmentId) {
+    mold = 'device';
+  }
   return {
     info: {
       filter: {

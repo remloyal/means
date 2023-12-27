@@ -30,6 +30,8 @@ const ZHTYPE = {
     humiLow: [/低湿警报 (.*?)高湿警报/],
     humiHigh: [/高湿警报 (.*?)记录图表/],
     timeZone: [/所有时间基于(.*?)，24小时制/],
+    shipmentId: [/行程 ID：(.*?)设备配置/],
+    shipment: [/行程描述：(.*?)记录概要/],
   },
 };
 

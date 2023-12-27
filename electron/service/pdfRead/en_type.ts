@@ -42,6 +42,8 @@ const ENTYPE = {
     humiLow: [/Humi-Low (.*?)Humi-High/],
     humiHigh: [/Humi-High (.*?)Record/],
     timeZone: [/All times shown are based on(.*?)24-Hour/, /쯹폐쪱볤믹폚(.*?),24킡쪱훆/],
+    shipmentId: [/Shipment ID:(.*?)Device Configuration/],
+    shipment: [/Shipment Note:(.*?)Logging Summary/],
   },
 };
 // 设备生成
@@ -59,6 +61,11 @@ const DEVICEENTYPE = {
     logInterval: [/Log Interval: (.*?)Start Time/, /듦뒢볤룴:(.*?)뾪쪼쪱볤/],
     minsStartTime: [/MinsStart Time: (.*?)End Time/],
     endTime: [/End Time: (.*?)Device Information/],
+    threshold: [
+      /Threshold(.*?)Data Points/,
+      /뗍ꆫ룟(.*?)쫽뻝쳵쫽/,
+      /Threshold(.*?)Start Record Delay/,
+    ],
   },
 };
 export default { currency: ENTYPE, device: DEVICEENTYPE };

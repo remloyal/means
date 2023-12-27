@@ -133,6 +133,8 @@ const setFormatData = async data => {
       timeZone: data.timeZone || 'UTC+08:00',
       firmwareVersion: data.firmwareVersion,
       stopMode: data.stopMode,
+      shipmentId: data.shipmentId || null,
+      shipment: data.shipment || null,
     },
     operateConfig: {},
     isComplete: true,

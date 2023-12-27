@@ -9,7 +9,7 @@ export const exportDevicePdf = params => {
     try {
       const time = dayjs(new Date()).format('YYYYMMDDHHmmss');
       const csvName = `${params.record.deviceType}_${params.record.getsn}_${time}`;
-      const dataPath = await selectSavePath(`${params.csvName}_${time}` || csvName);
+      const dataPath = await selectSavePath(params.csvName ? `${params.csvName}_${time}` : csvName);
       params.filePath = dataPath;
       const pdfData = await setPdfData(params);
       const data = createPdf(pdfData.info, pdfData.monitors);

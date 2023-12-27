@@ -181,13 +181,13 @@ const readData = async (text, todo, pageFooting) => {
     key = '℉';
     unit = '℉';
   }
-  if (text.includes('RH')) {
+  if (text.includes('RH') || text.includes('%RH')) {
     size += 1;
     key = 'RH';
   }
   text.replace('wwww.friggatech.com', '');
   let data = text.replace('wwww.friggatech.com', '').replace(pageFooting, '').trim();
-  data = await formatText(data);
+  data = await formatText(data, todo.type);
   const chunkedData = splitData(data, size, unit, todo);
   return chunkedData;
 };
@@ -230,13 +230,13 @@ function splitData(data, size, unit, todo) {
   return result;
 }
 
-function formatText(text) {
+function formatText(text, type) {
   const rule = [
     'www.friggatech.com',
     'Date',
     'Time',
-    'RH',
     '%RH',
+    'RH',
     '日期',
     '时间',
     '°C',
@@ -250,7 +250,7 @@ function formatText(text) {
     '쪱볤',
     'ꇦ',
   ];
-  let character = text;
+  let character = newFromat(text, type);
   rule.forEach(item => {
     character = character.replaceAll(item, '');
   });
@@ -320,4 +320,29 @@ function getThreshold(data, type) {
   }
 
   return { hightEmp: 0, lowtEmp: 0, highHumi: 0, lowHumi: 0 };
+}
+
+function newFromat(text, type) {
+  if (type == 'currency') {
+    let timeIndex = text.indexOf('日期 时间');
+    if (timeIndex == -1) {
+      timeIndex = text.indexOf('Date Time');
+    }
+    let deviceIndex = text.indexOf('设备 ID');
+    if (deviceIndex == -1) {
+      deviceIndex = text.indexOf('Device ID');
+    }
+    const str = text.substring(timeIndex, deviceIndex);
+    return str || text;
+  }
+  // 新设备端
+  if (text.includes('设备 ID') || text.includes('Device ID')) {
+    let timeIndex = text.indexOf('日期 时间');
+    if (timeIndex == -1) {
+      timeIndex = text.indexOf('Date Time');
+    }
+    const str = text.substring(timeIndex, text.length);
+    return str;
+  }
+  return text;
 }

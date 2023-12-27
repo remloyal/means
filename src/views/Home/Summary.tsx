@@ -410,10 +410,15 @@ const SummaryRight: React.FC = () => {
       label: t('home.startDelay'),
       children: device != null ? secondsToTime(device?.record.startDelayTime) : '---',
     },
-    // {
-    //   label: t('home.repetitionPriming'),
-    //   children: device != null ? device?.record.repetitionPriming : '---',
-    // },
+    {
+      label: t('home.repetitionPriming'),
+      children:
+        device != null
+          ? device?.record.multIdMulton == 0
+            ? t('deploy.prohibit')
+            : t('deploy.allow')
+          : '---',
+    },
     {
       label: t('home.displayTime'),
       children: device != null ? `${device?.record.multIdSleepTime || 0} S` : '---',

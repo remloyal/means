@@ -1777,33 +1777,49 @@ const printOrderInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs }
   // 行程 描述
   // pdf.text(shipmentNote, valueLeftStartX, posY);
   posY += ROW_DELTA;
-  const Placeholder = `                        ${shipmentNote}`;
-  if (LANGUAGE == 'en') {
-    pdf
-      .font(getFont('zh'))
-      .text(Placeholder, labelRightStartX, posY, {
-        width: 190 + 100,
-        height: 60,
-        ellipsis: true,
-        paragraphGap: 0,
-        lineGap: 0,
-        wordSpacing: 0,
-        characterSpacing: 0,
-      })
-      .stroke();
-  } else {
-    pdf.font(getFont('zh')).text(Placeholder, labelRightStartX, posY, {
-      width: 190 + 100,
-      height: 60,
+  const Placeholder = `                                           ${shipmentNote}`;
+
+  pdf.text(text('PDF_IDFO_TRIP_NOTE', LANGUAGE), labelRightStartX, posY);
+  pdf
+    .font(getFont('zh'))
+    .text(shipmentNote, valueRightStartX, posY, {
+      width: 150,
+      height: 40,
       ellipsis: true,
       paragraphGap: 0,
       lineGap: 0,
       wordSpacing: 0,
       characterSpacing: 0,
-    });
-  }
+      columns: 1,
+    })
+    .stroke();
+  // if (LANGUAGE == 'en') {
+  //   pdf
+  //     .font(getFont('zh'))
+  //     .text(Placeholder, labelRightStartX, posY, {
+  //       width: 190 + 100,
+  //       // height: 60,
+  //       ellipsis: true,
+  //       paragraphGap: 0,
+  //       lineGap: 0,
+  //       wordSpacing: 0,
+  //       characterSpacing: 0,
+  //       columns: 1,
+  //     })
+  //     .stroke();
+  // } else {
+  //   pdf.font(getFont('zh')).text(Placeholder, labelRightStartX, posY, {
+  //     width: 190 + 100,
+  //     // height: 60,
+  //     ellipsis: true,
+  //     paragraphGap: 0,
+  //     lineGap: 0,
+  //     wordSpacing: 0,
+  //     characterSpacing: 0,
+  //     columns: 1,
+  //   });
+  // }
   pdf.font(getFont(LANGUAGE));
-  pdf.text(text('PDF_IDFO_TRIP_NOTE', LANGUAGE), labelRightStartX, posY);
 };
 
 const printLoggingLessThreeSummay = (
