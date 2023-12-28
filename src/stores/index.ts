@@ -138,3 +138,11 @@ export const pageHeight = atom<number>({
   key: 'pageHeight',
   default: 960,
 });
+
+export const userInformation = atom<any>({
+  key: 'userInformation',
+  default: {
+    type: '',
+    data: {},
+  },
+});

@@ -41,5 +41,8 @@ const Theme = {
       titleColor: '#FFFFFF',
       extraColor: '#ffffff',
     },
+    Table: {
+      rowHoverBg: 'var(--bg-right-color)',
+    },
   },
 };

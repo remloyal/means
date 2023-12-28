@@ -10,6 +10,8 @@ import { IsOnlineService, isNetworkState } from '../unitls/request';
 import log from '../unitls/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
 import { text } from '../pdfgen/gloable/language';
+import { getUserStart, setUserStart } from '../service/user/user';
+import { detectionStatus } from '../service/db';
 
 // The built directory structure
 //
@@ -147,6 +149,7 @@ export async function createWindow() {
 
 // 当应用准备就绪时，执行下面的函数
 app.whenReady().then(async () => {
+  initUser();
   DYNAMIC_CONFIG.language = LANGUAGE_PDF[app.getLocale() || 'default'] || 'en';
   // 调用isOnline函数，获取网络连接状态
   const state = await isNetworkState();
@@ -237,6 +240,7 @@ ipcMain.handle('lang', (_, data) => {
   };
   DYNAMIC_CONFIG.lan = lang[data] || 1;
   setTray(DYNAMIC_CONFIG.lan);
+  setUserStart({ name: 'language', value: data });
   return LANGUAGE_PDF[app.getLocale()];
 });
 
@@ -290,4 +294,10 @@ const setTray = lan => {
 // 设置更新状态
 export const setUpdateState = state => {
   updateState = state;
+};
+
+const initUser = async () => {
+  await detectionStatus();
+  const state = await getUserStart();
+  console.log('getUserStart', state);
 };

@@ -78,7 +78,7 @@ const CfrMain = ({ onChange }) => {
         onChange={key => {
           onChange(key);
         }}
-        destroyInactiveTabPane={false}
+        destroyInactiveTabPane={true}
       />
     </>
   );
@@ -97,7 +97,7 @@ const CfrRight = ({ activeKey }) => {
   return (
     <div className="cfr-right">
       {rightDom.map((Item, index) => {
-        if (index != activeKey) return <></>;
+        if (index != activeKey) return <span key={Math.random().toString(36).slice(-8)}></span>;
         return <Item key={index} />;
       })}
     </div>

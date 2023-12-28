@@ -84,7 +84,7 @@ export const PATH_PARAM = {
 // 数据库
 export const DB_PARAM = {
   DB_PATH: path.join(process.cwd(), CACHE_PATH, 'database/frigga.db'),
-  DB_USER_PATH: path.join(process.cwd(), CACHE_PATH, 'database/friggaUser.db'),
+  DB_USER_PATH: path.join(process.cwd(), CACHE_PATH, 'database/friggaInfo.db'),
   DB_PASSWORD: 'frigga',
 };
 

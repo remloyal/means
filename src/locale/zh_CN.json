@@ -207,6 +207,20 @@
     "operationType": "操作类型",
     "systemAuditTraces": "系统审计痕迹",
     "analyzeAuditTraces": "分析审计痕迹",
-    "systemEvent": "系统事件"
+    "systemEvent": "系统事件",
+    "newUsers": "新增用户",
+    "modifyUsers": "修改用户",
+    "twoPassword": "两次密码不一致",
+    "userNameExist": "用户名已存在",
+    "users": "用户",
+    "administrator": "管理员",
+    "normal": "正常",
+    "lock": "锁定",
+    "unlock": "解锁",
+    "success": "成功",
+    "fail": "失败",
+    "resetting": "重置",
+    "userResetSuccess": "重置密码成功，密码为123456！",
+    "resetPasswordText": "您确定要重置用户 {{userName}}的密码吗？"
   }
 }

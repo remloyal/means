@@ -207,6 +207,20 @@
     "operationType": "Operation Type",
     "systemAuditTraces": "System audit traces",
     "analyzeAuditTraces": "Analyze audit traces",
-    "systemEvent": "System event"
+    "systemEvent": "System event",
+    "newUsers": "New Users",
+    "modifyUsers": "Modify Users",
+    "twoPassword": "The two password inputs are inconsistent",
+    "userNameExist": "The username already exists",
+    "users": "Users",
+    "administrator": "Administrator",
+    "normal": "Normal",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "success": "success",
+    "fail": "fail",
+    "resetting": "Resetting",
+    "userResetSuccess": "User reset successful with password 123456!",
+    "resetPasswordText": "Are you sure you want to reset the password for user {{userName}}?"
   }
 }

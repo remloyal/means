@@ -97,3 +97,15 @@ export const FileData = database.define(
 );
 
 // FileData.belongsTo(Device, { foreignKey: 'device_id', targetKey: 'id' });
+export const UserRelated = database.define(
+  'user_related',
+  {
+    id: { type: INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: STRING, allowNull: false },
+    value: { type: INTEGER, allowNull: false },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+  }
+);
