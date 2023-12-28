@@ -18,8 +18,8 @@ import { Locale } from 'antd/es/locale';
 import { useThrottle } from './utils/tool';
 
 const languageData = {
-  zh_CN: zhCN,
-  en_US: enUS,
+  zh: zhCN,
+  en: enUS,
 };
 let observer;
 const App: React.FC = () => {
@@ -31,7 +31,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     message.config({ prefixCls: 'antd-message', maxCount: 3, duration: 2 });
-    setTongue(localStorage.getItem('language') || 'zh_CN');
+    setTongue(localStorage.getItem('language') || 'zh');
     setDate(localStorage.getItem('dateFormat') || 'YYYY-MM-DD');
     const element = document.getElementById('main');
     observer = new MutationObserver(mutationList => {
@@ -52,7 +52,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setLocal(languageData[tongue] || zhCN);
+    setLocal(languageData[tongue || 'zh']);
   }, [tongue]);
 
   function getHight() {

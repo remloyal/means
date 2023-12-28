@@ -367,4 +367,6 @@ export const en = {
   NETWORK_CONNECTION_FAILED: 'Network connection failed',
   NETWORK_PROMPT: 'Please check your network connection or try again later!',
   APP_UPDATE: 'App update',
+  PDF_IDFO_TRIP_ID: 'Shipment ID:',
+  PDF_IDFO_TRIP_NOTE: 'Shipment Note:',
 };

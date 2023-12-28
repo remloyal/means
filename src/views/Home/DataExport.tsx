@@ -64,7 +64,7 @@ export const DataExport = ({ onCancel }) => {
       endTime,
     });
     const tempUnit = MultidUnit[device?.record.multidUnit | 0];
-    const lang = Language[localStorage.getItem('language') || 'en_US'];
+    const lang = localStorage.getItem('language') || 'en';
     setParam(item => ({
       ...item,
       startTime,

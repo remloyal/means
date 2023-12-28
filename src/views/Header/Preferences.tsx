@@ -153,8 +153,8 @@ const BasicSetting = () => {
           style={{ width: 200 }}
           onChange={setLanguage}
           options={[
-            { value: 'zh_CN', label: '简体中文' },
-            { value: 'en_US', label: 'English' },
+            { value: 'zh', label: '简体中文' },
+            { value: 'en', label: 'English' },
           ]}
         />
       </div>

@@ -4,8 +4,8 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '获取设备型号',
     order: () => 'AT+GETDEVTYPE:',
     getData: data => {
-      data = data.split('#')[0];
-      return data;
+      const todo = data.split('#');
+      return todo;
     },
   },
   multidUnit: {
@@ -58,14 +58,6 @@ export const instructRead: OperateType<OperateTypeItem> = {
       return data.split(':')[1].replaceAll(';', '');
     },
   },
-  //   batvol: {
-  //     key: 'batvol',
-  //     name: '读取设备电量',
-  //     order: () => 'AT+GETBATVOL:',
-  //     getData: data => {
-  //       return data.split(':')[1].replaceAll(';', '');
-  //     },
-  //   },
   startDelayTime: {
     key: 'startDelayTime',
     name: '读取StartDelay时间',
@@ -133,6 +125,90 @@ export const instructRead: OperateType<OperateTypeItem> = {
       return data.replaceAll(';', '').split(':')[1];
     },
   },
+};
+
+export const getNewInstruct = () => {
+  const read = {
+    batvol: {
+      key: 'batvol',
+      name: '读取设备电量',
+      order: () => 'AT+GETBATVOL:',
+      getData: data => {
+        return data.split(':')[1].replaceAll(';', '');
+      },
+    },
+    multIdMulton: {
+      key: 'multIdMulton',
+      name: '获取重复启动',
+      order: () => 'AT+GETMULTID:MULTON:',
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    },
+    shipmentId: {
+      key: 'shipmentId',
+      name: '获取shipment ID',
+      order: () => 'AT+GETMULTID:SID:',
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    },
+    pdfLan: {
+      key: 'pdfLan',
+      name: '读取PDF语言',
+      order: () => 'AT+GETPDFLAN:',
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[1];
+      },
+    },
+  };
+  const setup = {
+    setMultIdMulton: {
+      key: 'setMultIdMulton',
+      name: '设置重复启动',
+      order: str => `AT+SETMULTID:MULTON:${str}`,
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    },
+    setShipmentId: {
+      key: 'setShipmentId',
+      name: '设置Shipment ID',
+      order: str => `AT+SETMULTID:SID:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+    setPdfLan: {
+      key: 'setPdfLan',
+      name: '设置PDF语言',
+      order: str => `AT+SETPDFLAN:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+  };
+
+  [...new Array(7).keys()].map((_, i) => {
+    i += 1;
+    read[`shipment${i}`] = {
+      key: `shipment${i}`,
+      name: `获取shipment描述${i}`,
+      order: () => `AT+GETMULTID:SD${i}:`,
+      getData: (data: string) => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    };
+    setup[`setShipment${i}`] = {
+      key: `setShipment${i}`,
+      name: `设置shipment描述${i}`,
+      order: str => `AT+SETMULTID:SD${i}:${str}`,
+      getData: (data: string) => {
+        return data;
+      },
+    };
+  });
+  return { read, setup };
 };
 
 export const instructSetup: OperateType<OperateTypeItem> = {
@@ -267,6 +343,14 @@ export const deviceType = {
   name: '获取设备型号',
   order: () => 'AT+GETDEVTYPE:',
   getData: data => data,
+};
+export const batvol = {
+  key: 'batvol',
+  name: '读取设备电量',
+  order: () => 'AT+GETBATVOL:',
+  getData: data => {
+    return data.split(':')[1].replaceAll(';', '');
+  },
 };
 
 const humi = {

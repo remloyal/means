@@ -64,7 +64,7 @@ export const AnalysisPage = () => {
     if (exportState) return;
     exportState = true;
     const imgBaseData = await childRef.current.exportImage();
-    const language = lang[localStorage.getItem('language') || 'zh_CN'] || 'zh';
+    const language = localStorage.getItem('language') || 'zh';
     try {
       const todo = await ipcRenderer.invoke('exportHistory', {
         key: currentKey,

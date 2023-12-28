@@ -48,7 +48,7 @@ import {
   ENDORSEMENT_EACH_LINE_HEIGHT,
   PADDING_TOP_ENDORSEMENT,
   CHART_Y_PARTS_SHENGSHENG,
-} from '../templates/constants';
+} from '../constants';
 import {
   PDF_CHART_TYPE,
   SENSORS,
@@ -62,9 +62,9 @@ import {
   PDF_TEMPLATE_NAME,
   TEMP_UNIT,
   PDF_CONFIG,
-} from '../gloable/gloable';
-import * as _common from '../gloable/common';
-import * as _util from '../unitl';
+} from '../../gloable/gloable';
+import * as _common from '../../gloable/common';
+import * as _util from '../../unitl';
 import {
   drawYesOrNoLogo,
   drawLogo,
@@ -78,10 +78,10 @@ import {
   checkContainChinese,
   footPageNumberDeltaX,
   needTransSensorValue,
-} from '../templates/pdfutil';
-import { text } from '../gloable/language';
-import _log from '../../unitls/log';
-import { transFahr } from '../unitl';
+} from '../pdfutil';
+import { text } from '../../gloable/language';
+import _log from '../../../unitls/log';
+import { transFahr } from '../../unitl';
 
 const { POP_INTERVAL, NEED_POP } = PDF_CONFIG.POP;
 /**
@@ -483,6 +483,8 @@ const initDeviceInfo = (globalInfo, info, sensorInfo) => {
     readVal: read,
     stopMode: UNBIND_TYPE_MAP_NAME[unbindType](LANGUAGE),
     deviceStopMode: stopMode,
+    shipmentID: device.shipmentID || '',
+    shipmentNote: device.shipmentNote || '',
   };
 };
 
@@ -737,9 +739,9 @@ const initChartXValues = (data, xParts) => {
 const initChartParams = ({ sensorInfo, summaryInfo, globalInfo }) => {
   const { sensors = [], sensorCnt = 0, thresholds = {}, datas = {}, dataCount } = sensorInfo || {};
   const { highests = {}, lowests = {}, alarmCount = {} } = summaryInfo || {};
-  const { UNIT } = globalInfo;
-  const needTransValue = needTransSensorValue(SENSORS.TEMP, UNIT);
+  const { LANGUAGE = 'en', UNIT } = globalInfo || {};
 
+  const needTransValue = needTransSensorValue(SENSORS.TEMP, UNIT);
   const chartWidth = PDF_A4_WIDTH - 2 * (PAGE_LEFT_POS() + PADDING_LEFT_CHART_FROM_LEFT_POS());
 
   // 只有存在humi时，我们才画第二个Y轴
@@ -749,12 +751,12 @@ const initChartParams = ({ sensorInfo, summaryInfo, globalInfo }) => {
   let topPosLeftYValue = undefined;
   // 左侧坐标轴 ：最低Y位置点映射的温度值（不一定是温度的最低值，需要综合阈值以及布局分布需要确定的值）
   let bottomPosLeftYValue = undefined;
-  // topPosLeftYValue - bottomPosLeftYValue 需要满足delta值能被CHART_Y_PARTS_SHENGSHENG整除，这样下面的单位高度就是一个整数，尽量减少精度带来的偏差
+  // topPosLeftYValue - bottomPosLeftYValue 需要满足delta值能被CHART_Y_PARTS整除，这样下面的单位高度就是一个整数，尽量减少精度带来的偏差
   // 左侧坐标轴 ：单位sensor值对应的高度
   let heightLeftYPerValue = 0;
 
   // 右侧坐标轴 最高Y位置点映射的温度值（不一定是温度的最高值，需要综合阈值以及布局分布需要确定的值）
-  const topPosRightYValue = 100;
+  const topPosRightYValue = 99;
   // 右侧坐标轴 最低Y位置点映射的温度值（不一定是温度的最低值，需要综合阈值以及布局分布需要确定的值）
   const bottomPosRightYValue = 0;
   // 右侧坐标轴 ：单位sensor值对应的高度
@@ -766,7 +768,6 @@ const initChartParams = ({ sensorInfo, summaryInfo, globalInfo }) => {
   let widthXPerValue = 0;
 
   const popConfig = {};
-
   sensors.forEach(type => {
     const { low, high } = alarmCount[type] || {};
     const { total: lowTotal = 0 } = low || {};
@@ -802,76 +803,33 @@ const initChartParams = ({ sensorInfo, summaryInfo, globalInfo }) => {
       }
     }
   });
+  let deltaMore = 0;
+  // 设备端是*10来操作的，所以，这边为了同步，也进行*10来操作
+  topPosLeftYValue *= 10;
+  bottomPosLeftYValue *= 10;
+  const maxMinDelta = topPosLeftYValue - bottomPosLeftYValue;
 
-  // TODO: 看不懂这是做什么，直接从设备端拿来的算法，为了跟设备端一致@{
-  const get_abs = (max, min) => {
-    const delta = max - min;
-    if (delta < 0) {
-      return -delta;
-    } else {
-      return delta;
-    }
-  };
-  /*
-   * 找到和data数接近的n_times倍数的数字
-   * up为0 则返回小于data的n_times倍数的数
-   * up为1,则返回大于data的n_times倍数的数字
-   * 因为data是实际温度x10之后的数值,所以这个倍数n_times要乘以10
-   */
-  const find_next_n_times_data = (data, up, n_times) => {
-    let res_data = Math.floor(data);
-
-    for (let i = 0; i < 60; i++) {
-      if (up == 1) {
-        res_data += 1;
-      } else if (up == 0) {
-        res_data -= 1;
-      } else {
-        //do nothing
-        return 0;
-      }
-
-      if (res_data % n_times == 0) return res_data;
-    }
-
-    return 0;
-  };
-
-  // 确定最高温度与最低温度后，多画一部分，也就是坐标最高点比温度数据最高温度多一点
-  let gap_value = 0;
-  let y_parts = CHART_Y_PARTS_SHENGSHENG;
-  const delta = get_abs(topPosLeftYValue, bottomPosLeftYValue);
-
-  /**
-   *  * shengsheng
-   * 温度跨度在10°之内    1°
-   * 温度跨度在10~50°之间 5°
-   * 温度跨度在50~100°之间 10°
-   * 温度跨度在100~200°之间 20°
-   * 温度跨度在200°以上 50°
-   */
-  if (delta < 10) {
-    gap_value = 1;
-  } else if (get_abs(topPosLeftYValue, bottomPosLeftYValue) < 50) {
-    gap_value = 5;
-  } else if (get_abs(topPosLeftYValue, bottomPosLeftYValue) < 100) {
-    gap_value = 10;
-  } else if (get_abs(topPosLeftYValue, bottomPosLeftYValue) < 200) {
-    gap_value = 20;
+  if (Math.floor(maxMinDelta / CHART_Y_PARTS) > 0) {
+    deltaMore = Math.floor(maxMinDelta / CHART_Y_PARTS);
   } else {
-    gap_value = 50;
+    deltaMore = 1;
   }
-  topPosLeftYValue = find_next_n_times_data(topPosLeftYValue, 1, gap_value);
-  bottomPosLeftYValue = find_next_n_times_data(bottomPosLeftYValue, 0, gap_value);
-  y_parts = get_abs(topPosLeftYValue, bottomPosLeftYValue) / gap_value;
 
-  let miss_parts = 0;
-  if (y_parts < CHART_Y_PARTS_SHENGSHENG) {
-    miss_parts = CHART_Y_PARTS_SHENGSHENG - y_parts;
-    y_parts = CHART_Y_PARTS_SHENGSHENG;
-    topPosLeftYValue += miss_parts * gap_value;
+  //确定最高温度与最低温度后，多画一部分,也就是坐标最高点比温度数据最高温度多一点
+  topPosLeftYValue += deltaMore;
+  bottomPosLeftYValue -= deltaMore;
+
+  const reminder = (topPosLeftYValue - bottomPosLeftYValue) % CHART_Y_PARTS;
+  //如果不能整除,要去凑整数,max与min都相应增加与减少，这样分布更均匀
+  if (reminder != 0) {
+    topPosLeftYValue += Math.floor((CHART_Y_PARTS - reminder) / 2); //为了保证下面能整除
+    bottomPosLeftYValue -=
+      Math.floor((CHART_Y_PARTS - reminder) / 2) + ((CHART_Y_PARTS - reminder) % 2);
   }
-  // TODO: }@ 看不懂这是做什么，直接从设备端拿来的算法，为了跟设备端一致
+
+  // 重新去10操作
+  topPosLeftYValue = topPosLeftYValue / 10;
+  bottomPosLeftYValue = bottomPosLeftYValue / 10;
 
   const getLengthPerValue = (topValue, bottomValue, innerHeight) => {
     return innerHeight / (topValue - bottomValue);
@@ -892,44 +850,48 @@ const initChartParams = ({ sensorInfo, summaryInfo, globalInfo }) => {
   heightRightYPerValue = getLengthPerValue(
     topPosRightYValue,
     bottomPosRightYValue,
-    CHART_INNER_HEIG()
+    (CHART_INNER_HEIG() / CHART_Y_PARTS) * (CHART_Y_PARTS - 1)
   );
-  // 为了给Y轴每行轴线标记相应的坐标值
-  let valueDeltaPerYPart = Math.floor((topPosLeftYValue - bottomPosLeftYValue) / y_parts);
+  // 为了给Y轴每行轴线标记相应的坐标值 需要保留小数位
+  let valueDeltaPerYPart = ((topPosLeftYValue - bottomPosLeftYValue) * 10) / CHART_Y_PARTS / 10;
+
   // 左侧Y轴所有坐标点的值
   const Y1stValues = [];
   // 右侧Y轴所有坐标点的值
   const Y2ndValues = [];
-  const valueDeltaPerY2Part = Math.floor(topPosRightYValue / y_parts);
-  for (let i = 0; i < y_parts + 1; i++) {
-    if (i === y_parts) {
+  const valueDeltaPerY2Part = Math.floor(topPosRightYValue / (CHART_Y_PARTS - 1));
+  for (let i = 0; i < CHART_Y_PARTS + 1; i++) {
+    if (i === CHART_Y_PARTS) {
       // 保险起见，最后一个点的值，直接用计算得到的bottom赋值
       Y1stValues.push(bottomPosLeftYValue);
-      if (draw2ndSensor) {
-        Y2ndValues.push(bottomPosRightYValue); // 保险起见,最后一个点是0
-      }
     } else {
+      //因为右侧Y轴 展示湿度，而湿度最高表示到99，最低0，所以比较固定，而Y_PARTS要么是12，要么是10，无法均分，所以牺牲掉一格
       Y1stValues.push(topPosLeftYValue - i * valueDeltaPerYPart);
       if (draw2ndSensor) {
-        Y2ndValues.push(topPosRightYValue - i * valueDeltaPerY2Part);
+        if (i === CHART_Y_PARTS - 1) {
+          Y2ndValues.push(bottomPosRightYValue); // 保险起见,最后一个点是0
+        } else {
+          Y2ndValues.push(topPosRightYValue - valueDeltaPerY2Part * i);
+        }
       }
     }
   }
+
   if (needTransValue) {
-    valueDeltaPerYPart = Math.floor(
-      (transFahr(topPosLeftYValue) - transFahr(bottomPosLeftYValue)) / y_parts
-    );
+    valueDeltaPerYPart =
+      ((transFahr(topPosLeftYValue) - transFahr(bottomPosLeftYValue)) * 10) / CHART_Y_PARTS / 10;
   }
   // Y轴向，每格多高
-  const heightDeltaPerYPart = CHART_INNER_HEIG() / y_parts;
+  const heightDeltaPerYPart = CHART_INNER_HEIG() / CHART_Y_PARTS;
   // X轴向，每格多宽
   //* 这是一种理想的均分状态，但是x轴移动时，会有精度差的，如果按照这个绘制了X line，那么x轴上的点，不一定能正好绘制到轴线上
   const widthDeltaPerXPart = chartWidth / CHART_X_PARTS;
-  const tempData = datas[SENSORS.TEMP] || [];
   // X轴坐标点的值
+  const tempData = datas[SENSORS.TEMP] || [];
   const XValues = initChartXValues(tempData, CHART_X_PARTS);
-  //TODO X轴坐标点的index，用于绘制X轴线，这样能保证轴线上的点能绘制到轴线上
+  // TODO X轴坐标点的index，用于绘制X轴线，这样能保证轴线上的点能绘制到轴线上
   const XIndexs = [];
+  // 按照多少点来均分x轴宽度
   widthXPerValue = getLengthPerValue(
     tempData.length - 1,
     0,
@@ -942,7 +904,6 @@ const initChartParams = ({ sensorInfo, summaryInfo, globalInfo }) => {
   return {
     chartWidth,
     draw2ndSensor,
-    fullDraw2ndSensor: true,
     popConfig,
     //*Y轴信息
     topPosLeftYValue: needTransValue ? transFahr(topPosLeftYValue) : topPosLeftYValue, // 左侧Y轴：最高Y位置点映射的温度值（不一定是温度的最高值，需要综合阈值以及布局分布需要确定的值）
@@ -952,22 +913,21 @@ const initChartParams = ({ sensorInfo, summaryInfo, globalInfo }) => {
     topPosRightYValue, // 右侧Y轴：最高Y位置点映射的温度值（不一定是温度的最高值，需要综合阈值以及布局分布需要确定的值）
     bottomPosRightYValue, // 右侧Y轴：最低Y位置点映射的温度值（不一定是温度的最低值，需要综合阈值以及布局分布需要确定的值）
     heightRightYPerValue, // 右侧Y轴：单位sensor值对应的高度
-    startYRightDelta: 0, // 此处humi绘制完整
+    startYRightDelta: CHART_INNER_HEIG() / CHART_Y_PARTS, // 因为绘制的最高坐标少一个空格
 
     valueDeltaPerYPart, // 为了给Y轴每行轴线标记相应的坐标值
     heightDeltaPerYPart, // Y轴向，每格多高
     Y1stValues: needTransValue ? Y1stValues.map(y => transFahr(y)) : Y1stValues, // 左侧Y轴:所有坐标点的值
     Y2ndValues, // 右侧Y轴所有坐标点的值
-    withFixed: false, //  是否保留小数位
 
     //*X轴信息
-    widthXPerValue, // X坐标轴： 单位时间对应的宽度
-    widthDeltaPerXPart, // X轴向，每格多宽
+    widthXPerValue, // X坐标轴：每两个点之间对应的宽度
+    widthDeltaPerXPart, // X轴向，每格多宽 不再用这个绘制Xline了
     XValues, // X轴坐标点的值
     XIndexs,
-    timeFormat: 'HH:mm',
   };
 };
+
 const initDataTableParams = ({ sensorInfo, globalInfo, info }) => {
   const { product } = info || {};
   // 配置中支持的展示sensor的类型
@@ -1711,7 +1671,7 @@ const printDeviceInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs 
     paddingTop: { TOP_POS_DEVICE },
     row_delta: { FIRST_ROW_DELTA, ROW_DELTA },
   } = pdfInfo || {};
-  const { terNo, model, firmwareVersion, hardwareVersion } = deviceInfo || {};
+  const { terNo, model, firmwareVersion, hardwareVersion, shipmentID = '' } = deviceInfo || {};
   const { topDelta = 0 } = paddingConfigs || {};
 
   let posY = TOP_POS_DEVICE + topDelta;
@@ -1741,6 +1701,10 @@ const printDeviceInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs 
   posY += ROW_DELTA;
   pdf.text(text('PDF_HARD_VERSION', LANGUAGE), labelLeftStartX, posY);
   pdf.text(hardwareVersion, valueLeftStartX, posY);
+  // 行程 id
+  posY += ROW_DELTA;
+  pdf.text(text('PDF_IDFO_TRIP_ID', LANGUAGE), labelLeftStartX, posY);
+  pdf.text(shipmentID, valueLeftStartX, posY);
 };
 
 /**
@@ -1756,8 +1720,15 @@ const printOrderInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs }
     paddingTop: { TOP_POS_ORDER },
     row_delta: { FIRST_ROW_DELTA, ROW_DELTA },
   } = pdfInfo || {};
-  const { companyName, shipmentId, startRecordTime, endRecordTime, startDelayTime, read } =
-    deviceInfo || {};
+  const {
+    companyName,
+    shipmentId,
+    startRecordTime,
+    endRecordTime,
+    startDelayTime,
+    read,
+    shipmentNote = '',
+  } = deviceInfo || {};
   const { topDelta = 0 } = paddingConfigs || {};
 
   let posY = TOP_POS_ORDER + topDelta;
@@ -1802,6 +1773,53 @@ const printOrderInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs }
   posY += ROW_DELTA;
   pdf.text(text('PDF_DEVICE_END_TIME', LANGUAGE), labelRightStartX, posY);
   pdf.text(endRecordTime, valueRightStartX, posY);
+
+  // 行程 描述
+  // pdf.text(shipmentNote, valueLeftStartX, posY);
+  posY += ROW_DELTA;
+  const Placeholder = `                                           ${shipmentNote}`;
+
+  pdf.text(text('PDF_IDFO_TRIP_NOTE', LANGUAGE), labelRightStartX, posY);
+  pdf
+    .font(getFont('zh'))
+    .text(shipmentNote, valueRightStartX, posY, {
+      width: 150,
+      height: 40,
+      ellipsis: true,
+      paragraphGap: 0,
+      lineGap: 0,
+      wordSpacing: 0,
+      characterSpacing: 0,
+      columns: 1,
+    })
+    .stroke();
+  // if (LANGUAGE == 'en') {
+  //   pdf
+  //     .font(getFont('zh'))
+  //     .text(Placeholder, labelRightStartX, posY, {
+  //       width: 190 + 100,
+  //       // height: 60,
+  //       ellipsis: true,
+  //       paragraphGap: 0,
+  //       lineGap: 0,
+  //       wordSpacing: 0,
+  //       characterSpacing: 0,
+  //       columns: 1,
+  //     })
+  //     .stroke();
+  // } else {
+  //   pdf.font(getFont('zh')).text(Placeholder, labelRightStartX, posY, {
+  //     width: 190 + 100,
+  //     // height: 60,
+  //     ellipsis: true,
+  //     paragraphGap: 0,
+  //     lineGap: 0,
+  //     wordSpacing: 0,
+  //     characterSpacing: 0,
+  //     columns: 1,
+  //   });
+  // }
+  pdf.font(getFont(LANGUAGE));
 };
 
 const printLoggingLessThreeSummay = (
@@ -2232,7 +2250,7 @@ const printLoggingSummary = (
   } = pdfInfo || {};
   const { topDelta = 0 } = paddingConfigs || {};
 
-  let posY = TOP_POS_LOGGING + topDelta;
+  let posY = TOP_POS_LOGGING + topDelta + 20;
   pdf
     .fontSize(FONT_SIZE_TITLE)
     .fillColor(pdfLogoColor)
@@ -2695,7 +2713,7 @@ const printChartYLineAndLabel = (pdf, { pdfInfo, startX, startY }) => {
     // 首尾横线都是直线，没有dash
     if (index === 0) {
       drawLine(pdf, [posX, posY], [endX, posY], {
-        color: CHART_COLORS.CHAT_LINE_COLOR,
+        color: CHART_COLORS.DEFAULT_FONT_COLOR,
         undash: true,
       });
     }
@@ -2706,23 +2724,19 @@ const printChartYLineAndLabel = (pdf, { pdfInfo, startX, startY }) => {
       //   // dash: DASH.CHART,
       //   color: CHART_COLORS.XY_LINE_COLOR,
       // });
-      drawLine(pdf, [posX, posY], [endX, posY], {
-        color: CHART_COLORS.CHAT_LINE_COLOR,
-        undash: true,
-      });
       // 首尾横线都是直线，没有dash
-      // if (index === Y1stValues.length - 1) {
-      //   drawLine(pdf, [posX, posY], [endX, posY], {
-      //     color: DEFAULT_FONT_COLOR,
-      //     undash: true,
-      //   });
-      // } else {
-      //   // 绘制label对应的虚线
-      //   drawLine(pdf, [posX, posY], [endX, posY], {
-      //     // dash: DASH.CHART,
-      //     color: CHART_COLORS.XY_LINE_COLOR,
-      //   });
-      // }
+      if (index === Y1stValues.length - 1) {
+        drawLine(pdf, [posX, posY], [endX, posY], {
+          color: DEFAULT_FONT_COLOR,
+          undash: true,
+        });
+      } else {
+        // 绘制label对应的虚线
+        drawLine(pdf, [posX, posY], [endX, posY], {
+          dash: DASH.CHART,
+          color: CHART_COLORS.XY_LINE_COLOR,
+        });
+      }
     }
   });
 
@@ -2852,7 +2866,7 @@ const printChartXLineAndLabel = (pdf, { globalInfo, pdfInfo, startX, startY, dev
     // 首尾横线都是直线，没有dash
     if (index === 0 || index === X_LINE_CNT - 1) {
       drawLine(pdf, [posX, posY], [posX, endY], {
-        color: CHART_COLORS.CHAT_LINE_COLOR,
+        color: DEFAULT_FONT_COLOR,
         undash: true,
       });
       yAxisHeight = [
@@ -2864,8 +2878,8 @@ const printChartXLineAndLabel = (pdf, { globalInfo, pdfInfo, startX, startY, dev
     else {
       // 绘制label对应的虚线
       drawLine(pdf, [posX, posY], [posX, endY], {
-        // dash: DASH.CHART,
-        color: CHART_COLORS.CHAT_LINE_COLOR,
+        dash: DASH.CHART,
+        color: CHART_COLORS.XY_LINE_COLOR,
       });
     }
     // 绘制X坐标值
@@ -3181,22 +3195,22 @@ const printTableHead = (pdf, { pdfInfo, sensorInfo, deviceInfo, pageIndex = 0, g
         : (pageIndex + 1) * onePageDataContains - 1
     ];
   const posY = 5;
-  // pdf.fontSize(FONT_SIZE_SMALL).text(
-  //   `${text('PDF_FROM', LANGUAGE)} ${_common.formatDate(fromTime, timeZone, DATE_FORMAT)}   ${text(
-  //     'PDF_TO',
-  //     LANGUAGE
-  //   )} ${_common.formatDate(toTime, timeZone, DATE_FORMAT)}`,
-  //   // sensors.length < 3 ? PAGE_LEFT_POS() : 2,
-  //   PAGE_LEFT_POS(),
-  //   posY
-  // );
+  pdf.fontSize(FONT_SIZE_SMALL).text(
+    `${text('PDF_FROM', LANGUAGE)} ${_common.formatDate(fromTime, timeZone, DATE_FORMAT)}   ${text(
+      'PDF_TO',
+      LANGUAGE
+    )} ${_common.formatDate(toTime, timeZone, DATE_FORMAT)}`,
+    // sensors.length < 3 ? PAGE_LEFT_POS() : 2,
+    PAGE_LEFT_POS(),
+    posY
+  );
 
-  // pdf.text(`${text('PDF_FILE_CREATED', LANGUAGE)}${fileCreatedTime}`, 0, posY, {
-  //   lineBreak: false,
-  //   // width: sensors.length < 3 ? PAGE_RIGHT_POS() : PDF_A4_WIDTH - 2,
-  //   width: PAGE_RIGHT_POS(),
-  //   align: 'right',
-  // });
+  pdf.text(`${text('PDF_FILE_CREATED', LANGUAGE)}${fileCreatedTime}`, 0, posY, {
+    lineBreak: false,
+    // width: sensors.length < 3 ? PAGE_RIGHT_POS() : PDF_A4_WIDTH - 2,
+    width: PAGE_RIGHT_POS(),
+    align: 'right',
+  });
 };
 
 /**
@@ -3401,8 +3415,8 @@ const printFoot = (pdf, { pdfInfo, pageIndex = 1, terNo = '', globalInfo }) => {
   });
   const deltaX = footPageNumberDeltaX(pageIndex, totalPage);
   // 页码放中间
-  // posX = PDF_A4_WIDTH / 2 - 5 - deltaX;
-  posX = PAGE_RIGHT_POS() - 16;
+  posX = PDF_A4_WIDTH / 2 - 5 - deltaX;
+  // posX = PAGE_RIGHT_POS() - 16;
   posY = posY + 5;
   pdf
     .fillColor(DEFAULT_FONT_COLOR)
@@ -3415,10 +3429,10 @@ const printFoot = (pdf, { pdfInfo, pageIndex = 1, terNo = '', globalInfo }) => {
     lineBreak: false,
   });
   // device id 放右下角
-  // posX = PAGE_RIGHT_POS() - 70;
-  // pdf.text(`${text("PDF_DEVICEID", LANGUAGE)}${terNo}`, posX, posY, {
-  //   lineBreak: false,
-  // });
+  posX = PAGE_RIGHT_POS() - 70;
+  pdf.text(`${text('PDF_DEVICEID', LANGUAGE)}${terNo}`, posX, posY, {
+    lineBreak: false,
+  });
 };
 
 /**
@@ -3569,9 +3583,8 @@ const printEsts = (pdf, { endorsements, pageIndex, pdfInfo, globalInfo, deviceIn
     posY += TABLE_EACH_LINE_HEIGHT() + 3;
   }
 };
-const paint = drawPdf;
 export {
-  paint,
+  drawPdf,
   init,
   initGlobalInfo,
   initSensorInfo,

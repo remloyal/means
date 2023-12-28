@@ -58,7 +58,7 @@ const handlePdf = async (params, filePath) => {
     humidity: JSON.stringify(result.humi),
     dataStorage_type: 0,
     otherData: JSON.stringify(other_data),
-    alarm: result.c.max > record.highHumi ? 1 : 0,
+    alarm: result.c.max > record.hightEmp ? 1 : result.c.min < record.lowtEmp ? 1 : 0,
     mode: record.mode || 5,
     timeZone: record.timeZone,
   });
@@ -133,6 +133,8 @@ const setFormatData = async data => {
       timeZone: data.timeZone || 'UTC+08:00',
       firmwareVersion: data.firmwareVersion,
       stopMode: data.stopMode,
+      shipmentId: data.shipmentId || null,
+      shipment: data.shipment || null,
     },
     operateConfig: {},
     isComplete: true,

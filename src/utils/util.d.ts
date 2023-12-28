@@ -5,7 +5,7 @@ interface OperateType<T> {
 interface OperateTypeItem {
   name: string;
   order: (string?) => string;
-  getData: (data: string) => string | number;
+  getData: (data: string) => string | number | string[];
   key: string;
   param?: number | string;
 }

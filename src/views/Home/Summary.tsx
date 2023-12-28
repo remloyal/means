@@ -410,10 +410,15 @@ const SummaryRight: React.FC = () => {
       label: t('home.startDelay'),
       children: device != null ? secondsToTime(device?.record.startDelayTime) : '---',
     },
-    // {
-    //   label: t('home.repetitionPriming'),
-    //   children: device != null ? device?.record.repetitionPriming : '---',
-    // },
+    {
+      label: t('home.repetitionPriming'),
+      children:
+        device != null
+          ? device?.record.multIdMulton == 0
+            ? t('deploy.prohibit')
+            : t('deploy.allow')
+          : '---',
+    },
     {
       label: t('home.displayTime'),
       children: device != null ? `${device?.record.multIdSleepTime || 0} S` : '---',
@@ -438,14 +443,10 @@ const SummaryRight: React.FC = () => {
       label: t('home.lowTemperatureAlarm'),
       children: device != null ? setTempValue(device?.record.lowtEmp) : '---',
     },
-    // {
-    //   label: t('home.runLengthCoding'),
-    //   children: device != null ? device?.record.runLengthCoding : '---',
-    // },
-    // {
-    //   label: t('home.journeyDescription'),
-    //   children: device != null ? device?.record.journeyDescription : '---',
-    // },
+    {
+      label: t('home.runLengthCoding'),
+      children: device != null ? device?.record.shipmentId || '---' : '---',
+    },
   ];
 
   return (
@@ -462,6 +463,27 @@ const SummaryRight: React.FC = () => {
             }}
             contentStyle={{
               color: '#000000',
+            }}
+            size="small"
+          />
+        </div>
+        <div className="record">
+          <Descriptions
+            items={[
+              {
+                label: t('home.journeyDescription'),
+                children: device != null ? device?.record.shipment || '---' : '---',
+              },
+            ]}
+            column={1}
+            labelStyle={{
+              color: '#000000',
+              marginLeft: '16px',
+            }}
+            layout="vertical"
+            contentStyle={{
+              color: '#000000',
+              marginLeft: '16px',
             }}
             size="small"
           />

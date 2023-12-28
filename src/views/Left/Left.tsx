@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import M2H from '@/assets/img/M2H.png';
 import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
+import DianLiangImg from '@/assets/img/dianliang.png';
 import { loadUsbData, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
 import { QuitPrompt } from './ExitPrompt';
@@ -117,6 +118,15 @@ const Left: React.FC = () => {
         }, 10000);
       });
     }
+    return () => {
+      window.eventBus.removeAllListeners('friggaDevice:in');
+      window.eventBus.removeAllListeners('friggaDevice:out');
+      window.eventBus.removeAllListeners('typePower');
+      window.eventBus.removeAllListeners('loading');
+      window.eventBus.removeAllListeners('loadingCompleted');
+      window.eventBus.removeAllListeners('updateDevice');
+      window.eventBus.removeAllListeners('saving');
+    };
   }, []);
 
   const Time = ({ data }) => {
@@ -162,6 +172,57 @@ const Left: React.FC = () => {
     return `${value} ${unit}`;
   };
 
+  const DianLiang = val => {
+    if (val && val != '') {
+      console.log('DianLiang', val);
+      return (
+        <div className="dianliang" style={{ position: 'relative', overflow: 'hidden' }}>
+          <img
+            src={DianLiangImg}
+            alt=""
+            style={{
+              width: '36px',
+              height: '16px',
+              paddingTop: '4px',
+              transform: 'translateY(-50px)',
+              filter: `drop-shadow(${parseInt(val) == 0 ? 'red' : '#6EB442'} 0 50px)`,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              width: '36px',
+              height: '16px',
+              top: '4px',
+              left: 0,
+              padding: '2px',
+              display: 'flex',
+            }}
+          >
+            {...[...new Array(parseInt(val) || 0)].map((item, i) => {
+              return (
+                <span
+                  key={i}
+                  style={{
+                    display: 'block',
+                    marginTop: '1px',
+                    width: '8px',
+                    height: '10px',
+                    backgroundColor: '#6EB442',
+                    marginLeft: '1px',
+                    borderRadius: '1px',
+                  }}
+                ></span>
+              );
+            })}
+          </div>
+        </div>
+      );
+    } else {
+      return <span>---</span>;
+    }
+  };
+
   const items: DescriptionsProps['items'] = [
     {
       label: t('left.equipmentModel'),
@@ -180,10 +241,10 @@ const Left: React.FC = () => {
           '---'
         ),
     },
-    // {
-    //   label: t('left.batteryLevel'),
-    //   children: device != null ? device?.record.batteryLevel : '---',
-    // },
+    {
+      label: t('left.batteryLevel'),
+      children: device != null ? DianLiang(device?.record.batvol) : '---',
+    },
     {
       label: t('left.DeviceStatus'),
       children: device != null ? DeviceStatus[device?.record.mode] : '---',
@@ -258,9 +319,11 @@ const Left: React.FC = () => {
             className={
               device == null
                 ? 'image-alarm'
-                : device?.database.alarm == 1
-                  ? 'image-alarm image-alarm-red'
-                  : 'image-alarm image-alarm-green'
+                : device?.record.lowtEmp == 0 && device?.record.hightEmp == 0
+                  ? 'image-alarm image-alarm-green'
+                  : device?.database.alarm == 1
+                    ? 'image-alarm image-alarm-red'
+                    : 'image-alarm image-alarm-green'
             }
           />
         </div>

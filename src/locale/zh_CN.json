@@ -59,7 +59,7 @@
     "firmwareVersion": "固件版本",
     "highTemperatureAlarm": "高温报警",
     "lowTemperatureAlarm": "低温报警",
-    "runLengthCoding": "行程编码",
+    "runLengthCoding": "行程 ID",
     "journeyDescription": "行程描述",
     "serialNumber": "序号",
     "time": "时间",

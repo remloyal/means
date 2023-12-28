@@ -5,7 +5,7 @@ import zh_CN from './zh_CN.json';
 import en_US from './en_US.json';
 import { ipcRenderer } from 'electron';
 
-const lang = await ipcRenderer.invoke('lang', localStorage.getItem('language') || 'en_US');
+const lang = await ipcRenderer.invoke('lang', localStorage.getItem('language') || 'en');
 if (!localStorage.getItem('language')) {
   await localStorage.setItem('language', lang);
 }
@@ -25,10 +25,10 @@ i18n
       escapeValue: false,
     },
     resources: {
-      zh_CN: {
+      zh: {
         translation: zh_CN,
       },
-      en_US: {
+      en: {
         translation: en_US,
       },
     },
