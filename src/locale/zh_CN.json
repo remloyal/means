@@ -223,7 +223,14 @@
     "userResetSuccess": "重置密码成功，密码为123456！",
     "resetPasswordText": "您确定要重置用户 {{userName}}的密码吗？",
     "systemPermissions": "系统权限",
-    "permissionObtained": "已获得权限"
+    "permissionObtained": "已获得权限",
+    "add": "新增",
+    "edit": "编辑",
+    "delete": "删除",
+    "endorsement": "签注",
+    "fillEndorsement": "请填写签注名称",
+    "endorsementExists": "该签注已存在",
+    "deleteEndorsement": "您确定要删除签注 {{name}} 吗？"
   },
   "db": {
     "configureDeviceParameters": "配置设备参数",

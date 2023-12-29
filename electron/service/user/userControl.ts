@@ -1,4 +1,4 @@
-import { Power, UserInfo } from './userModel';
+import { Endorsement, Power, UserInfo } from './userModel';
 import log from '../../unitls/log';
 
 export const createUser = async param => {
@@ -116,5 +116,98 @@ export const updateUserPower = async param => {
     return data.toJSON();
   } else {
     return false;
+  }
+};
+// 更改用户endorsementId
+export const updateUserEndorsement = async param => {
+  console.log('updateUserEndorsement', param);
+
+  const data = await UserInfo.findOne({
+    where: {
+      userName: param.userName,
+      id: param.id,
+    },
+  });
+  if (data) {
+    data.update({
+      endorsementId: param.endorsementId,
+    });
+    data.save();
+    log.info('updateUserEndorsement 成功');
+    return data.toJSON();
+  } else {
+    return false;
+  }
+};
+
+// 添加、修改签注
+export const addOrUpdateSign = async param => {
+  const newData = await Endorsement.create({
+    name: param.name,
+    translateKey: param.translateKey || '',
+  });
+  log.info('addOrUpdateSign 成功');
+  return newData.toJSON();
+};
+
+// 修改签注
+export const updateSign = async param => {
+  const data = await Endorsement.findOne({
+    where: {
+      id: param.id,
+    },
+  });
+  if (data) {
+    data.update({
+      name: param.name,
+      translateKey: param.translateKey || data.toJSON().translateKey || '',
+    });
+    data.save();
+    log.info('updateSign 成功');
+    return data.toJSON();
+  } else {
+    return false;
+  }
+};
+
+// 删除签注
+export const deleteSign = async param => {
+  const data = await Endorsement.findOne({
+    where: {
+      id: param.id,
+      name: param.name,
+    },
+  });
+  if (data) {
+    data.destroy();
+    log.info('deleteSign 成功');
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// 查询签注
+export const getSign = async param => {
+  if (param.name) {
+    const data = await Endorsement.findOne({
+      where: {
+        name: param.name,
+      },
+    });
+    if (data) {
+      log.info('getSign 成功');
+      return data.toJSON();
+    } else {
+      return false;
+    }
+  } else {
+    const data = await Endorsement.findAll();
+    if (data) {
+      log.info('getSign 成功');
+      return data.map(item => item.toJSON());
+    } else {
+      return false;
+    }
   }
 };

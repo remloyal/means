@@ -1,4 +1,4 @@
-import { ConfigProvider, Button, message } from 'antd';
+import { ConfigProvider, Button, message, App as AntdApp } from 'antd';
 import React, { Suspense, useEffect, useState } from 'react';
 import appTheme from '@/theme/App';
 import '@/App.scss';
@@ -65,21 +65,23 @@ const App: React.FC = () => {
 
   return (
     <ConfigProvider theme={appTheme} locale={locale}>
-      <HashRouter>
-        <Header />
-        <div
-          style={{
-            padding: '14px',
-            display: 'flex',
-          }}
-          id="main"
-        >
-          <Left></Left>
-          <Suspense>
-            <Router />
-          </Suspense>
-        </div>
-      </HashRouter>
+      <AntdApp>
+        <HashRouter>
+          <Header />
+          <div
+            style={{
+              padding: '14px',
+              display: 'flex',
+            }}
+            id="main"
+          >
+            <Left></Left>
+            <Suspense>
+              <Router />
+            </Suspense>
+          </div>
+        </HashRouter>
+      </AntdApp>
     </ConfigProvider>
   );
 };

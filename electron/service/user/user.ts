@@ -3,12 +3,17 @@ import log from '../../unitls/log';
 import { UserRelated } from '../model';
 import { UserRelatedData, UserPowerRelatedData } from './userInit';
 import {
+  addOrUpdateSign,
   createUser,
+  deleteSign,
+  getSign,
   lockUser,
   queryPower,
   queryUser,
   queryUserByName,
   resetUser,
+  updateSign,
+  updateUserEndorsement,
   updateUserPower,
 } from './userControl';
 import { Power } from './userModel';
@@ -83,4 +88,9 @@ const userRouter = {
   queryUserByName,
   queryPower,
   updateUserPower,
+  addOrUpdateSign,
+  updateSign,
+  getSign,
+  deleteSign,
+  updateUserEndorsement,
 };

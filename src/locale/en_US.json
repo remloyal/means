@@ -223,7 +223,14 @@
     "userResetSuccess": "User reset successful with password 123456!",
     "resetPasswordText": "Are you sure you want to reset the password for user {{userName}}?",
     "systemPermissions": "System permissions",
-    "permissionObtained": "Permission obtained"
+    "permissionObtained": "Permission obtained",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "endorsement": "Endorsement",
+    "fillEndorsement": "Please fill in the endorsement name",
+    "endorsementExists": "The endorsement already exists",
+    "deleteEndorsement": "Are you sure you want to delete endorsement {{name}}?"
   },
   "db": {
     "configureDeviceParameters": "Configure device parameters",
