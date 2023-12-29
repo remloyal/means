@@ -1,4 +1,4 @@
-import { UserInfo } from './userModel';
+import { Power, UserInfo } from './userModel';
 import log from '../../unitls/log';
 
 export const createUser = async param => {
@@ -83,6 +83,36 @@ export const resetUser = async param => {
     });
     data.save();
     log.info('resetUser 成功');
+    return data.toJSON();
+  } else {
+    return false;
+  }
+};
+
+// 查询权利
+export const queryPower = async () => {
+  const data = await Power.findAll();
+  return data
+    .map(item => item.toJSON())
+    .map(item => {
+      return { ...item, key: item.id };
+    });
+};
+
+// 更改用户powerId
+export const updateUserPower = async param => {
+  const data = await UserInfo.findOne({
+    where: {
+      userName: param.userName,
+      id: param.id,
+    },
+  });
+  if (data) {
+    data.update({
+      powerId: param.powerId,
+    });
+    data.save();
+    log.info('updateUserPower 成功');
     return data.toJSON();
   } else {
     return false;

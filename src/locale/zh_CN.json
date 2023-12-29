@@ -221,6 +221,15 @@
     "fail": "失败",
     "resetting": "重置",
     "userResetSuccess": "重置密码成功，密码为123456！",
-    "resetPasswordText": "您确定要重置用户 {{userName}}的密码吗？"
+    "resetPasswordText": "您确定要重置用户 {{userName}}的密码吗？",
+    "systemPermissions": "系统权限",
+    "permissionObtained": "已获得权限"
+  },
+  "db": {
+    "configureDeviceParameters": "配置设备参数",
+    "signatureData": "签名数据",
+    "modifyPreferenceSettings": "修改偏好设置",
+    "deleteData": "删除数据",
+    "viewAuditTrail": "查看审计痕迹"
   }
 }

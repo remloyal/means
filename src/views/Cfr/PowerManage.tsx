@@ -3,8 +3,9 @@ import { Button, Input, Table, TableProps } from 'antd';
 import { Transfer } from 'antd';
 import type { TransferDirection } from 'antd/es/transfer';
 import { useTranslation } from 'react-i18next';
-import { pageHeight } from '@/stores';
-import { useRecoilState } from 'recoil';
+import { language, pageHeight, userInformation } from '@/stores';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { ipcRenderer } from 'electron';
 
 interface RecordType {
   id: number;
@@ -12,99 +13,143 @@ interface RecordType {
   heat: string | number;
 }
 
-const mockData = Array.from({ length: 20 }).map((_, i) => ({
-  key: i.toString(),
-  title: `content${i + 1}`,
-  description: `description of content${i + 1}`,
-}));
-const initialTargetKeys = mockData.filter(item => Number(item.key) > 10).map(item => item.key);
 export const PowerManage = () => {
   const { t } = useTranslation();
   const [height, setHight] = useRecoilState(pageHeight);
   const [axle, setAxle] = useState<number>(500);
-  const [csvData, setCsvData] = useState<RecordType[]>();
+  const [userInfo, setUserInfo] = useState<RecordType[]>();
+  const [userSelected, setUserSelected] = useRecoilState(userInformation);
+  const tongue = useRecoilValue(language);
+  const typeList = [t('cfr.administrator'), t('cfr.users')];
+  const stateList = [t('cfr.normal'), t('cfr.lock')];
+
   const columns: TableProps<RecordType>['columns'] = [
     {
       title: t('cfr.userName'),
-      dataIndex: 'id',
+      dataIndex: 'userName',
       width: 60,
       align: 'center',
     },
     {
       title: t('cfr.realName'),
-      dataIndex: 'time',
+      dataIndex: 'realName',
       width: 60,
       align: 'center',
     },
     {
       title: t('cfr.position'),
-      dataIndex: 'heat',
+      dataIndex: 'position',
       width: 60,
       align: 'center',
     },
     {
       title: t('cfr.type'),
-      dataIndex: 'heat',
+      dataIndex: 'type',
       width: 60,
       align: 'center',
+      render(value, record, index) {
+        return <span>{typeList[value || 1]}</span>;
+      },
     },
     {
       title: t('cfr.state'),
-      dataIndex: 'heat',
+      dataIndex: 'state',
       width: 60,
       align: 'center',
+      render(value, record, index) {
+        return <span>{stateList[value || 0]}</span>;
+      },
     },
   ];
+
   const getRowClassName = (record, index) => {
+    if (userSelected?.data && record.id == userSelected?.data.id) {
+      return 'clickRow';
+    }
     let className = '';
     className = index % 2 === 0 ? 'oddRow' : 'evenRow';
     return className;
   };
 
   useEffect(() => {
-    console.log(height);
-    setAxle(height - 300);
+    setAxle(height - 330);
   }, [height]);
-  const TransferData = () => {
-    const [targetKeys, setTargetKeys] = useState(initialTargetKeys);
-    const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-
-    const onChange = (
-      nextTargetKeys: string[],
-      direction: TransferDirection,
-      moveKeys: string[]
-    ) => {
-      console.log('targetKeys:', nextTargetKeys);
-      console.log('direction:', direction);
-      console.log('moveKeys:', moveKeys);
-      setTargetKeys(nextTargetKeys);
+  useEffect(() => {
+    init();
+    return () => {
+      setUserSelected({});
     };
+  }, []);
 
-    const onSelectChange = (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => {
-      console.log('sourceSelectedKeys:', sourceSelectedKeys);
-      console.log('targetSelectedKeys:', targetSelectedKeys);
-      setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
-    };
-
-    const onScroll = (direction: TransferDirection, e: React.SyntheticEvent<HTMLUListElement>) => {
-      console.log('direction:', direction);
-      console.log('target:', e.target);
-    };
-
-    return (
-      <Transfer
-        style={{ width: '100%' }}
-        dataSource={mockData}
-        targetKeys={targetKeys}
-        selectedKeys={selectedKeys}
-        listStyle={{ width: '50%', height: 200 }}
-        onChange={onChange}
-        onSelectChange={onSelectChange}
-        onScroll={onScroll}
-        render={item => item.title}
-      />
-    );
+  const init = async () => {
+    getUserInfo();
+    const powerList = await ipcRenderer.invoke('userOperate', { name: 'queryPower' });
+    if (powerList) {
+      setMockData(powerList);
+    }
   };
+
+  const getUserInfo = async () => {
+    const data = await ipcRenderer.invoke('userOperate', { name: 'queryUser' });
+    setUserInfo(data);
+  };
+
+  const [mockData, setMockData] = useState<any[]>([]);
+  const [targetKeys, setTargetKeys] = useState<string[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  useEffect(() => {
+    setMockData([...mockData]);
+  }, [tongue]);
+
+  useEffect(() => {
+    if (userSelected?.data && userSelected.data.powerId) {
+      const keys = userSelected.data.powerId.split(',').map(key => parseInt(key));
+      setTargetKeys(keys);
+    } else {
+      setTargetKeys([]);
+    }
+  }, [userSelected]);
+
+  const onChange = async (
+    nextTargetKeys: string[],
+    direction: TransferDirection,
+    moveKeys: string[]
+  ) => {
+    const newUserInfo = { ...userSelected.data, powerId: nextTargetKeys.toString() };
+    const powerList = await ipcRenderer.invoke('userOperate', {
+      name: 'updateUserPower',
+      data: newUserInfo,
+    });
+    if (powerList) {
+      setUserSelected({
+        type: 'update',
+        data: powerList,
+      });
+      getUserInfo();
+    }
+  };
+
+  const onSelectChange = (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => {
+    // console.log('sourceSelectedKeys:', sourceSelectedKeys);
+    // console.log('targetSelectedKeys:', targetSelectedKeys);
+    setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
+  };
+
+  const renderItem = item => {
+    const customLabel = (
+      <span className="custom-item">{item.translateKey ? t(item.translateKey) : item.name}</span>
+    );
+    return {
+      label: customLabel, // for displayed item
+      value: item.id, // for title and filter matching
+    };
+  };
+
+  const handleRowClick = data => {
+    setUserSelected({ type: 'setup', data });
+    setSelectedKeys([]);
+  };
+
   return (
     <>
       <Table
@@ -114,12 +159,28 @@ export const PowerManage = () => {
         columns={columns}
         scroll={{ y: axle }}
         rowKey="id"
-        dataSource={csvData}
+        dataSource={userInfo}
         pagination={false}
+        style={{ height: `${axle}px`, borderBottom: '1px solid #D3D4D8', marginBottom: '46px' }}
         rowClassName={getRowClassName}
-        style={{ height: `${axle}px`, borderBottom: '1px solid #D3D4D8', marginBottom: '10px' }}
+        onRow={record => {
+          return {
+            onClick: event => handleRowClick(record),
+          };
+        }}
       />
-      <TransferData />
+      <Transfer
+        disabled={userSelected?.data ? (userSelected.data.userName ? false : true) : true}
+        style={{ width: '100%' }}
+        titles={[t('cfr.systemPermissions'), t('cfr.permissionObtained')]}
+        dataSource={mockData}
+        targetKeys={targetKeys}
+        selectedKeys={selectedKeys}
+        listStyle={{ width: '50%', height: 200 }}
+        onChange={onChange}
+        onSelectChange={onSelectChange}
+        render={renderItem}
+      />
     </>
   );
 };

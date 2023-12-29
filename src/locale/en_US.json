@@ -221,6 +221,15 @@
     "fail": "fail",
     "resetting": "Resetting",
     "userResetSuccess": "User reset successful with password 123456!",
-    "resetPasswordText": "Are you sure you want to reset the password for user {{userName}}?"
+    "resetPasswordText": "Are you sure you want to reset the password for user {{userName}}?",
+    "systemPermissions": "System permissions",
+    "permissionObtained": "Permission obtained"
+  },
+  "db": {
+    "configureDeviceParameters": "Configure device parameters",
+    "signatureData": "Signature data",
+    "modifyPreferenceSettings": "Modify preference settings",
+    "deleteData": "Delete data",
+    "viewAuditTrail": "View audit trail"
   }
 }

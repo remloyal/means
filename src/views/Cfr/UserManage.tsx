@@ -166,7 +166,7 @@ export const UserManageRight = () => {
       data: userInfo,
     });
     if (data) {
-      message.error('用户名已存在');
+      message.error(t('cfr.userNameExist'));
     } else {
       await ipcRenderer.invoke('userOperate', { name: 'createUser', data: userInfo });
       setUserInfo({});
@@ -190,7 +190,7 @@ export const UserManageRight = () => {
     });
     setIsModalOpen(false);
   };
-  const rules: any = [{ type: 'string', min: 5, required: true }];
+  const rules: any = [{ type: 'string', min: 5, max: 16, required: true }];
 
   const [modifyState, setModifyState] = useState(true);
 
@@ -319,12 +319,14 @@ export const UserManageRight = () => {
             <Input
               disabled={title == 1}
               value={userInfo.userName || ''}
+              maxLength={16}
               onChange={e => changeUserInfo('userName', e)}
             />
           </Form.Item>
           <Form.Item name="realName" label={t('cfr.realName')} required rules={rules}>
             <Input
               disabled={title == 1}
+              maxLength={16}
               value={userInfo.realName || ''}
               onChange={e => changeUserInfo('realName', e)}
             />
@@ -337,7 +339,7 @@ export const UserManageRight = () => {
           >
             <Input.Password
               value={userInfo.password || ''}
-              max={16}
+              maxLength={16}
               onChange={e => changeUserInfo('password', e)}
             />
           </Form.Item>
@@ -358,13 +360,17 @@ export const UserManageRight = () => {
             ]}
           >
             <Input.Password
-              max={16}
+              maxLength={16}
               value={userInfo.confirmPassword || ''}
               onChange={e => changeUserInfo('confirmPassword', e)}
             />
           </Form.Item>
           <Form.Item name="position" label={t('cfr.position')} required rules={rules}>
-            <Input value={userInfo.position || ''} onChange={e => changeUserInfo('position', e)} />
+            <Input
+              maxLength={16}
+              value={userInfo.position || ''}
+              onChange={e => changeUserInfo('position', e)}
+            />
           </Form.Item>
         </Form>
       </Modal>

@@ -1,8 +1,17 @@
 import { ipcMain } from 'electron';
 import log from '../../unitls/log';
 import { UserRelated } from '../model';
-import { UserRelatedData } from './userInit';
-import { createUser, lockUser, queryUser, queryUserByName, resetUser } from './userControl';
+import { UserRelatedData, UserPowerRelatedData } from './userInit';
+import {
+  createUser,
+  lockUser,
+  queryPower,
+  queryUser,
+  queryUserByName,
+  resetUser,
+  updateUserPower,
+} from './userControl';
+import { Power } from './userModel';
 
 export const getUserStart = async (name = '') => {
   if (name) {
@@ -21,6 +30,7 @@ export const getUserStart = async (name = '') => {
   if (!data) {
     log.info('UserRelated: 初始化 isEnabled 状态');
     UserRelated.bulkCreate(UserRelatedData);
+    Power.bulkCreate(UserPowerRelatedData);
     return false;
   }
   if (data.toJSON().value == '0') return false;
@@ -71,4 +81,6 @@ const userRouter = {
   lockUser,
   resetUser,
   queryUserByName,
+  queryPower,
+  updateUserPower,
 };
