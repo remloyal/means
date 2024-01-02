@@ -101,7 +101,7 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
     });
   };
   const handleChange = e => {
-    let val = e.target.value.trim();
+    let val = e.target.value;
     if (Buffer.from(val, 'utf-8').length >= 270) {
       const buffer = Buffer.from(val, 'utf-8');
       val = buffer.subarray(0, 270).toString().replaceAll('�', '');
