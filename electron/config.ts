@@ -96,3 +96,25 @@ export const LOG_PARAM = {
 
 // UTC 对应时区
 export const UTC_PARAM = UTC;
+
+export const HID_PARAM = {
+  // hid 延迟读取key
+  DELAY_LIST: [
+    'shipmentId',
+    'shipment1',
+    'setShipment1',
+    'shipment2',
+    'setShipment2',
+    'shipment3',
+    'setShipment3',
+    'shipment4',
+    'setShipment4',
+    'shipment5',
+    'setShipment5',
+    'shipment6',
+    'setShipment6',
+    'shipment7',
+    'setShipment7',
+  ],
+  DELAY_TIME: 200,
+};

@@ -49,13 +49,22 @@ const parseCSVData = csvString => {
   const data: TimeType[] = [];
   // Stop Mode,USB Stop,
   const stopMode = lines[1].split(',');
-  // 我们从第3行开始处理，因为前几行包含元数据或标题。
-  for (let i = 3; i < lines.length; i++) {
+  let startHandle = false;
+  for (let i = 1; i < lines.length; i++) {
     const line: string = lines[i].trim();
+    // 查询开始位置
+    if (!startHandle) {
+      const state = line.includes('Date');
+      startHandle = state;
+      continue;
+    }
     if (!line) continue; // 跳过空行
-    if (line.indexOf('Output') != -1) break; //结束语句
+    if (line.indexOf('Output') != -1) {
+      startHandle = false;
+      break; //结束语句
+    }
+    if (!startHandle) continue;
     const fields = line.split(',');
-
     const date = fields[0];
     const time = fields[1];
     const celsius = parseFloat(fields[2]);

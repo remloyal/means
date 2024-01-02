@@ -29,39 +29,48 @@ const createHid = path => {
   if (path) {
     device = new HID.HID(path);
     device.on('data', res => {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      bufferAll.push(res);
-      timeout = setTimeout(() => {
-        if (bufferAll.length > 1) {
-          const buffer = [];
-          bufferAll.forEach(item => {
-            if (buffer.length > 0) {
-              const list = [...item];
-              //   list.shift();
-              buffer.push(...list);
-            } else {
-              buffer.push(...item);
-            }
-          });
-          const todo = Uint8ArrayToStr(new Uint8Array(buffer));
-          bufferAll = [];
-          process.parentPort.postMessage({
-            event: 'hidData',
-            data: { key: item.key, value: todo },
-          });
-        } else {
-          const data = bufferAll[0];
-          const todo = Uint8ArrayToString(data);
-          bufferAll = [];
-          process.parentPort.postMessage({
-            event: 'hidData',
-            data: { key: item.key, value: todo },
-          });
+      // 判断是否需要延时
+      if (item.delayState) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
         }
-      }, 100);
+        bufferAll.push(res);
+        timeout = setTimeout(() => {
+          if (bufferAll.length > 1) {
+            const buffer = [];
+            bufferAll.forEach(res => {
+              if (buffer.length > 0) {
+                const list = [...res];
+                //   list.shift();
+                buffer.push(...list);
+              } else {
+                buffer.push(...res);
+              }
+            });
+            const todo = Uint8ArrayToStr(new Uint8Array(buffer));
+            bufferAll = [];
+            process.parentPort.postMessage({
+              event: 'hidData',
+              data: { key: item.key, value: todo },
+            });
+          } else {
+            const data = bufferAll[0];
+            const todo = Uint8ArrayToString(data);
+            bufferAll = [];
+            process.parentPort.postMessage({
+              event: 'hidData',
+              data: { key: item.key, value: todo },
+            });
+          }
+        }, item.delayTime || 150);
+      } else {
+        const todo = Uint8ArrayToStr(res);
+        process.parentPort.postMessage({
+          event: 'hidData',
+          data: { key: item.key, value: todo },
+        });
+      }
     });
     device.on('error', err => {
       process.parentPort.postMessage({ event: 'hidError', data: err });
@@ -83,7 +92,7 @@ function Uint8ArrayToStr(fileData) {
   }
   const decoder = new TextDecoder('utf8');
   const str = decoder.decode(fileData);
-  console.log(str);
+  console.log('解析数据 ==>', str);
   return str
     .trim()
     .replaceAll('\u0002', '')

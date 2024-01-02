@@ -5,7 +5,7 @@ import { BrowserWindow, app, ipcMain, utilityProcess } from 'electron';
 import log from '../../unitls/log';
 import drivelist from 'drivelist';
 import HID from 'node-hid';
-import { PATH_PARAM } from '../../config';
+import { PATH_PARAM, HID_PARAM } from '../../config';
 
 let mainWindow: BrowserWindow | null = null;
 export let hidProcess: Electron.UtilityProcess | null;
@@ -89,6 +89,10 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
   // 如果hidProcess不存在，则创建线程
   if (!hidProcess) {
     await createThread();
+  }
+  params.delayState = HID_PARAM.DELAY_LIST.includes(params.key) || false;
+  if (params.delayState) {
+    params.delayTime = HID_PARAM.DELAY_TIME;
   }
   return new Promise(async (resolve, reject) => {
     try {
