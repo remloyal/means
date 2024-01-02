@@ -12,6 +12,7 @@ import {
   queryUser,
   queryUserByName,
   resetUser,
+  securityPolicy,
   updateSign,
   updateUserEndorsement,
   updateUserPower,
@@ -94,3 +95,15 @@ const userRouter = {
   deleteSign,
   updateUserEndorsement,
 };
+
+ipcMain.handle('securityPolicy', (event, params: ParamType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await securityPolicy(params);
+      resolve(data);
+    } catch (error) {
+      log.error(error);
+      resolve(false);
+    }
+  });
+});

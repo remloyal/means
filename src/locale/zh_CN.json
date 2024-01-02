@@ -230,7 +230,10 @@
     "endorsement": "签注",
     "fillEndorsement": "请填写签注名称",
     "endorsementExists": "该签注已存在",
-    "deleteEndorsement": "您确定要删除签注 {{name}} 吗？"
+    "deleteEndorsement": "您确定要删除签注 {{name}} 吗？",
+    "order": "次",
+    "minute": "分",
+    "day": "天"
   },
   "db": {
     "configureDeviceParameters": "配置设备参数",

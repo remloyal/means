@@ -1,5 +1,7 @@
 import { Endorsement, Power, UserInfo } from './userModel';
+import { UserRelated } from '../model';
 import log from '../../unitls/log';
+import { Op } from 'sequelize';
 
 export const createUser = async param => {
   const oldData = await UserInfo.findOne({
@@ -209,5 +211,27 @@ export const getSign = async param => {
     } else {
       return false;
     }
+  }
+};
+
+// 安全策略
+export const securityPolicy = async param => {
+  const data = await UserRelated.findAll({
+    where: {
+      [Op.or]: [{ name: 'loginNumber' }, { name: 'guardTime' }, { name: 'expirationTime' }],
+    },
+  });
+  if (param) {
+    data.forEach(item => {
+      // 更新对象
+      const val = param[item.toJSON().name];
+      item.update({
+        value: val,
+      });
+      item.save();
+    });
+    return data.map(item => item.toJSON());
+  } else {
+    return data.map(item => item.toJSON());
   }
 };

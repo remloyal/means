@@ -230,7 +230,10 @@
     "endorsement": "Endorsement",
     "fillEndorsement": "Please fill in the endorsement name",
     "endorsementExists": "The endorsement already exists",
-    "deleteEndorsement": "Are you sure you want to delete endorsement {{name}}?"
+    "deleteEndorsement": "Are you sure you want to delete endorsement {{name}}?",
+    "order": "Order",
+    "minute": "Minute",
+    "day": "Day"
   },
   "db": {
     "configureDeviceParameters": "Configure device parameters",

@@ -5,6 +5,9 @@ export const UserRelatedData = [
     value: '0',
   },
   { name: 'language', value: 'en' },
+  { name: 'loginNumber', value: '3' },
+  { name: 'guardTime', value: '30' },
+  { name: 'expirationTime', value: '30' },
 ];
 
 export const UserPowerRelatedData = [
