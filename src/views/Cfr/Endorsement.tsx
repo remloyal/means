@@ -80,6 +80,7 @@ export const Endorsement = () => {
   }, [height]);
   useEffect(() => {
     init();
+    initSignList();
     return () => {
       setUserSelected({});
       setSignSelected({ type: '', data: {} });
@@ -94,30 +95,27 @@ export const Endorsement = () => {
   useEffect(() => {
     if (signSelected?.data && signSelected?.type == 'update') {
       initSignList();
-      setSignKeyList([...signKeyList]);
+      init();
     }
   }, [signSelected]);
 
   const init = async () => {
-    const data = await ipcRenderer.invoke('userOperate', { name: 'queryUser' });
+    const data = await ipcRenderer.invoke('userOperate', { name: 'queryUser', data: {} });
     if (data) {
       setUserInfo(data);
     }
-    initSignList();
   };
   const initSignList = async () => {
     const signData = await ipcRenderer.invoke('userOperate', { name: 'getSign', data: {} });
-    console.log(signData);
-
     if (signData) {
       setSignList(signData);
     }
   };
   const handleRowClick = data => {
-    setUserSelected({ type: 'setup', data });
     setSignKeyList(
       data.endorsementId != '' ? data.endorsementId.split(',').map(item => parseInt(item)) : []
     );
+    setUserSelected({ type: 'setup', data });
   };
 
   // 签注列表
@@ -137,16 +135,22 @@ export const Endorsement = () => {
     setSignSelected({ type: 'setup', data: item });
   };
 
-  const onCheckboxChange = async (checkedValues: CheckboxValueType[]) => {
-    console.log(checkedValues, signKeyList);
+  const onCheckboxChange = async e => {
+    let keyList: any = [];
+    if (e.target.checked) {
+      keyList = [...signKeyList, e.target.value];
+    } else {
+      keyList = signKeyList.filter(item => item !== e.target.value);
+    }
+    setSignKeyList(keyList);
     await ipcRenderer.invoke('userOperate', {
       name: 'updateUserEndorsement',
       data: {
         ...userSelected.data,
-        endorsementId: checkedValues.toString(),
+        endorsementId: keyList.toString(),
       },
     });
-    setSignKeyList(checkedValues);
+    init();
   };
 
   return (
@@ -168,47 +172,43 @@ export const Endorsement = () => {
           };
         }}
       />
-      <Checkbox.Group
-        style={{ height: '200px', width: '100%' }}
-        onChange={onCheckboxChange}
-        value={signKeyList}
-      >
-        <List
-          bordered
-          dataSource={signList}
-          style={{ height: '200px', width: '100%', overflow: 'auto' }}
-          size="small"
-          renderItem={(item, index) => (
-            <>
-              <List.Item style={{ padding: 0 }}>
-                <List.Item.Meta
-                  avatar={
-                    <Checkbox
-                      style={{ width: '10px', height: '40px', padding: '10px' }}
-                      disabled={userSelected?.data && userSelected?.data.userName ? false : true}
-                      value={item.id}
-                    ></Checkbox>
-                  }
-                  description={
-                    <div
-                      style={{
-                        color: '#000',
-                        backgroundColor: signClick.index == index ? 'var(--bg-right-color)' : '',
-                        padding: '10px',
-                      }}
-                      onClick={() => {
-                        onClickList(item, index);
-                      }}
-                    >
-                      {item.name}
-                    </div>
-                  }
-                ></List.Item.Meta>
-              </List.Item>
-            </>
-          )}
-        />
-      </Checkbox.Group>
+      <List
+        bordered
+        dataSource={signList}
+        style={{ height: '200px', width: '100%', overflow: 'auto' }}
+        size="small"
+        renderItem={(item, index) => (
+          <>
+            <List.Item style={{ padding: 0 }}>
+              <List.Item.Meta
+                avatar={
+                  <Checkbox
+                    style={{ width: '10px', height: '40px', padding: '10px' }}
+                    disabled={userSelected?.data && userSelected?.data.userName ? false : true}
+                    checked={signKeyList.includes(item.id)}
+                    value={item.id}
+                    onChange={onCheckboxChange}
+                  ></Checkbox>
+                }
+                description={
+                  <div
+                    style={{
+                      color: '#000',
+                      backgroundColor: signClick.index == index ? 'var(--bg-right-color)' : '',
+                      padding: '10px',
+                    }}
+                    onClick={() => {
+                      onClickList(item, index);
+                    }}
+                  >
+                    {item.name}
+                  </div>
+                }
+              ></List.Item.Meta>
+            </List.Item>
+          </>
+        )}
+      />
     </>
   );
 };
@@ -220,8 +220,6 @@ export const EndorsementRight = () => {
   const [title, setTitle] = useState(0);
 
   const confirm = (type = 0) => {
-    console.log(type);
-    console.log(signSelected);
     if (type == 1) {
       setEndorsementText(signSelected.data.name);
     } else {
@@ -312,8 +310,7 @@ export const EndorsementRight = () => {
 
   // 删除签注
   const deleteEndorsement = async () => {
-    console.log(signSelected);
-
+    // console.log(signSelected);
     Modal.confirm({
       title: t('cfr.delete') + t('cfr.endorsement'),
       content: t('cfr.deleteEndorsement', { name: signSelected?.data.name }),
@@ -326,7 +323,7 @@ export const EndorsementRight = () => {
         if (data) {
           setSignSelected({
             type: 'update',
-            data: signSelected?.data,
+            data: {},
           });
           message.success(t('cfr.delete') + t('cfr.endorsement') + t('cfr.success'));
         } else {
