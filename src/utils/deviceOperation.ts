@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { deviceType, batvol, DeviceTypeAT, getNewInstruct } from './deviceType';
-import { convertTZ } from './time';
+import { convertTZ, sleep } from './time';
 import { ipcRenderer } from 'electron';
 
 // 指令读取
@@ -175,7 +175,7 @@ class DeviceInstance {
             clearInterval(interval); //清除定时器
             resolve(key != undefined ? this.record[key] : this.record);
           }
-        }, 1000);
+        }, 500);
       } catch (error) {
         console.log('error', error);
         reject({});
@@ -282,7 +282,6 @@ export const deviceExample: DeviceInstance = new DeviceInstance();
 
 // 判断是否为OK
 const isOk = (data: any) => {
-  console.log(data);
   return data == 'OK' ? true : data;
 };
 
@@ -317,7 +316,6 @@ const setOperateDevice = (item: OperateTypeItem, queryData?: OperateTypeItem) =>
     console.log(err);
   });
 };
-
 // 设备操作方法
 export const deviceOperate = {
   /**设置记录间隔*/
@@ -457,5 +455,35 @@ export const deviceOperate = {
     tempPeriod.param = value;
     const data = await setOperateDevice(tempPeriod, instructRead.pdfLan);
     return data;
+  },
+  /** 多级报警设置 */
+  alarmSettings: async alarmData => {
+    const highTemp1Setup = instructSetup.setHighTemp1;
+    highTemp1Setup.param = alarmData.highTemp1;
+    await setOperateDevice(highTemp1Setup);
+    const highTemp2Setup = instructSetup.setHighTemp2;
+    highTemp2Setup.param = alarmData.highTemp2;
+    await setOperateDevice(highTemp2Setup);
+    const lowTemp1Setup = instructSetup.setLowTemp1;
+    lowTemp1Setup.param = alarmData.lowTemp1;
+    await setOperateDevice(lowTemp1Setup);
+    const lowTemp2Setup = instructSetup.setLowTemp2;
+    lowTemp2Setup.param = alarmData.lowTemp2;
+    await setOperateDevice(lowTemp2Setup);
+    await deviceOperate.setLowtEmp(alarmData.lowtEmp);
+    await deviceOperate.setHightEmp(alarmData.hightEmp);
+    // 防止设备还未写入
+    await sleep(500);
+    await deviceExample.write(instructRead.highTemp1);
+    await updateDevice();
+    await sleep(500);
+    await deviceExample.write(instructRead.highTemp2);
+    await updateDevice();
+    await sleep(500);
+    await deviceExample.write(instructRead.lowTemp1);
+    await updateDevice();
+    await sleep(500);
+    await deviceExample.write(instructRead.lowTemp2);
+    await updateDevice();
   },
 };

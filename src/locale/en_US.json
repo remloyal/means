@@ -103,7 +103,11 @@
     "functionSwitch": "Function Switch",
     "buttonStop": "Button stop",
     "prohibit": "Prohibit",
-    "allow": "Allow"
+    "allow": "Allow",
+    "monotypic": "Monotypic",
+    "accumulating": "Accumulating",
+    "overtop": "overtop",
+    "below": "below"
   },
   "history": {
     "cloudStorage": "cloud storage",

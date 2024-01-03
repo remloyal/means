@@ -62,9 +62,14 @@ ipcMain.handle('hidWrite', async (event, params: HidEventData) => {
   return data;
 });
 
+let timeoutClose;
 ipcMain.handle('hidClose', (event, params: HidEventData) => {
   // 向hidProcess发送消息，关闭hid
-  hidProcess?.postMessage({ event: 'hidClose', data: params });
+  timeoutClose = setTimeout(() => {
+    hidProcess?.postMessage({ event: 'hidClose', data: params });
+    clearTimeout(timeoutClose);
+    timeoutClose = null;
+  }, 2000);
   // 杀死hidProcess
   // hidProcess?.kill();
   // hidProcess = null;
@@ -89,6 +94,10 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
   // 如果hidProcess不存在，则创建线程
   if (!hidProcess) {
     await createThread();
+  }
+  if (timeoutClose) {
+    clearTimeout(timeoutClose);
+    timeoutClose = null;
   }
   params.delayState = HID_PARAM.DELAY_LIST.includes(params.key) || false;
   if (params.delayState) {
