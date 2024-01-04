@@ -19,6 +19,7 @@ const readCSVFilesFromDrive = async drive => {
     let csvName = '';
     let stopMode = '';
     let markList = [];
+    let timeZone = '';
     if (csvFiles.length === 0) {
       return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [] };
     }
@@ -28,14 +29,22 @@ const readCSVFilesFromDrive = async drive => {
       const data = fs.readFileSync(filePath, 'utf-8');
       // console.log(`读取到CSV文件 ${csvFile} 的内容：`);
       // console.log(data);
-      const { data: todo, stopMode: mode, markList: mark } = parseCSVData(data);
+      const { data: todo, stopMode: mode, markList: mark, timeZone: zone } = parseCSVData(data);
       dataParsed = todo;
       stopMode = mode;
       markList = mark;
+      timeZone = zone;
     }
-    return { drive, csvData: dataParsed, csvName: csvName.split('.')[0], stopMode, markList };
+    return {
+      drive,
+      csvData: dataParsed,
+      csvName: csvName.split('.')[0],
+      stopMode,
+      markList,
+      timeZone,
+    };
   } catch (error) {
-    return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [] };
+    return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [], timeZone: '' };
   }
 };
 
@@ -47,11 +56,19 @@ const readCSVFilesFromDrive = async drive => {
 const parseCSVData = csvString => {
   const lines = csvString.split('\n');
   const data: TimeType[] = [];
-  // Stop Mode,USB Stop,
-  const stopMode = lines[1].split(',');
   let startHandle = false;
-  for (let i = 1; i < lines.length; i++) {
+  let timeZoneText = '';
+  let stopModeText = '';
+  for (let i = 0; i < lines.length; i++) {
     const line: string = lines[i].trim();
+    if (line.includes('Stop Mode')) {
+      stopModeText = line;
+      continue;
+    }
+    if (line.includes('Zone')) {
+      timeZoneText = line;
+      continue;
+    }
     // 查询开始位置
     if (!startHandle) {
       const state = line.includes('Date');
@@ -118,7 +135,12 @@ const parseCSVData = csvString => {
       });
     }
   }
-  return { data, stopMode: stopMode[1], markList };
+  return {
+    data,
+    stopMode: stopModeText.split(',')[1] || '',
+    markList,
+    timeZone: timeZoneText.split(',')[1] || '',
+  };
 };
 
 export let usbData;
@@ -145,9 +167,11 @@ export const loadUsbData = async data => {
         operation.markList = csvData.markList;
         const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
         operation.database = data;
-
         // 获取PDF UTC
-        const oldData = await ipcRenderer.invoke('deviceUtcUpdate', Object.assign({}, operation));
+        const oldData = await ipcRenderer.invoke(
+          'deviceUtcUpdate',
+          Object.assign({}, operation, { csvTimeZone: csvData.timeZone })
+        );
         if (oldData) {
           operation.database = oldData;
         }

@@ -3131,7 +3131,7 @@ const printDataTable = (
   const {
     oneDatePerMonth = false,
     markAlert = false,
-    showTableHead = true,
+    showTableHead = false,
   } = dataTableConfigs || {};
 
   const posX = pageLeftPos;
@@ -3415,8 +3415,8 @@ const printFoot = (pdf, { pdfInfo, pageIndex = 1, terNo = '', globalInfo }) => {
   });
   const deltaX = footPageNumberDeltaX(pageIndex, totalPage);
   // 页码放中间
-  posX = PDF_A4_WIDTH / 2 - 5 - deltaX;
-  // posX = PAGE_RIGHT_POS() - 16;
+  // posX = PDF_A4_WIDTH / 2 - 5 - deltaX;
+  posX = PAGE_RIGHT_POS() - 16;
   posY = posY + 5;
   pdf
     .fillColor(DEFAULT_FONT_COLOR)
@@ -3429,10 +3429,10 @@ const printFoot = (pdf, { pdfInfo, pageIndex = 1, terNo = '', globalInfo }) => {
     lineBreak: false,
   });
   // device id 放右下角
-  posX = PAGE_RIGHT_POS() - 70;
-  pdf.text(`${text('PDF_DEVICEID', LANGUAGE)}${terNo}`, posX, posY, {
-    lineBreak: false,
-  });
+  // posX = PAGE_RIGHT_POS() - 70;
+  // pdf.text(`${text('PDF_DEVICEID', LANGUAGE)}${terNo}`, posX, posY, {
+  //   lineBreak: false,
+  // });
 };
 
 /**

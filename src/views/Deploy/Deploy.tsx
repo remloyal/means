@@ -13,7 +13,7 @@ import {
 } from './DeviceOperate';
 import { ipcRenderer } from 'electron';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { deviceConfigParam, typePower } from '@/stores';
+import { deviceConfigParam, equipment, typePower } from '@/stores';
 import { TimeZone } from './Timezone';
 import { DeployAdvanced } from './DeployAdvanced';
 import { ShipmentDescribeDom, ShipmentIdDom } from './Shipment';
@@ -37,6 +37,7 @@ const DeployMain: React.FC = () => {
   // 是否更新
   const [isUpdate, setIsUpdate] = useState(false);
   const power = useRecoilValue(typePower);
+  const device = useRecoilValue(equipment);
   const items: TabsProps['items'] = [
     {
       key: '1',
@@ -49,7 +50,7 @@ const DeployMain: React.FC = () => {
       children: <DeployAdvanced state={isUpdate} />,
     },
   ];
-  if (power.includes('setHighTemp1')) {
+  if (device.record.hardwareVersion == 'V2' && power.includes('setHighTemp1')) {
     items?.push({
       key: '3',
       label: t('deploy.multipleAlarmSettings'),
