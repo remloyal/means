@@ -233,7 +233,10 @@
     "deleteEndorsement": "您确定要删除签注 {{name}} 吗？",
     "order": "次",
     "minute": "分",
-    "day": "天"
+    "day": "天",
+    "operationText": "此操作将不可逆，请问是否继续开启？",
+    "initialization": "初始化",
+    "deleteUserText": "是否删除该用户？"
   },
   "db": {
     "configureDeviceParameters": "配置设备参数",

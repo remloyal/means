@@ -4,8 +4,10 @@ import { UserRelated } from '../model';
 import { UserRelatedData, UserPowerRelatedData } from './userInit';
 import {
   addOrUpdateSign,
+  createAdmin,
   createUser,
   deleteSign,
+  deleteUser,
   getSign,
   lockUser,
   queryPower,
@@ -82,8 +84,10 @@ ipcMain.handle('userOperate', (event, params: ParamType) => {
 });
 
 const userRouter = {
+  createAdmin,
   createUser,
   queryUser,
+  deleteUser,
   lockUser,
   resetUser,
   queryUserByName,

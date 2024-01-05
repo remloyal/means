@@ -1,5 +1,5 @@
 import { MainBody, MainRight } from '@/components/main';
-import { Radio, Tabs, TabsProps } from 'antd';
+import { Form, Input, Modal, Radio, Tabs, TabsProps } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserInfo, UserInfoRight } from './UserInfo';
@@ -8,6 +8,7 @@ import { PowerManage, PowerManageRight } from './PowerManage';
 import { Endorsement, EndorsementRight } from './Endorsement';
 import { SecurityPolicy, SecurityPolicyRight } from './SecurityPolicy';
 import { AuditLog, AuditLogRight } from './AuditLog';
+import { ipcRenderer } from 'electron';
 const Cfr: React.FC = () => {
   const [activeKey, setActiveKey] = useState('0');
   const onChange = (key: string) => {
@@ -119,14 +120,120 @@ const CfrHomeRight = () => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
   const handleChangeCheck = e => {
-    setChecked(!checked);
+    // setChecked(!checked);
+    if (checked == false) {
+      Modal.confirm({
+        centered: true,
+        width: 300,
+        content: t('cfr.operationText'),
+        onOk(...args) {
+          setChecked(!checked);
+          setIsOpen(true);
+        },
+      });
+    } else {
+      setChecked(!checked);
+    }
+  };
+  const [isOpen, setIsOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [userInfo, setUserInfo] = useState<any>({
+    confirmPassword: '',
+    password: '',
+    position: '',
+    realName: '',
+    userName: '',
+  });
+  const rules: any = [{ type: 'string', min: 5, max: 16, required: true }];
+  const onclick = async () => {
+    try {
+      await form.validateFields();
+      const data = await ipcRenderer.invoke('userOperate', { name: 'createAdmin', data: userInfo });
+    } catch (errorInfo) {
+      console.log('Failed:', errorInfo);
+    }
+  };
+  const changeUserInfo = (key, e) => {
+    setUserInfo(itme => {
+      return { ...itme, [key]: e.target.value };
+    });
   };
   return (
-    <Radio.Group value={checked}>
-      <Radio onClick={handleChangeCheck} value={true} style={{ fontSize: '12px' }}>
-        {t('cfr.cfrEnable')}
-      </Radio>
-    </Radio.Group>
+    <>
+      <Radio.Group value={checked}>
+        <Radio onClick={handleChangeCheck} value={true} style={{ fontSize: '12px' }}>
+          {t('cfr.cfrEnable')}
+        </Radio>
+      </Radio.Group>
+      <Modal
+        title={t('cfr.initialization') + t('cfr.administrator')}
+        open={isOpen}
+        centered
+        width={300}
+        onCancel={() => {
+          setIsOpen(false);
+        }}
+        onOk={onclick}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="userName" label={t('cfr.userName')} required rules={rules}>
+            <Input
+              value={userInfo.userName || ''}
+              maxLength={16}
+              onChange={e => changeUserInfo('userName', e)}
+            />
+          </Form.Item>
+          <Form.Item name="realName" label={t('cfr.realName')} required rules={rules}>
+            <Input
+              maxLength={16}
+              value={userInfo.realName || ''}
+              onChange={e => changeUserInfo('realName', e)}
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label={t('history.password')}
+            required
+            rules={[{ max: 16, min: 6, required: true }]}
+          >
+            <Input.Password
+              value={userInfo.password || ''}
+              maxLength={16}
+              onChange={e => changeUserInfo('password', e)}
+            />
+          </Form.Item>
+          <Form.Item
+            name="confirmPassword"
+            label={t('history.password') + t('home.confirm')}
+            required
+            rules={[
+              { max: 16, min: 6, required: true },
+              ({ getFieldValue }) => ({
+                validator(rule, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(t('cfr.twoPassword'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              maxLength={16}
+              value={userInfo.confirmPassword || ''}
+              onChange={e => changeUserInfo('confirmPassword', e)}
+            />
+          </Form.Item>
+          <Form.Item name="position" label={t('cfr.position')} required rules={rules}>
+            <Input
+              maxLength={16}
+              value={userInfo.position || ''}
+              onChange={e => changeUserInfo('position', e)}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 };
 

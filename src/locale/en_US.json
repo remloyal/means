@@ -197,9 +197,9 @@
     "endorsementManage": "Endorsement Manage",
     "securityPolicy": "Security policy",
     "auditLog": "Audit Log",
-    "userName": "user name",
+    "userName": "User name",
     "realName": "Real name",
-    "position": "position",
+    "position": "Position",
     "type": "Type",
     "state": "State",
     "details": "Details",
@@ -233,7 +233,10 @@
     "deleteEndorsement": "Are you sure you want to delete endorsement {{name}}?",
     "order": "Order",
     "minute": "Minute",
-    "day": "Day"
+    "day": "Day",
+    "operationText": "This operation will be irreversible. Do you want to continue opening it?",
+    "initialization": "Initialize",
+    "deleteUserText": "Do you want to delete the user?"
   },
   "db": {
     "configureDeviceParameters": "Configure device parameters",

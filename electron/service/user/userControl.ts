@@ -3,6 +3,22 @@ import { UserRelated } from '../model';
 import log from '../../unitls/log';
 import { Op } from 'sequelize';
 
+// 创建管理员员
+export const createAdmin = async param => {
+  const newData = await UserInfo.create({
+    userName: param.userName,
+    password: param.password,
+    realName: param.realName,
+    position: param.position,
+    status: '1',
+    type: '0',
+    state: '0',
+    powerId: '1,2,3,4,5',
+    endorsementId: '',
+  });
+  return newData.toJSON();
+};
+
 export const createUser = async param => {
   const oldData = await UserInfo.findOne({
     where: {
@@ -39,6 +55,24 @@ export const queryUser = async () => {
   const data = await UserInfo.findAll();
   const todo = data.map(item => item.toJSON());
   return todo;
+};
+
+// 删除用户
+export const deleteUser = async param => {
+  const data = await UserInfo.findOne({
+    where: {
+      userName: param.userName,
+      id: param.id,
+    },
+  });
+  if (data) {
+    data.destroy();
+    log.info('删除用户成功');
+    return true;
+  } else {
+    log.info('删除用户失败');
+    return false;
+  }
 };
 
 // 判断用户名是否存在

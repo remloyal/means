@@ -271,6 +271,37 @@ export const UserManageRight = () => {
       },
     });
   };
+  // 删除用户
+  const deleteUser = async () => {
+    Modal.confirm({
+      title: t('cfr.delete') + t('cfr.users'),
+      content: t('cfr.deleteUserText', { userName: userSelected?.data.userName }),
+      centered: true,
+      async onOk() {
+        console.log('OK');
+        const data = await ipcRenderer.invoke('userOperate', {
+          name: 'deleteUser',
+          data: {
+            ...userSelected?.data,
+          },
+        });
+        if (data) {
+          setUserSelected({
+            type: 'update',
+            data,
+          });
+          message.success(t('cfr.delete') + t('cfr.success'));
+        } else {
+          message.error(t('cfr.delete') + t('cfr.fail'));
+        }
+      },
+      onCancel() {
+        console.log('Cancel');
+        message.error(t('cfr.delete') + t('cfr.fail'));
+      },
+    });
+  };
+
   return (
     <div style={{ textAlign: 'center' }}>
       <Button style={{ width: '100%', margin: '10px 0' }} onClick={createUser}>
@@ -303,6 +334,13 @@ export const UserManageRight = () => {
         onClick={resetUser}
       >
         {t('cfr.resetting') + t('history.password')}
+      </Button>
+      <Button
+        disabled={modifyState}
+        style={{ width: '100%', margin: '10px 0' }}
+        onClick={deleteUser}
+      >
+        {t('cfr.delete') + t('cfr.users')}
       </Button>
       <Modal
         title={titleList[title || 0]}
