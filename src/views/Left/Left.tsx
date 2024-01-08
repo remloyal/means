@@ -131,29 +131,23 @@ const Left: React.FC = () => {
 
   const Time = ({ data }) => {
     const [deviceTime, setDeviceTime] = useState('');
+    const format = localStorage.getItem('dateFormat') || 'YYYY-MM-DD';
     useEffect(() => {
       if (data) {
         const time = splitStringTime(data);
-        const present = dayjs(time).format(
-          `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-        );
+        const present = dayjs(time).format(`${format} HH:mm:ss`);
         setDeviceTime(present);
       }
     }, []);
     let terval;
     useEffect(() => {
       if (deviceTime) {
-        terval = setInterval(() => {
-          const present = dayjs(
-            deviceTime,
-            `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-          ).valueOf();
-          setDeviceTime(
-            dayjs(present + 1000).format(
-              `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-            )
-          );
-        }, 1000);
+        if (!terval) {
+          terval = setInterval(() => {
+            const present = dayjs(deviceTime, `${format} HH:mm:ss`).valueOf();
+            setDeviceTime(dayjs(present + 1000).format(`${format} HH:mm:ss`));
+          }, 1000);
+        }
         return () => {
           terval && clearInterval(terval);
           terval = null;
