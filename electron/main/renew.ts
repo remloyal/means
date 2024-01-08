@@ -159,9 +159,20 @@ export const downLoad = async deploy => {
  */
 function compareVersions(version1, version2) {
   // 将版本号字符串分割成数字数组
-  const ver1 = version1.split('.').map(Number);
-  const ver2 = version2.split('.').map(Number);
-
+  const ver1 = version1
+    .replaceAll('-', '.')
+    .split('.')
+    .map(e => Number(e));
+  const ver2 = version2
+    .replaceAll('-', '.')
+    .split('.')
+    .map(e => Number(e));
+  if (ver1.length == 3) {
+    ver1.push(0);
+  }
+  if (ver2.length == 3) {
+    ver2.push(0);
+  }
   // 比较两个版本号数组的大小关系
   if (ver1.length > ver2.length) {
     return 1;

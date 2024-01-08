@@ -18,8 +18,12 @@ export const importPDFFile = async (filePath: string, pdfPassword = '', deviceRe
   // if (!pdfjsLib) {
   //   pdfjsLib = await import('pdfjs-dist');
   // }
-  const data = new Uint8Array(fs.readFileSync(filePath));
-  const loadingTask = pdfjsLib.getDocument(data);
+  // const data = new Uint8Array(fs.readFileSync(filePath));
+  const loadingTask = pdfjsLib.getDocument({
+    url: filePath,
+    cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
+    cMapPacked: true,
+  });
   let lang = 'en'; //zh
   let type = pdfType[lang];
   let list: any = [];

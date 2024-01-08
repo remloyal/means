@@ -13,10 +13,11 @@ import {
 } from './DeviceOperate';
 import { ipcRenderer } from 'electron';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { deviceConfigParam, typePower } from '@/stores';
+import { deviceConfigParam, equipment, typePower } from '@/stores';
 import { TimeZone } from './Timezone';
 import { DeployAdvanced } from './DeployAdvanced';
 import { ShipmentDescribeDom, ShipmentIdDom } from './Shipment';
+import { MultipleAlarm } from './MultipleAlarm';
 
 const Deploy: React.FC = () => {
   return (
@@ -35,7 +36,8 @@ const DeployMain: React.FC = () => {
   const { t } = useTranslation();
   // 是否更新
   const [isUpdate, setIsUpdate] = useState(false);
-
+  const power = useRecoilValue(typePower);
+  const device = useRecoilValue(equipment);
   const items: TabsProps['items'] = [
     {
       key: '1',
@@ -47,13 +49,14 @@ const DeployMain: React.FC = () => {
       label: t('deploy.advancedParameters'),
       children: <DeployAdvanced state={isUpdate} />,
     },
-    // {
-    //   key: '3',
-    //   label: t('deploy.multipleAlarmSettings'),
-    //   children: <DeployMultiple state={isUpdate} />,
-    // },
   ];
-
+  if (device.record.hardwareVersion == 'V2' && power.includes('setHighTemp1')) {
+    items?.push({
+      key: '3',
+      label: t('deploy.multipleAlarmSettings'),
+      children: <MultipleAlarm state={isUpdate} />,
+    });
+  }
   const save = () => {
     setIsUpdate(true);
     window.eventBus.emit('saving');
@@ -116,16 +119,6 @@ const DeployBasic = ({ state }: { state: boolean }) => {
       </Row>
     </div>
   );
-};
-
-// 多参数设置
-const DeployMultiple = ({ state }: { state: boolean }) => {
-  useEffect(() => {
-    if (state) {
-      console.log('DeployMultiple 更新...');
-    }
-  }, [state]);
-  return <div>DeployMultiple</div>;
 };
 
 // 数据操作

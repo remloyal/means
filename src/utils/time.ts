@@ -50,3 +50,5 @@ export function convertUTC(timezone: string): string {
   // UTC+00:00
   return timezone.replace(':', '').replace('+', '').replace('UTC', 'TZ:');
 }
+
+export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));

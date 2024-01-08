@@ -103,7 +103,11 @@
     "functionSwitch": "功能开关",
     "buttonStop": "按键停止",
     "prohibit": "禁止",
-    "allow": "允许"
+    "allow": "允许",
+    "monotypic": "单一型",
+    "accumulating": "累积型",
+    "overtop": "高于",
+    "below": "低于"
   },
   "history": {
     "cloudStorage": "云端存储",

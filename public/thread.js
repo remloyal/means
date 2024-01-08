@@ -48,7 +48,7 @@ const createHid = path => {
                 buffer.push(...res);
               }
             });
-            const todo = Uint8ArrayToStr(new Uint8Array(buffer));
+            const todo = Uint8ArrayToString(new Uint8Array(buffer));
             bufferAll = [];
             process.parentPort.postMessage({
               event: 'hidData',
@@ -65,7 +65,7 @@ const createHid = path => {
           }
         }, item.delayTime || 150);
       } else {
-        const todo = Uint8ArrayToStr(res);
+        const todo = Uint8ArrayToString(res);
         process.parentPort.postMessage({
           event: 'hidData',
           data: { key: item.key, value: todo },
@@ -78,14 +78,6 @@ const createHid = path => {
   }
 };
 function Uint8ArrayToString(fileData) {
-  let dataString = '';
-  for (let i = 0; i < fileData.length; i++) {
-    dataString += String.fromCharCode(fileData[i]);
-  }
-  console.log(dataString);
-  return dataString.replace('\u0002', '').replaceAll('\u0000', '');
-}
-function Uint8ArrayToStr(fileData) {
   let dataString = '';
   for (let i = 0; i < fileData.length; i++) {
     dataString += String.fromCharCode(fileData[i]);

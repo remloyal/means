@@ -169,7 +169,7 @@ export function formatUtc(utcStr) {
   if (utcStr == '' || utcStr == null || utcStr == undefined) {
     return utcStr;
   }
-  const regex = /UTC([+-]\d{1,2}):(\d{2})/;
+  const regex = /UTC([+-]?\d{1,2}):(\d{2})/;
   const match = utcStr.match(regex);
 
   if (!match) {
@@ -182,11 +182,12 @@ export function formatUtc(utcStr) {
   let minutes = match[2];
   if (hours.includes('+')) {
     sign = '+';
-  } else {
+  }
+  if (hours.includes('-')) {
     sign = '-';
   }
 
-  hours = parseInt(hours).toString();
+  hours = Math.abs(hours).toString();
   if (hours.length === 1) {
     hours = `0${hours}`;
   }
