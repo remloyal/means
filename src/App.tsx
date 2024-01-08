@@ -34,7 +34,6 @@ const App: React.FC = () => {
   const [date, setDate] = useRecoilState(dateFormat);
   const [height, setHight] = useRecoilState(pageHeight);
   const [loginState, setLoginState] = useState<boolean>(isLogin);
-  console.log('loginState', loginState);
 
   useEffect(() => {
     // setLoginState(isLogin);

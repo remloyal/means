@@ -242,7 +242,12 @@
     "initialization": "Initialize",
     "deleteUserText": "Do you want to delete the user?",
     "login": "Login",
-    "loginErrText": "The username or password is incorrect, you can try again {{order}} times!"
+    "loginErrText": "The username or password is incorrect, you can try again {{order}} times!",
+    "join": "Join",
+    "revise": "Revise",
+    "original": "Original",
+    "new": "New",
+    "originalPasswordErr": "Original password input error"
   },
   "db": {
     "configureDeviceParameters": "Configure device parameters",

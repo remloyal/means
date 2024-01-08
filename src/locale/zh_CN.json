@@ -242,7 +242,12 @@
     "initialization": "初始化",
     "deleteUserText": "是否删除该用户？",
     "login": "登录",
-    "loginErrText": "用户名或密码不正确，您还可以尝试{{order}}次"
+    "loginErrText": "用户名或密码不正确，您还可以尝试{{order}}次",
+    "join": "加入",
+    "revise": "修改",
+    "original": "原始",
+    "new": "新",
+    "originalPasswordErr": "原始密码错误"
   },
   "db": {
     "configureDeviceParameters": "配置设备参数",

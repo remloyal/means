@@ -19,6 +19,7 @@ import {
   getUserStart as GetUserStart,
   setUserStart as SetUserStart,
   login,
+  updateUserPassword,
 } from './userControl';
 import './userLog';
 export const getUserStart = GetUserStart;
@@ -46,6 +47,7 @@ const userRouter = {
   createAdmin,
   createUser,
   queryUser,
+  updateUserPassword,
   deleteUser,
   lockUser,
   resetUser,

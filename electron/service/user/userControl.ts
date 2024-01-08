@@ -129,6 +129,27 @@ export const queryUser = async () => {
   return todo;
 };
 
+// 修改用户密码
+export const updateUserPassword = async param => {
+  const data = await UserInfo.findOne({
+    where: {
+      userName: param.userName,
+      id: param.id,
+      realName: param.realName,
+    },
+  });
+  if (data) {
+    data.update({
+      password: param.newPassword,
+    });
+    log.info('修改用户密码成功');
+    return data.toJSON();
+  } else {
+    log.info('修改用户密码失败');
+    return false;
+  }
+};
+
 // 删除用户
 export const deleteUser = async param => {
   const data = await UserInfo.findOne({
