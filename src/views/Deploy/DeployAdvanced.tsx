@@ -195,9 +195,9 @@ export const SensorTypeDom = ({ state }: { state: boolean }) => {
     setStartMode(value);
   };
   const sensorType = {
-    M2H: `${t('home.temperature')}、${t('home.humidity')}`,
-    M2D: t('home.temperature'),
-    M2E: t('home.humidity'),
+    M2H: `${t('home.internal')}${t('home.temperature')}、${t('home.humidity')}`,
+    M2D: t('home.internal') + t('home.temperature'),
+    M2E: t('home.probe') + t('home.humidity'),
   };
   useEffect(() => {
     if (device?.record.deviceType) {
