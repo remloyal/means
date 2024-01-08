@@ -91,7 +91,9 @@ export const DB_PARAM = {
 export const DATE = dayjs().format('YYYY-MM-DD').split('-');
 // 日志
 export const LOG_PARAM = {
-  LOG_PATH: path.join(process.cwd(), CACHE_PATH, `logs/${DATE[0]}/${DATE[1]}/work`),
+  LOG_PATH: path.join(process.cwd(), CACHE_PATH, 'logs/work.log'),
+  COLLECT_PATH: path.join(process.cwd(), CACHE_PATH, 'logs/collect.log'),
+  COLLECT_STATE: false,
 };
 
 // UTC 对应时区
@@ -117,4 +119,8 @@ export const HID_PARAM = {
     'setShipment7',
   ],
   DELAY_TIME: 200,
+};
+
+export const USER_PARAM = {
+  USER_NAME: '',
 };

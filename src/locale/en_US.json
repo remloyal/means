@@ -240,7 +240,9 @@
     "day": "Day",
     "operationText": "This operation will be irreversible. Do you want to continue opening it?",
     "initialization": "Initialize",
-    "deleteUserText": "Do you want to delete the user?"
+    "deleteUserText": "Do you want to delete the user?",
+    "login": "Login",
+    "loginErrText": "The username or password is incorrect, you can try again {{order}} times!"
   },
   "db": {
     "configureDeviceParameters": "Configure device parameters",

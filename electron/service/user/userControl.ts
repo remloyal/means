@@ -3,6 +3,7 @@ import { UserRelated } from '../model';
 import log from '../../unitls/log';
 import { Op } from 'sequelize';
 import { UserRelatedData, UserPowerRelatedData } from './userInit';
+import { USER_PARAM } from '../../config';
 
 export const getUserStart = async (name = '') => {
   if (name) {
@@ -194,6 +195,21 @@ export const resetUser = async param => {
   } else {
     return false;
   }
+};
+
+// 用户登录
+export const login = async param => {
+  const data = await UserInfo.findOne({
+    where: {
+      userName: param.userName,
+      password: param.password,
+    },
+  });
+  if (data) {
+    USER_PARAM.USER_NAME = data.toJSON().userName;
+    return data.toJSON();
+  }
+  return false;
 };
 
 // 查询权利

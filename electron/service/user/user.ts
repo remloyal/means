@@ -18,8 +18,9 @@ import {
   updateUserPower,
   getUserStart as GetUserStart,
   setUserStart as SetUserStart,
+  login,
 } from './userControl';
-
+import './userLog';
 export const getUserStart = GetUserStart;
 export const setUserStart = SetUserStart;
 
@@ -41,6 +42,7 @@ ipcMain.handle('userOperate', (event, params: ParamType) => {
 });
 
 const userRouter = {
+  login,
   createAdmin,
   createUser,
   queryUser,

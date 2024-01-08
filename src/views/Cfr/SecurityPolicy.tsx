@@ -19,7 +19,7 @@ const SetInfoContext = new Proxy<any>(person, {
     return true;
   },
 });
-
+// 安全策略
 export const SecurityPolicy = () => {
   const { t } = useTranslation();
   const [info, setInfo] = useState({
@@ -81,7 +81,7 @@ export const SecurityPolicy = () => {
         <label htmlFor="">尝试登录次数：</label>
       </div>
       <InputNumber
-        min={0}
+        min={3}
         max={100}
         value={info.loginNumber}
         style={{ width: '200px', marginBottom: '16px' }}

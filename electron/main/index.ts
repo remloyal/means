@@ -5,7 +5,7 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, WINDOW_PARAM } from '../config';
+import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, LOG_PARAM, WINDOW_PARAM } from '../config';
 import { IsOnlineService, isNetworkState } from '../unitls/request';
 import log from '../unitls/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
@@ -302,5 +302,5 @@ export const setUpdateState = state => {
 const initUser = async () => {
   await detectionStatus();
   const state = await getUserStart();
-  console.log('getUserStart', state);
+  LOG_PARAM.COLLECT_STATE = state;
 };

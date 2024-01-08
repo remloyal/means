@@ -16,20 +16,28 @@ import { useRecoilState } from 'recoil';
 import { dateFormat, language, pageHeight } from './stores';
 import { Locale } from 'antd/es/locale';
 import { useThrottle } from './utils/tool';
+import { ipcRenderer } from 'electron';
+import Login from './views/Login/Login';
 
 const languageData = {
   zh: zhCN,
   en: enUS,
 };
+
 let observer;
+const isLogin = (await ipcRenderer.invoke('userLog', { name: 'isLogin' })) || false;
+
 const App: React.FC = () => {
   const handle = useThrottle(getHight, 200);
   const [tongue, setTongue] = useRecoilState(language);
   const [locale, setLocal] = useState<Locale>(enUS);
   const [date, setDate] = useRecoilState(dateFormat);
   const [height, setHight] = useRecoilState(pageHeight);
+  const [loginState, setLoginState] = useState<boolean>(isLogin);
+  console.log('loginState', loginState);
 
   useEffect(() => {
+    // setLoginState(isLogin);
     message.config({ prefixCls: 'antd-message', maxCount: 3, duration: 2 });
     setTongue(localStorage.getItem('language') || 'zh');
     setDate(localStorage.getItem('dateFormat') || 'YYYY-MM-DD');
@@ -62,25 +70,31 @@ const App: React.FC = () => {
     console.log(axleHight);
     setHight(axleHight);
   }
-
+  const toMain = () => {
+    setLoginState(false);
+  };
   return (
     <ConfigProvider theme={appTheme} locale={locale}>
       <AntdApp>
-        <HashRouter>
-          <Header />
-          <div
-            style={{
-              padding: '14px',
-              display: 'flex',
-            }}
-            id="main"
-          >
-            <Left></Left>
-            <Suspense>
-              <Router />
-            </Suspense>
-          </div>
-        </HashRouter>
+        {loginState ? (
+          <Login onMain={toMain} />
+        ) : (
+          <HashRouter>
+            <Header />
+            <div
+              style={{
+                padding: '14px',
+                display: 'flex',
+              }}
+              id="main"
+            >
+              <Left></Left>
+              <Suspense>
+                <Router />
+              </Suspense>
+            </div>
+          </HashRouter>
+        )}
       </AntdApp>
     </ConfigProvider>
   );

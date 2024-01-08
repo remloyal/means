@@ -93,7 +93,8 @@ export const Logs = dbInfo.define(
   'logs',
   {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: STRING, allowNull: true },
+    userName: { type: STRING, allowNull: true },
+    operateType: { type: STRING, allowNull: true },
     value: { type: STRING, allowNull: false },
     createdAt: {
       type: DATE,

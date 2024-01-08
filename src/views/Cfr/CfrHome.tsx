@@ -9,6 +9,8 @@ import { Endorsement, EndorsementRight } from './Endorsement';
 import { SecurityPolicy, SecurityPolicyRight } from './SecurityPolicy';
 import { AuditLog, AuditLogRight } from './AuditLog';
 import { ipcRenderer } from 'electron';
+
+const isLogin = await ipcRenderer.invoke('userLog', { name: 'isLogin' });
 const Cfr: React.FC = () => {
   const [activeKey, setActiveKey] = useState('0');
   const onChange = (key: string) => {
@@ -29,7 +31,6 @@ const Cfr: React.FC = () => {
 
 const CfrMain = ({ onChange }) => {
   const { t } = useTranslation();
-  const [activeKey, setActiveKey] = useState('1');
 
   const items: TabsProps['items'] = [
     {
@@ -37,6 +38,8 @@ const CfrMain = ({ onChange }) => {
       label: `FDA 21 CFR Part 11  ${t('cfr.module')}`,
       children: <CfrProve></CfrProve>,
     },
+  ];
+  const loginItems = [
     {
       key: '1',
       label: t('cfr.userInfo'),
@@ -68,7 +71,9 @@ const CfrMain = ({ onChange }) => {
       children: <AuditLog />,
     },
   ];
-
+  if (isLogin) {
+    items.push(...loginItems);
+  }
   return (
     <>
       <Tabs
@@ -161,6 +166,9 @@ const CfrHomeRight = () => {
       return { ...itme, [key]: e.target.value };
     });
   };
+  useEffect(() => {
+    setChecked(isLogin || false);
+  }, []);
   return (
     <>
       <Radio.Group value={checked}>
