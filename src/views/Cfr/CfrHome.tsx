@@ -149,6 +149,9 @@ const CfrHomeRight = () => {
     try {
       await form.validateFields();
       const data = await ipcRenderer.invoke('userOperate', { name: 'createAdmin', data: userInfo });
+      if (data) {
+        ipcRenderer.invoke('exitType', 3);
+      }
     } catch (errorInfo) {
       console.log('Failed:', errorInfo);
     }
@@ -172,6 +175,7 @@ const CfrHomeRight = () => {
         width={300}
         onCancel={() => {
           setIsOpen(false);
+          setChecked(false);
         }}
         onOk={onclick}
       >

@@ -258,7 +258,10 @@ ipcMain.handle('open-url', (event, url) => {
 // 处理退出类型的事件
 ipcMain.handle('exitType', (event, type) => {
   setTimeout(async () => {
-    if (type == 1) {
+    if (type == 3) {
+      app.exit(0);
+      app.relaunch();
+    } else if (type == 1) {
       win?.hide();
     } else {
       await hidProcess?.kill();

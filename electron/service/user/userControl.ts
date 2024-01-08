@@ -2,9 +2,75 @@ import { Endorsement, Power, UserInfo } from './userModel';
 import { UserRelated } from '../model';
 import log from '../../unitls/log';
 import { Op } from 'sequelize';
+import { UserRelatedData, UserPowerRelatedData } from './userInit';
+
+export const getUserStart = async (name = '') => {
+  if (name) {
+    const data = await UserRelated.findOne({
+      where: {
+        name,
+      },
+    });
+    return data ? data.toJSON() : {};
+  }
+  const data = await UserRelated.findOne({
+    where: {
+      name: 'isEnabled',
+    },
+  });
+  if (!data) {
+    log.info('UserRelated: 初始化 isEnabled 状态');
+    UserRelated.bulkCreate(UserRelatedData);
+    Power.bulkCreate(UserPowerRelatedData);
+    return false;
+  }
+  if (data.toJSON().value == '0') return false;
+  return true;
+};
+
+export const setUserStart = async ({ name, value }) => {
+  const data = await UserRelated.findOne({
+    where: {
+      name,
+    },
+  });
+  if (data) {
+    if (value) {
+      data.update({ value });
+      data.save();
+    }
+    return data.toJSON();
+  } else {
+    const todo = await UserRelated.create({
+      name,
+      value,
+    });
+    return todo.toJSON();
+  }
+};
 
 // 创建管理员员
 export const createAdmin = async param => {
+  const oldData = await UserInfo.findOne({
+    where: {
+      type: '0',
+    },
+  });
+  if (oldData) {
+    oldData.update({
+      userName: param.userName,
+      password: param.password,
+      realName: param.realName,
+      position: param.position,
+      status: '1',
+      type: '0',
+      state: '0',
+      powerId: '1,2,3,4,5',
+      endorsementId: '',
+    });
+    oldData.save();
+    return oldData.toJSON();
+  }
   const newData = await UserInfo.create({
     userName: param.userName,
     password: param.password,
@@ -16,7 +82,12 @@ export const createAdmin = async param => {
     powerId: '1,2,3,4,5',
     endorsementId: '',
   });
-  return newData.toJSON();
+  if (newData) {
+    await setUserStart({ name: 'isEnabled', value: '1' });
+    return newData.toJSON();
+  } else {
+    return false;
+  }
 };
 
 export const createUser = async param => {
