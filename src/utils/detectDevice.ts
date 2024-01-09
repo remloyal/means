@@ -197,3 +197,9 @@ ipcRenderer.on('deviceRemoval', async (event, data) => {
     setTypePower();
   }
 });
+
+export const setDeviceError = () => {
+  usbData = null;
+  window.eventBus.emit('friggaDevice:out');
+  setTypePower();
+};

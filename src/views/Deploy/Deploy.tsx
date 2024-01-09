@@ -168,7 +168,9 @@ const DataOperate = ({ save }: { save: () => void }) => {
         onOk={handleOk}
         onCancel={handleCancel}
         centered
+        width={300}
         destroyOnClose={true}
+        maskClosable={false}
       >
         <p>{t('deploy.currentConfiguration')}</p>
       </Modal>
