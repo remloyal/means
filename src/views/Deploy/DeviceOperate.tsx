@@ -1,4 +1,4 @@
-import { OPERATE_CONFIG } from '@/config';
+import { HUMI_UNIT, OPERATE_CONFIG } from '@/config';
 import { deviceConfigParam, equipment } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { c2f, f2c } from '@/utils/utils';
@@ -541,7 +541,7 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
           value={emp}
           style={{ width: '80%' }}
         />
-        <span className="deploy-span">RH</span>
+        <span className="deploy-span">{HUMI_UNIT}</span>
       </div>
     </Col>
   );
@@ -604,7 +604,7 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
           value={emp}
           style={{ width: '80%' }}
         />
-        <span className="deploy-span">RH</span>
+        <span className="deploy-span">{HUMI_UNIT}</span>
       </div>
     </Col>
   );

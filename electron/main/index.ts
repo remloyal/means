@@ -50,9 +50,9 @@ const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, 'index.html');
 
 let tray;
-let updateState = false;
+let updateState = true;
 export async function createWindow() {
-  updateState = false;
+  // updateState = false;
   win = new BrowserWindow({
     autoHideMenuBar: true,
     title: WINDOW_PARAM.TITLE,
@@ -231,6 +231,9 @@ ipcMain.on('window-reset', () => {
 });
 
 ipcMain.handle('lang', (_, data) => {
+  if (updateState) {
+    updateState = false;
+  }
   const lang = {
     en: 1,
     zh: 2,

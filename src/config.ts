@@ -17,3 +17,6 @@ export const OPERATE_CONFIG = {
 
 // UTC 对应时区
 export const UTC_PARAM = UTC;
+
+// 湿度单位
+export const HUMI_UNIT = '%RH';
