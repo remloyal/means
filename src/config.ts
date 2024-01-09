@@ -11,9 +11,12 @@ export const lang = {
 export const OPERATE_CONFIG = {
   MIN_TEMP: -30,
   MAX_TEMP: 70,
-  MIN_HUMI: -200,
+  MIN_HUMI: 0,
   MAX_HUMI: 100,
 };
 
 // UTC 对应时区
 export const UTC_PARAM = UTC;
+
+// 湿度单位
+export const HUMI_UNIT = '%RH';

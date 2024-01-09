@@ -175,7 +175,7 @@ class DeviceInstance {
             clearInterval(interval); //清除定时器
             resolve(key != undefined ? this.record[key] : this.record);
           }
-        }, 500);
+        }, 300);
       } catch (error) {
         console.log('error', error);
         reject({});
@@ -194,12 +194,12 @@ class DeviceInstance {
 
     if (csvData.length > 0) {
       // 设置第一条记录的时间
-      const firstRecordTime = dayjs(csvData[0].timeStamp).format('YYYY-MM-DD  HH:mm:ss');
+      const firstRecordTime = dayjs(csvData[0].timeStamp).format('YYYY-MM-DD HH:mm:ss');
       this.record.firstRecordTime = firstRecordTime;
 
       // 设置最后一条记录的时间
       const lastRecordTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
-        'YYYY-MM-DD  HH:mm:ss'
+        'YYYY-MM-DD HH:mm:ss'
       );
       this.record.lastRecordedTime = lastRecordTime;
 

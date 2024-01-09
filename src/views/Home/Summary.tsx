@@ -376,11 +376,11 @@ const SummaryRight: React.FC = () => {
     const sensorType = {
       M2H: (
         <div>
-          {t('home.temperature')}、{t('home.humidity')}
+          {t('home.internal') + t('home.temperature')}、{t('home.humidity')}
         </div>
       ),
-      M2D: <div>{t('home.temperature')}</div>,
-      M2E: <div>{t('home.humidity')}</div>,
+      M2D: <div>{t('home.internal') + t('home.temperature')}</div>,
+      M2E: <div>{t('home.probe') + t('home.humidity')}</div>,
     };
     return device?.record.deviceType ? sensorType[device?.record.deviceType] : '---';
   };

@@ -75,6 +75,7 @@ const DEVICEENTYPE = {
       /Hardware Version:(.*?)Shipment ID:/,
       /Hardware Version: (.*?)Logging Summary/,
       /펲볾냦놾:(.*?)볇슼룅튪컂뛈횵/,
+      /펲볾냦놾:(.*?)탐돌ID/,
     ],
     startDelay: [
       /Start Delay: (.*?)Log Interval/,
@@ -99,6 +100,8 @@ const DEVICEENTYPE = {
       /Shipment ID:(.*?)Logging Summary/,
       /퓋떥뇠뫅:(.*?)볇슼룅튪컂뛈/,
       /퓋떥뇠뫅:(.*?)볇슼룅튪컂쪪/,
+      /탐돌ID:(.*?)볇슼룅튪컂쪪/,
+      /탐돌 ID:(.*?)볇슼룅튪컂쪪/,
     ],
     shipment: [/Shipment Note:(.*?)Device Information/, /탐돌쏨쫶(.*?)짨놸탅쾢짨놸/],
   },

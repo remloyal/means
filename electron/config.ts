@@ -118,7 +118,7 @@ export const HID_PARAM = {
     'shipment7',
     'setShipment7',
   ],
-  DELAY_TIME: 200,
+  DELAY_TIME: 100,
 };
 
 export const USER_PARAM = {

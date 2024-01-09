@@ -16,7 +16,7 @@ import M2H from '@/assets/img/M2H.png';
 import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
 import DianLiangImg from '@/assets/img/dianliang.png';
-import { loadUsbData, usbData } from '@/utils/detectDevice';
+import { loadUsbData, setDeviceError, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
 import { QuitPrompt } from './ExitPrompt';
 const DeviceImg = {
@@ -27,6 +27,8 @@ const DeviceImg = {
 const setTimeFormat = (time: string): string => {
   return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
 };
+let errorModal;
+let deviceStates = false;
 const Left: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -58,6 +60,7 @@ const Left: React.FC = () => {
     if (leftRef.current) {
       window.eventBus.on('friggaDevice:in', deviceData => {
         if (deviceMent) return;
+        deviceStates = true;
         setDevice(deviceData);
         setDeviceMent(true);
         navigate('/');
@@ -65,11 +68,11 @@ const Left: React.FC = () => {
       });
 
       window.eventBus.on('friggaDevice:out', (...datas) => {
-        console.log(window.location.href.includes('deploy'));
         if (window.location.href.includes('deploy')) {
           setHeadKey(0);
           navigate('/');
         }
+        deviceStates = false;
         setDeviceMent(false);
         setDevice(null);
       });
@@ -78,7 +81,23 @@ const Left: React.FC = () => {
       });
       ipcRenderer.on('hidError', (event, err) => {
         setLoading(false);
-        alert(t('left.errotText'));
+        // alert(t('left.errotText'));
+        // message.error(t('left.errotText'));
+        if (!errorModal) {
+          errorModal = Modal.error({
+            centered: true,
+            content: t('left.errotText'),
+            cancelButtonProps: { style: { display: 'none' } },
+            onOk() {
+              deviceStates = false;
+              errorModal = null;
+              setDeviceError();
+              setSaving(false);
+              setLoading(false);
+              setDevice(null);
+            },
+          });
+        }
       });
 
       window.eventBus.on('typePower', res => {
@@ -105,9 +124,12 @@ const Left: React.FC = () => {
       });
 
       window.eventBus.on('updateDevice', deviceData => {
-        message.success(t('history.dataUpdateSuccessful'));
-        setDevice(deviceData);
-        setSaving(false);
+        console.log('updateDevice', deviceStates, deviceData);
+        if (deviceStates) {
+          message.success(t('history.dataUpdateSuccessful'));
+          setDevice(deviceData);
+          setSaving(false);
+        }
       });
       window.eventBus.on('saving', res => {
         setSaving(true);
@@ -131,29 +153,23 @@ const Left: React.FC = () => {
 
   const Time = ({ data }) => {
     const [deviceTime, setDeviceTime] = useState('');
+    const format = localStorage.getItem('dateFormat') || 'YYYY-MM-DD';
     useEffect(() => {
       if (data) {
         const time = splitStringTime(data);
-        const present = dayjs(time).format(
-          `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-        );
+        const present = dayjs(time).format(`${format} HH:mm:ss`);
         setDeviceTime(present);
       }
     }, []);
     let terval;
     useEffect(() => {
       if (deviceTime) {
-        terval = setInterval(() => {
-          const present = dayjs(
-            deviceTime,
-            `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-          ).valueOf();
-          setDeviceTime(
-            dayjs(present + 1000).format(
-              `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-            )
-          );
-        }, 1000);
+        if (!terval) {
+          terval = setInterval(() => {
+            const present = dayjs(deviceTime, `${format} HH:mm:ss`).valueOf();
+            setDeviceTime(dayjs(present + 1000).format(`${format} HH:mm:ss`));
+          }, 1000);
+        }
         return () => {
           terval && clearInterval(terval);
           terval = null;
@@ -300,6 +316,22 @@ const Left: React.FC = () => {
   const reloading = () => {
     loadUsbData(usbData);
   };
+
+  const getImageClass = () => {
+    if (device == null) {
+      return 'image-alarm';
+    }
+    if (device?.record.lowtEmp == 0 && device?.record.hightEmp == 0) {
+      return 'image-alarm image-alarm-green';
+    }
+    if (
+      device?.database.temperature.max > device?.record.hightEmp ||
+      device?.database.temperature.min < device?.record.lowtEmp
+    ) {
+      return 'image-alarm image-alarm-red';
+    }
+    return 'image-alarm image-alarm-green';
+  };
   return (
     <MainLeft>
       <div className="left" ref={leftRef}>
@@ -314,18 +346,7 @@ const Left: React.FC = () => {
             </div>
           )}
           {/* <span>报警</span> */}
-          <img
-            src={alarmPng}
-            className={
-              device == null
-                ? 'image-alarm'
-                : device?.record.lowtEmp == 0 && device?.record.hightEmp == 0
-                  ? 'image-alarm image-alarm-green'
-                  : device?.database.alarm == 1
-                    ? 'image-alarm image-alarm-red'
-                    : 'image-alarm image-alarm-green'
-            }
-          />
+          <img src={alarmPng} className={getImageClass()} />
         </div>
         <Descriptions
           items={items}

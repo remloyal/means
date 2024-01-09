@@ -80,7 +80,9 @@
     "processing": "处理中",
     "startTime": "开始时间",
     "endTime": "结束时间",
-    "friggaRecorder": "请插入Frigga记录仪"
+    "friggaRecorder": "请插入Frigga记录仪",
+    "internal": "内部",
+    "probe": "探头"
   },
   "deploy": {
     "basicParameters": "基本参数",

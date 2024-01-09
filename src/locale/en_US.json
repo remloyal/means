@@ -63,8 +63,8 @@
     "journeyDescription": "Shipment Note",
     "serialNumber": "Order",
     "time": "Time",
-    "temperature": "temp",
-    "humidity": "humi",
+    "temperature": "Temp",
+    "humidity": "Humi",
     "thresholdEditing": "Threshold editing",
     "exportGraph": "Export Graph",
     "goBack": "Go Back",
@@ -80,7 +80,9 @@
     "processing": "Processing",
     "startTime": "Start Time",
     "endTime": "End Time",
-    "friggaRecorder": "Please insert the Frigga recorder"
+    "friggaRecorder": "Please insert the Frigga recorder",
+    "internal": "internal",
+    "probe": "probe"
   },
   "deploy": {
     "basicParameters": "Basic parameters",
