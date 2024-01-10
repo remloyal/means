@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { deviceType, DeviceTypeAT } from './deviceType';
-import { convertTZ } from './time';
+import { deviceType, batvol, DeviceTypeAT, getNewInstruct } from './deviceType';
+import { convertTZ, sleep } from './time';
 import { ipcRenderer } from 'electron';
 
 // 指令读取
@@ -12,7 +12,7 @@ export let instructSetup;
 // 设备属性变量
 export let DeviceAttribute;
 // 导出一个函数，用于设置设备类型
-export const setTypePower = (type: any = null) => {
+export const setTypePower = (type: any = null, batvolVal = '') => {
   // 如果type参数存在
   if (type) {
     // 如果type参数中包含#号，则将#号分割
@@ -26,6 +26,11 @@ export const setTypePower = (type: any = null) => {
     DeviceAttribute = DeviceTypeAT[type];
     instructRead = DeviceAttribute.read;
     instructSetup = DeviceAttribute.setup;
+    if (batvolVal != '') {
+      const newInstruct = getNewInstruct();
+      instructRead = Object.assign({}, DeviceAttribute.read, newInstruct.read);
+      instructSetup = Object.assign({}, DeviceAttribute.setup, newInstruct.setup);
+    }
     // 向window.eventBus发送一个typePower事件，参数为instructRead和instructSetup中的属性
     window.eventBus.emit('typePower', [
       ...Object.keys(instructRead),
@@ -46,10 +51,11 @@ export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> 
   // 初始化设备记录
   deviceExample.record = {};
   // 获取设备类型
-  const { key, value } = await deviceExample.getType(deviceType);
-  console.log('deviceExample =======>', key, value);
+  const deviceTypeDate = await deviceExample.getType(deviceType);
+  // 根据是否有电量参数判断配置
+  const batvolData = await deviceExample.getType(batvol);
   // 设置设备操作类型
-  setTypePower(value);
+  setTypePower(deviceTypeDate.value, batvolData.value);
   // 初始化设备
   await deviceExample?.init(deviceInfo);
   return deviceExample;
@@ -97,13 +103,8 @@ class DeviceInstance {
       console.log(data);
       // 解构data
       const { key, value } = data;
-      // 解构this.record
-      const { record } = this;
-      // 将record和value进行合并
-      this.record = Object.assign({}, record, {
-        // 如果value不为空，则使用operate.getData方法获取value
-        [key]: value != '' ? this.operate?.getData(value) : value,
-      });
+
+      this.formatParam(key, value);
       // 调用repeatOperation方法
       this.repeatOperation();
     } catch (error) {
@@ -174,7 +175,7 @@ class DeviceInstance {
             clearInterval(interval); //清除定时器
             resolve(key != undefined ? this.record[key] : this.record);
           }
-        }, 1000);
+        }, 300);
       } catch (error) {
         console.log('error', error);
         reject({});
@@ -193,14 +194,12 @@ class DeviceInstance {
 
     if (csvData.length > 0) {
       // 设置第一条记录的时间
-      const firstRecordTime = dayjs(csvData[0].timeStamp).format(
-        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-      );
+      const firstRecordTime = dayjs(csvData[0].timeStamp).format('YYYY-MM-DD HH:mm:ss');
       this.record.firstRecordTime = firstRecordTime;
 
       // 设置最后一条记录的时间
       const lastRecordTime = dayjs(csvData[csvData.length - 1].timeStamp).format(
-        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
+        'YYYY-MM-DD HH:mm:ss'
       );
       this.record.lastRecordedTime = lastRecordTime;
 
@@ -223,9 +222,38 @@ class DeviceInstance {
 
     // 转换时区
     this.record.timeZone = convertTZ(this.record.time);
-
     // 设置固件版本
-    this.record.firmwareVersion = 'V1.02';
+    if (!this.record.firmwareVersion) {
+      this.record.firmwareVersion = 'V1.02';
+    }
+    if (!this.record.hardwareVersion) {
+      this.record.hardwareVersion = 'M2MR21';
+    }
+    if (this.record.shipment1 || this.record.shipment) {
+      this.record.shipment =
+        this.record.shipment1 +
+        this.record.shipment2 +
+        this.record.shipment3 +
+        this.record.shipment4 +
+        this.record.shipment5 +
+        this.record.shipment6 +
+        this.record.shipment7;
+    }
+  }
+  private formatParam(key, val: string) {
+    const { record } = this;
+    if (key == 'deviceType') {
+      const todo = this.operate?.getData(val) || '';
+      this.record = Object.assign({}, record, {
+        [key]: todo[0],
+        hardwareVersion: todo[1],
+        firmwareVersion: todo[2],
+      });
+      return;
+    }
+    this.record = Object.assign({}, record, {
+      [key]: val != '' ? this.operate?.getData(val) : val,
+    });
   }
 }
 // 寻找数组中的最大值和最小值
@@ -254,7 +282,6 @@ export const deviceExample: DeviceInstance = new DeviceInstance();
 
 // 判断是否为OK
 const isOk = (data: any) => {
-  console.log(data);
   return data == 'OK' ? true : data;
 };
 
@@ -267,7 +294,7 @@ const updateDevice = () => {
   timeout = setTimeout(() => {
     deviceExample.setCsvData(deviceExample.csvData);
     window.eventBus.emit('updateDevice', Object.assign({}, deviceExample));
-  }, 1500);
+  }, 3000);
 };
 
 // 操作父类
@@ -289,7 +316,6 @@ const setOperateDevice = (item: OperateTypeItem, queryData?: OperateTypeItem) =>
     console.log(err);
   });
 };
-
 // 设备操作方法
 export const deviceOperate = {
   /**设置记录间隔*/
@@ -385,5 +411,79 @@ export const deviceOperate = {
     tempPeriod.param = value;
     const data = await setOperateDevice(tempPeriod, instructRead.keyStopEnableget);
     return data;
+  },
+  /** 设置行程id*/
+  setShipmentId: async value => {
+    const tempPeriod = instructSetup.setShipmentId;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.shipmentId);
+    return data;
+  },
+  /** 设置行程描述*/
+  setShipmentDescribe: async (val: string[]) => {
+    const readList = [
+      instructRead.shipment1,
+      instructRead.shipment2,
+      instructRead.shipment3,
+      instructRead.shipment4,
+      instructRead.shipment5,
+      instructRead.shipment6,
+      instructRead.shipment7,
+    ];
+    for (let i = 0; i < 7; i++) {
+      const str = val[i] || ' ';
+      const tempPeriod = instructSetup[`setShipment${i + 1}`];
+      tempPeriod.param = str;
+      await setOperateDevice(tempPeriod);
+    }
+    for (let i = 0; i < readList.length; i++) {
+      const read = readList[i];
+      read && (await deviceExample.write(read));
+      await updateDevice();
+    }
+  },
+  /** 设置重复启动*/
+  setMultIdMulton: async value => {
+    const tempPeriod = instructSetup.setMultIdMulton;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.multIdMulton);
+    return data;
+  },
+  /** 设置PDF语言*/
+  setPdfLan: async value => {
+    const tempPeriod = instructSetup.setPdfLan;
+    tempPeriod.param = value;
+    const data = await setOperateDevice(tempPeriod, instructRead.pdfLan);
+    return data;
+  },
+  /** 多级报警设置 */
+  alarmSettings: async alarmData => {
+    const highTemp1Setup = instructSetup.setHighTemp1;
+    highTemp1Setup.param = alarmData.highTemp1;
+    await setOperateDevice(highTemp1Setup);
+    const highTemp2Setup = instructSetup.setHighTemp2;
+    highTemp2Setup.param = alarmData.highTemp2;
+    await setOperateDevice(highTemp2Setup);
+    const lowTemp1Setup = instructSetup.setLowTemp1;
+    lowTemp1Setup.param = alarmData.lowTemp1;
+    await setOperateDevice(lowTemp1Setup);
+    const lowTemp2Setup = instructSetup.setLowTemp2;
+    lowTemp2Setup.param = alarmData.lowTemp2;
+    await setOperateDevice(lowTemp2Setup);
+    await deviceOperate.setLowtEmp(alarmData.lowtEmp);
+    await deviceOperate.setHightEmp(alarmData.hightEmp);
+    // 防止设备还未写入
+    await sleep(500);
+    await deviceExample.write(instructRead.highTemp1);
+    await updateDevice();
+    await sleep(500);
+    await deviceExample.write(instructRead.highTemp2);
+    await updateDevice();
+    await sleep(500);
+    await deviceExample.write(instructRead.lowTemp1);
+    await updateDevice();
+    await sleep(500);
+    await deviceExample.write(instructRead.lowTemp2);
+    await updateDevice();
   },
 };

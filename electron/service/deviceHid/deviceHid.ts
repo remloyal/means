@@ -5,7 +5,7 @@ import { BrowserWindow, app, ipcMain, utilityProcess } from 'electron';
 import log from '../../unitls/log';
 import drivelist from 'drivelist';
 import HID from 'node-hid';
-import { PATH_PARAM } from '../../config';
+import { PATH_PARAM, HID_PARAM } from '../../config';
 
 let mainWindow: BrowserWindow | null = null;
 export let hidProcess: Electron.UtilityProcess | null;
@@ -62,9 +62,14 @@ ipcMain.handle('hidWrite', async (event, params: HidEventData) => {
   return data;
 });
 
+let timeoutClose;
 ipcMain.handle('hidClose', (event, params: HidEventData) => {
   // 向hidProcess发送消息，关闭hid
-  hidProcess?.postMessage({ event: 'hidClose', data: params });
+  timeoutClose = setTimeout(() => {
+    hidProcess?.postMessage({ event: 'hidClose', data: params });
+    clearTimeout(timeoutClose);
+    timeoutClose = null;
+  }, 2000);
   // 杀死hidProcess
   // hidProcess?.kill();
   // hidProcess = null;
@@ -78,21 +83,26 @@ ipcMain.handle('hidClose', (event, params: HidEventData) => {
 });
 
 function stringToUint8Array(str): number[] {
-  const tmpUint8Array = str.split('').map(e => e.charCodeAt(0));
-  tmpUint8Array.unshift(1);
-  return tmpUint8Array;
+  const buffer = Buffer.from(str, 'utf8');
+  return [1, ...buffer];
 }
 
 let timeout: any = {};
 const errorCount: any = {};
-
 // hidWrite函数用于执行HID写入操作
 const hidWrite = async (params): Promise<{ key: string; value: string } | boolean> => {
   // 如果hidProcess不存在，则创建线程
   if (!hidProcess) {
     await createThread();
   }
-
+  if (timeoutClose) {
+    clearTimeout(timeoutClose);
+    timeoutClose = null;
+  }
+  params.delayState = HID_PARAM.DELAY_LIST.includes(params.key) || false;
+  if (params.delayState) {
+    params.delayTime = HID_PARAM.DELAY_TIME;
+  }
   return new Promise(async (resolve, reject) => {
     try {
       // 发送hidWrite事件和参数给hidProcess线程
@@ -108,16 +118,15 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
           // 收到hidData事件时，解析数据并返回
           resolve(msg.data);
         }
-
         // 清除对应key的超时定时器
         clearTimeout(timeout[params.key]);
         timeout[params.key] = null;
       });
 
-      // 设置超时定时器，5秒后执行超时处理逻辑
+      // 设置超时定时器，1秒后执行超时处理逻辑
       const handleTimeout = () => {
         // 如果该错误已经发生三次，则执行超时处理逻辑
-        if (errorCount[params.key] >= 3) {
+        if (errorCount[params.key] >= 1) {
           log.error(`子进程读取超时==> ${params.key} ${params.value}`);
           hidProcess?.kill();
           hidProcess = null;
@@ -133,7 +142,7 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
           hidWrite(params).then(resolve).catch(reject);
         }
       };
-      timeout[params.key] = setTimeout(handleTimeout, 5000);
+      timeout[params.key] = setTimeout(handleTimeout, 1000);
     } catch (error) {
       resolve(false);
     }

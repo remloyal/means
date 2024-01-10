@@ -1,4 +1,4 @@
-import { OPERATE_CONFIG } from '@/config';
+import { HUMI_UNIT, OPERATE_CONFIG } from '@/config';
 import { deviceConfigParam, equipment } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { c2f, f2c } from '@/utils/utils';
@@ -50,7 +50,8 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   const [minute, setMinute] = useState(0);
   const [minuteState, setMinuteState] = useState(false);
   const timeOptions = getTimeOptions();
-  const minuteOptions = getMinuteOptions(1);
+  // const minuteOptions = getMinuteOptions(1);
+  const [minuteOptions, setMinuteOptions] = useState(getMinuteOptions(1));
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
   const initTime = (data = null) => {
@@ -69,20 +70,32 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
     const minute = timePart % 60;
     setTime(hour * 3600);
     setMinute(minute * 60);
+    if (times >= 3600) {
+      setMinuteOptions(getMinuteOptions());
+    } else {
+      setMinuteOptions(getMinuteOptions(1));
+    }
   };
 
-  const timeChange = time => {
-    setTime(time);
-    if (time === 43200) {
+  const timeChange = val => {
+    setTime(val);
+    if (val === 43200) {
       setMinuteState(true);
     } else {
       setMinuteState(false);
     }
+    if (val > 0) {
+      setMinuteOptions(getMinuteOptions());
+    } else {
+      setMinuteOptions(getMinuteOptions(1));
+      if (minute == 0) {
+        setMinute(60);
+      }
+    }
   };
 
-  const minuteChange = minute => {
-    console.log(minute);
-    setMinute(minute);
+  const minuteChange = val => {
+    setMinute(val);
   };
   const setTempPeriod = async () => {
     const times = time === 43200 ? time : time + minute;
@@ -528,7 +541,7 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
           value={emp}
           style={{ width: '80%' }}
         />
-        <span className="deploy-span">RH</span>
+        <span className="deploy-span">{HUMI_UNIT}</span>
       </div>
     </Col>
   );
@@ -591,7 +604,7 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
           value={emp}
           style={{ width: '80%' }}
         />
-        <span className="deploy-span">RH</span>
+        <span className="deploy-span">{HUMI_UNIT}</span>
       </div>
     </Col>
   );

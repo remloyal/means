@@ -22,22 +22,30 @@ export const database = new Sequelize({
 });
 
 // 测试数据库链接
-database
-  .authenticate()
-  .then(() => {
-    // 创建模型
+export const detectionStatus = () => {
+  return new Promise((resolve, reject) => {
+    // 测试数据库链接
     database
-      .sync({ force: false, alter: false })
+      .authenticate()
       .then(() => {
-        console.log('数据库同步成功');
-      })
-      .catch(err => {
-        console.error('数据库同步失败====>', err);
-      });
+        // 创建模型
+        database
+          .sync({ force: false, alter: false })
+          .then(() => {
+            log.info('database 数据库同步成功');
+            resolve(true);
+          })
+          .catch(err => {
+            log.error('database 数据库同步失败====>', err);
+            resolve(false);
+          });
 
-    console.log('数据库连接成功');
-  })
-  .catch(async (err: any) => {
-    // 数据库连接失败时打印输出
-    console.error('数据库连接失败====>', err);
+        log.info('database 数据库连接成功');
+      })
+      .catch(async (err: any) => {
+        // 数据库连接失败时打印输出
+        log.error('database 数据库连接失败====>', err);
+        resolve(false);
+      });
   });
+};

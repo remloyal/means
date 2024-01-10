@@ -4,7 +4,7 @@ import { RecoilState, atom, selector } from 'recoil';
 // 应用语言
 export const language = atom({
   key: 'language',
-  default: 'zh_CN',
+  default: 'zh',
 });
 
 // 设备信息主体
@@ -132,4 +132,24 @@ export const screenList = selector<any[]>({
     }
     return device?.csvData || [];
   },
+});
+
+export const pageHeight = atom<number>({
+  key: 'pageHeight',
+  default: 960,
+});
+
+// 存储用户信息
+export const userInformation = atom<any>({
+  key: 'userInformation',
+  default: {
+    type: '',
+    data: {},
+  },
+});
+
+// 存储签注信息
+export const signInformation = atom<any>({
+  key: 'signInformation',
+  default: { type: '', data: {} },
 });

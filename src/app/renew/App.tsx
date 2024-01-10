@@ -1,4 +1,4 @@
-import { Button, Modal, Progress } from 'antd';
+import { Button, Modal, Progress, message } from 'antd';
 import { ipcRenderer } from 'electron';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,9 +16,9 @@ const App = () => {
   });
   const [content, setContent] = useState<any>(null);
   const [updateType, setUpdateType] = useState(0);
-  useEffect(() => {
-    ipcRenderer.on('version', async (event, data) => {
-      console.log(data);
+  const getVersionData = async () => {
+    const data = await ipcRenderer.invoke('versionData');
+    if (data) {
       setVersion({
         ...version,
         old: data.old,
@@ -27,7 +27,10 @@ const App = () => {
       });
       setUpdateType(data.data.updateType);
       setContent(data.data.content);
-    });
+    }
+  };
+  useEffect(() => {
+    getVersionData();
     ipcRenderer.on('updateProgressing', async (event, data) => {
       setPercent(data);
       if (data == 100 && updateType == 0) {
@@ -67,13 +70,35 @@ const App = () => {
     ipcRenderer.on('updateDownloaded', (event, data) => {
       const installModal = Modal.info({
         title: t('renew.applyUpdate'),
-        content: <div>退出并安装程序</div>,
+        content: <div>{t('renew.exitInstall')}</div>,
         onOk() {
           ipcRenderer.invoke('quit-and-install');
           installModal.destroy();
         },
       });
     });
+
+    // 无远程版本更新
+    ipcRenderer.on('update-not-available', (event, data) => {
+      setState(false);
+      Modal.info({
+        title: t('renew.applyUpdate'),
+        content: (
+          <div>{`${t('renew.remoteVersion')} ${data.version}, ${t('renew.updateAgain')}`}</div>
+        ),
+        onOk() {
+          // handleOk();
+        },
+      });
+    });
+    return () => {
+      ipcRenderer.removeAllListeners('updateFail');
+      ipcRenderer.removeAllListeners('updateProgressing');
+      ipcRenderer.removeAllListeners('automaticUpdateFail');
+      ipcRenderer.removeAllListeners('language');
+      ipcRenderer.removeAllListeners('updateDownloaded');
+      ipcRenderer.removeAllListeners('update-not-available');
+    };
   }, []);
 
   const [state, setState] = useState(false);

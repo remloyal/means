@@ -4,8 +4,8 @@ export const instructRead: OperateType<OperateTypeItem> = {
     name: '获取设备型号',
     order: () => 'AT+GETDEVTYPE:',
     getData: data => {
-      data = data.split('#')[0];
-      return data;
+      const todo = data.split('#');
+      return todo;
     },
   },
   multidUnit: {
@@ -58,14 +58,6 @@ export const instructRead: OperateType<OperateTypeItem> = {
       return data.split(':')[1].replaceAll(';', '');
     },
   },
-  //   batvol: {
-  //     key: 'batvol',
-  //     name: '读取设备电量',
-  //     order: () => 'AT+GETBATVOL:',
-  //     getData: data => {
-  //       return data.split(':')[1].replaceAll(';', '');
-  //     },
-  //   },
   startDelayTime: {
     key: 'startDelayTime',
     name: '读取StartDelay时间',
@@ -267,6 +259,166 @@ export const deviceType = {
   name: '获取设备型号',
   order: () => 'AT+GETDEVTYPE:',
   getData: data => data,
+};
+export const batvol = {
+  key: 'batvol',
+  name: '读取设备电量',
+  order: () => 'AT+GETBATVOL:',
+  getData: data => {
+    return data.split(':')[1].replaceAll(';', '');
+  },
+};
+
+export const getNewInstruct = () => {
+  const read = {
+    batvol: {
+      key: 'batvol',
+      name: '读取设备电量',
+      order: () => 'AT+GETBATVOL:',
+      getData: data => {
+        return data.split(':')[1].replaceAll(';', '');
+      },
+    },
+    multIdMulton: {
+      key: 'multIdMulton',
+      name: '获取重复启动',
+      order: () => 'AT+GETMULTID:MULTON:',
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    },
+    shipmentId: {
+      key: 'shipmentId',
+      name: '获取shipment ID',
+      order: () => 'AT+GETMULTID:SID:',
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    },
+    pdfLan: {
+      key: 'pdfLan',
+      name: '读取PDF语言',
+      order: () => 'AT+GETPDFLAN:',
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[1];
+      },
+    },
+    highTemp1: {
+      key: 'highTemp1',
+      name: '获读温度2阈值上限',
+      order: () => 'AT+GETHIGHT2:',
+      getData: data => {
+        console.log('highTemp1 ===============>', data);
+
+        return (parseInt(data.split(':')[1]) / 10).toFixed(1);
+      },
+    },
+    highTemp2: {
+      key: 'highTemp2',
+      name: '获读温度3阈值上限',
+      order: () => 'AT+GETHIGHT3:',
+      getData: data => {
+        return (parseInt(data.split(':')[1]) / 10).toFixed(1);
+      },
+    },
+    lowTemp1: {
+      key: 'lowTemp1',
+      name: '读取温度2阈值下限',
+      order: () => 'AT+GETLOWT2:',
+      getData: data => {
+        return (parseInt(data.split(':')[1]) / 10).toFixed(1);
+      },
+    },
+    lowTemp2: {
+      key: 'lowTemp2',
+      name: '读取温度3阈值下限',
+      order: () => 'AT+GETLOWT3:',
+      getData: data => {
+        return (parseInt(data.split(':')[1]) / 10).toFixed(1);
+      },
+    },
+    // lowtEmp
+  };
+
+  const setup = {
+    setMultIdMulton: {
+      key: 'setMultIdMulton',
+      name: '设置重复启动',
+      order: str => `AT+SETMULTID:MULTON:${str}`,
+      getData: data => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    },
+    setShipmentId: {
+      key: 'setShipmentId',
+      name: '设置Shipment ID',
+      order: str => `AT+SETMULTID:SID:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+    setPdfLan: {
+      key: 'setPdfLan',
+      name: '设置PDF语言',
+      order: str => `AT+SETPDFLAN:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+    setHighTemp1: {
+      key: 'setHighTemp1',
+      name: '设置温度2阈值上限',
+      order: str => `AT+SETHIGHT2:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+    setLowTemp1: {
+      key: 'setLowTemp1',
+      name: '设置温度2阈值下限',
+      order: str => `AT+SETLOWT2:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+    setHighTemp2: {
+      key: 'setHighTemp2',
+      name: '设置温度3阈值上限',
+      order: str => `AT+SETHIGHT3:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+    setLowTemp2: {
+      key: 'setLowTemp2',
+      name: '设置温度3阈值下限',
+      order: str => `AT+SETLOWT3:${str}`,
+      getData: data => {
+        return data;
+      },
+    },
+  };
+
+  [...new Array(7).keys()].map((_, i) => {
+    i += 1;
+    read[`shipment${i}`] = {
+      key: `shipment${i}`,
+      name: `获取shipment描述${i}`,
+      order: () => `AT+GETMULTID:SD${i}:`,
+      getData: (data: string) => {
+        return data.replaceAll(';', '').split(':')[2];
+      },
+    };
+    setup[`setShipment${i}`] = {
+      key: `setShipment${i}`,
+      name: `设置shipment描述${i}`,
+      order: str => `AT+SETMULTID:SD${i}:${str}`,
+      getData: (data: string) => {
+        return data;
+      },
+    };
+  });
+  return { read, setup };
 };
 
 const humi = {

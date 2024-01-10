@@ -48,10 +48,6 @@ export default defineConfig(({ command }) => {
               outDir: 'dist-electron/main',
               rollupOptions: {
                 external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
-                output: {
-                  chunkFileNames: 'dist-electron/main/[name]-[hash].js',
-                  assetFileNames: 'dist-electron/main/[name]-[hash][extname]',
-                },
               },
             },
           },

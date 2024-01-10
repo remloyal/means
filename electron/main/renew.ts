@@ -1,12 +1,15 @@
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
-import electron, { app, BrowserWindow, ipcMain } from 'electron';
+import electron, { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import log from '../unitls/log';
 import { createWindow, preload, setUpdateState } from './index';
 import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl, judgingSpaces } from '../unitls/unitls';
 import { listenUpdater } from './update';
+import { isNetworkState } from '../unitls/request';
+import { DYNAMIC_CONFIG, UPDATE_PARAM } from '../config';
+import { text } from '../pdfgen/gloable/language';
 
 const baseUrl = `${path.resolve('./')}/resources/`;
 const AdmZip = require('adm-zip');
@@ -18,10 +21,24 @@ const cachePath = `${baseUrl}app_old.asar`;
 const updatePath = `${baseUrl}update`;
 let renewtimer: NodeJS.Timeout | null = null;
 const createTimer = () => {
-  renewtimer = setInterval(() => {
-    CheckForUpdates(win);
+  renewtimer = setInterval(async () => {
+    const state = await isNetworkState();
+    if (state) {
+      CheckForUpdates(win);
+      // 如果网络连接状态不正常，则显示错误提示框，并退出应用
+    } else {
+      log.error('Network connection failed');
+      dialog.showErrorBox(
+        text('NETWORK_CONNECTION_FAILED', DYNAMIC_CONFIG.language),
+        text('NETWORK_PROMPT', DYNAMIC_CONFIG.language)
+      );
+      const state = await isNetworkState();
+      if (!state) {
+        app.exit();
+      }
+    }
     // clearInterval(renewtimer!);
-  }, 1800000);
+  }, UPDATE_PARAM.INSPECTION_TIME);
 };
 createTimer();
 
@@ -59,10 +76,11 @@ export const CheckForUpdates = (winData: Electron.BrowserWindow | null) => {
       // 强制更新关闭主程序
       if (data.forceUpdate == 1) {
         setUpdateState(true);
+        win?.show();
         setTimeout(() => {
           win && win?.close();
           win = null;
-        }, 1000);
+        }, 2000);
       }
       // if (fs.existsSync(baseUrl + 'app.asar')) {
       //   if (!fs.existsSync(baseUrl + 'app_old.asar')) {
@@ -141,9 +159,20 @@ export const downLoad = async deploy => {
  */
 function compareVersions(version1, version2) {
   // 将版本号字符串分割成数字数组
-  const ver1 = version1.split('.').map(Number);
-  const ver2 = version2.split('.').map(Number);
-
+  const ver1 = version1
+    .replaceAll('-', '.')
+    .split('.')
+    .map(e => Number(e));
+  const ver2 = version2
+    .replaceAll('-', '.')
+    .split('.')
+    .map(e => Number(e));
+  if (ver1.length == 3) {
+    ver1.push(0);
+  }
+  if (ver2.length == 3) {
+    ver2.push(0);
+  }
   // 比较两个版本号数组的大小关系
   if (ver1.length > ver2.length) {
     return 1;
@@ -225,15 +254,15 @@ async function _unzip(zipPath, topath?) {
 
 const createRenew = (data?, callback?) => {
   if (mainWindow) return;
-  const width = 400;
-  const height = 350;
+  const width = 720;
+  const height = 450;
   let newWindow: BrowserWindow | null = new BrowserWindow({
     width,
     height,
     autoHideMenuBar: true,
     // backgroundColor:"#F9B882",
     // titleBarStyle:"hidden",
-    title: '鼎为数据中心',
+    // title: '鼎为数据中心',
     icon: path.join(process.env.VITE_PUBLIC, 'favicon.ico'),
     alwaysOnTop: true,
     webPreferences: {
@@ -242,6 +271,7 @@ const createRenew = (data?, callback?) => {
       contextIsolation: false,
     },
   });
+  newWindow.title = text('APP_UPDATE', DYNAMIC_CONFIG.language);
   newWindow.setMenuBarVisibility(false);
   if (process.env.VITE_DEV_SERVER_URL) {
     newWindow.loadURL(`${process.env.VITE_DEV_SERVER_URL}renewIndex.html`);
@@ -254,16 +284,7 @@ const createRenew = (data?, callback?) => {
   newWindow.setSize(width, height);
   newWindow.setMaximumSize(width, height);
   newWindow.setMinimumSize(width, height);
-  newWindow.webContents.on('did-finish-load', () => {
-    setTimeout(() => {
-      newWindow?.webContents.send('version', {
-        new: data.version,
-        old: app.getVersion(),
-        data,
-      });
-    }, 1000);
-  });
-  newWindow.setAlwaysOnTop(true);
+  newWindow.setAlwaysOnTop(true, 'status');
   // 监听窗口退出
   newWindow.on('closed', () => {
     newWindow?.destroy();
@@ -275,16 +296,28 @@ const createRenew = (data?, callback?) => {
     callback(mainWindow);
   }
 
+  ipcMain.handle('versionData', (event, params) => {
+    return {
+      new: data.version,
+      old: app.getVersion(),
+      data,
+    };
+  });
+
   ipcMain.handle('startUpdate', (event, params) => {
-    if (data.updateType == 1) {
-      setUpdateState(true);
-      listenUpdater(mainWindow!, data);
-      setTimeout(() => {
-        win?.close();
-      }, 5000);
-      // 强制更新，全量升级
-    } else {
-      downLoad(data);
+    try {
+      if (data.updateType == 1) {
+        setUpdateState(true);
+        listenUpdater(mainWindow!, data);
+        setTimeout(() => {
+          win?.close();
+        }, 5000);
+        // 强制更新，全量升级
+      } else {
+        downLoad(data);
+      }
+    } catch (error) {
+      log.error(error);
     }
   });
 

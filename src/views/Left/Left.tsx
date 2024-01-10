@@ -15,7 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import M2H from '@/assets/img/M2H.png';
 import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
-import { loadUsbData, usbData } from '@/utils/detectDevice';
+import DianLiangImg from '@/assets/img/dianliang.png';
+import { loadUsbData, setDeviceError, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
 import { QuitPrompt } from './ExitPrompt';
 const DeviceImg = {
@@ -23,7 +24,11 @@ const DeviceImg = {
   M1H,
   M2D,
 };
-
+const setTimeFormat = (time: string): string => {
+  return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
+};
+let errorModal;
+let deviceStates = false;
 const Left: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -55,6 +60,7 @@ const Left: React.FC = () => {
     if (leftRef.current) {
       window.eventBus.on('friggaDevice:in', deviceData => {
         if (deviceMent) return;
+        deviceStates = true;
         setDevice(deviceData);
         setDeviceMent(true);
         navigate('/');
@@ -62,11 +68,11 @@ const Left: React.FC = () => {
       });
 
       window.eventBus.on('friggaDevice:out', (...datas) => {
-        console.log(window.location.href.includes('deploy'));
         if (window.location.href.includes('deploy')) {
           setHeadKey(0);
           navigate('/');
         }
+        deviceStates = false;
         setDeviceMent(false);
         setDevice(null);
       });
@@ -75,7 +81,23 @@ const Left: React.FC = () => {
       });
       ipcRenderer.on('hidError', (event, err) => {
         setLoading(false);
-        alert(t('left.errotText'));
+        // alert(t('left.errotText'));
+        // message.error(t('left.errotText'));
+        if (!errorModal) {
+          errorModal = Modal.error({
+            centered: true,
+            content: t('left.errotText'),
+            cancelButtonProps: { style: { display: 'none' } },
+            onOk() {
+              deviceStates = false;
+              errorModal = null;
+              setDeviceError();
+              setSaving(false);
+              setLoading(false);
+              setDevice(null);
+            },
+          });
+        }
       });
 
       window.eventBus.on('typePower', res => {
@@ -102,9 +124,12 @@ const Left: React.FC = () => {
       });
 
       window.eventBus.on('updateDevice', deviceData => {
-        message.success(t('history.dataUpdateSuccessful'));
-        setDevice(deviceData);
-        setSaving(false);
+        console.log('updateDevice', deviceStates, deviceData);
+        if (deviceStates) {
+          message.success(t('history.dataUpdateSuccessful'));
+          setDevice(deviceData);
+          setSaving(false);
+        }
       });
       window.eventBus.on('saving', res => {
         setSaving(true);
@@ -115,33 +140,36 @@ const Left: React.FC = () => {
         }, 10000);
       });
     }
+    return () => {
+      window.eventBus.removeAllListeners('friggaDevice:in');
+      window.eventBus.removeAllListeners('friggaDevice:out');
+      window.eventBus.removeAllListeners('typePower');
+      window.eventBus.removeAllListeners('loading');
+      window.eventBus.removeAllListeners('loadingCompleted');
+      window.eventBus.removeAllListeners('updateDevice');
+      window.eventBus.removeAllListeners('saving');
+    };
   }, []);
 
   const Time = ({ data }) => {
     const [deviceTime, setDeviceTime] = useState('');
+    const format = localStorage.getItem('dateFormat') || 'YYYY-MM-DD';
     useEffect(() => {
       if (data) {
         const time = splitStringTime(data);
-        const present = dayjs(time).format(
-          `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-        );
+        const present = dayjs(time).format(`${format} HH:mm:ss`);
         setDeviceTime(present);
       }
     }, []);
     let terval;
     useEffect(() => {
       if (deviceTime) {
-        terval = setInterval(() => {
-          const present = dayjs(
-            deviceTime,
-            `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-          ).valueOf();
-          setDeviceTime(
-            dayjs(present + 1000).format(
-              `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-            )
-          );
-        }, 1000);
+        if (!terval) {
+          terval = setInterval(() => {
+            const present = dayjs(deviceTime, `${format} HH:mm:ss`).valueOf();
+            setDeviceTime(dayjs(present + 1000).format(`${format} HH:mm:ss`));
+          }, 1000);
+        }
         return () => {
           terval && clearInterval(terval);
           terval = null;
@@ -158,6 +186,57 @@ const Left: React.FC = () => {
       return `${c2f(value)} ${unit}`;
     }
     return `${value} ${unit}`;
+  };
+
+  const DianLiang = val => {
+    if (val && val != '') {
+      console.log('DianLiang', val);
+      return (
+        <div className="dianliang" style={{ position: 'relative', overflow: 'hidden' }}>
+          <img
+            src={DianLiangImg}
+            alt=""
+            style={{
+              width: '36px',
+              height: '16px',
+              paddingTop: '4px',
+              transform: 'translateY(-50px)',
+              filter: `drop-shadow(${parseInt(val) == 0 ? 'red' : '#6EB442'} 0 50px)`,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              width: '36px',
+              height: '16px',
+              top: '4px',
+              left: 0,
+              padding: '2px',
+              display: 'flex',
+            }}
+          >
+            {...[...new Array(parseInt(val) || 0)].map((item, i) => {
+              return (
+                <span
+                  key={i}
+                  style={{
+                    display: 'block',
+                    marginTop: '1px',
+                    width: '8px',
+                    height: '10px',
+                    backgroundColor: '#6EB442',
+                    marginLeft: '1px',
+                    borderRadius: '1px',
+                  }}
+                ></span>
+              );
+            })}
+          </div>
+        </div>
+      );
+    } else {
+      return <span>---</span>;
+    }
   };
 
   const items: DescriptionsProps['items'] = [
@@ -178,10 +257,10 @@ const Left: React.FC = () => {
           '---'
         ),
     },
-    // {
-    //   label: t('left.batteryLevel'),
-    //   children: device != null ? device?.record.batteryLevel : '---',
-    // },
+    {
+      label: t('left.batteryLevel'),
+      children: device != null ? DianLiang(device?.record.batvol) : '---',
+    },
     {
       label: t('left.DeviceStatus'),
       children: device != null ? DeviceStatus[device?.record.mode] : '---',
@@ -192,11 +271,11 @@ const Left: React.FC = () => {
     },
     {
       label: t('left.firstRecordTime'),
-      children: device != null ? device?.record.firstRecordTime : '---',
+      children: device != null ? setTimeFormat(device?.record.firstRecordTime) : '---',
     },
     {
       label: t('left.lastRecordedTime'),
-      children: device != null ? device?.record.lastRecordedTime : '---',
+      children: device != null ? setTimeFormat(device?.record.lastRecordedTime) : '---',
     },
     {
       label: t('left.maximumValue'),
@@ -237,6 +316,22 @@ const Left: React.FC = () => {
   const reloading = () => {
     loadUsbData(usbData);
   };
+
+  const getImageClass = () => {
+    if (device == null) {
+      return 'image-alarm';
+    }
+    if (device?.record.lowtEmp == 0 && device?.record.hightEmp == 0) {
+      return 'image-alarm image-alarm-green';
+    }
+    if (
+      device?.database.temperature.max > device?.record.hightEmp ||
+      device?.database.temperature.min < device?.record.lowtEmp
+    ) {
+      return 'image-alarm image-alarm-red';
+    }
+    return 'image-alarm image-alarm-green';
+  };
   return (
     <MainLeft>
       <div className="left" ref={leftRef}>
@@ -251,16 +346,7 @@ const Left: React.FC = () => {
             </div>
           )}
           {/* <span>报警</span> */}
-          <img
-            src={alarmPng}
-            className={
-              device == null
-                ? 'image-alarm'
-                : device?.database.alarm == 1
-                  ? 'image-alarm image-alarm-red'
-                  : 'image-alarm image-alarm-green'
-            }
-          />
+          <img src={alarmPng} className={getImageClass()} />
         </div>
         <Descriptions
           items={items}

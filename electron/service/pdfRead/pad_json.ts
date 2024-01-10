@@ -1,13 +1,23 @@
 import log from '../../unitls/log';
 import PDFParser from 'pdf2json';
-export const parsePDF = async (file, size) => {
+export const parsePDF = async (file, size, password = '') => {
+  let passwordReading = password != '' || password != null ? true : false;
   return new Promise(async (resolve, reject) => {
     try {
       log.info('pdf2json', '开始读取');
       const textList: any = [];
       let index = 1;
-      parseFileItems({}, file, (err, item) => {
+      parseFileItems({ password }, file, async (err, item) => {
         if (err) {
+          if (passwordReading) {
+            log.error('parsePDF 密码读取失败，尝试无密码读取', err);
+            passwordReading = false;
+            const data = await parsePDF(file, size, '');
+            resolve(data);
+          } else {
+            log.error('parsePDF', err);
+            resolve(false);
+          }
           log.error('parsePDF', err);
         } else if (!item) {
           log.info('pdf2json', '读取成功');
@@ -22,8 +32,8 @@ export const parsePDF = async (file, size) => {
         }
       });
     } catch (error) {
-      resolve([]);
       log.error('parsePDF', error);
+      resolve(false);
     }
   });
 };

@@ -97,7 +97,7 @@ export const buildPdf = async function (info, monitors) {
   // !1、 pipe the document to a blob
   let file = path.resolve(PDF_DIR, archiveFolder, pdfName);
   if (customer.filePath) {
-    file = path.resolve(customer.filePath, pdfName);
+    file = path.resolve(customer.filePath);
   }
   _log.info('file path :', file);
   let pdfApiInfo = {};
@@ -114,8 +114,11 @@ export const buildPdf = async function (info, monitors) {
       data: null,
     };
   }
-
-  await savePdfToFile(pdf, file);
+  try {
+    await savePdfToFile(pdf, file);
+  } catch (error) {
+    throw new Error(error);
+  }
   _log.info('savePdfToFile success');
   // !get a blob when you're done
   let blob = null;

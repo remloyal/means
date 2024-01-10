@@ -147,17 +147,22 @@ const SummaryGraph: React.FC = () => {
   }, [device]);
 
   useEffect(() => {
+    const lines = setLines();
     const chat = foldLine(
       dateList,
       valueList,
-      line,
+      lines,
       humiList,
       [
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
         power.includes('setHighHumi') ? t('home.humidity') : '',
       ],
-      [device?.record.hightEmp, device?.record.lowtEmp]
+      [
+        Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
+        Math.min(device?.record.lowtEmp, device?.record.lowHumi || device?.record.lowtEmp),
+      ]
     );
+    setLine(lines);
     setOption(chat);
   }, [tongue]);
 
@@ -197,16 +202,18 @@ const SummaryGraph: React.FC = () => {
     const record = device?.record;
     const lines: StandardLine[] = [];
     if (record?.highHumi) {
-      lines.push(standardLine(record.highHumi, '湿度阈值上限', '#FF0000'));
+      lines.push(standardLine(record.highHumi, t('deploy.humiUpperLimit'), '#FF0000'));
     }
     if (record?.lowHumi) {
-      lines.push(standardLine(record.lowHumi, '湿度阈值下限', '#0000FF'));
+      lines.push(standardLine(record.lowHumi, t('deploy.humiLowerLimit'), '#0000FF'));
     }
     if (record?.hightEmp) {
-      lines.push(standardLine(setTempValue(record.hightEmp), '温度阈值上限', '#FF0000'));
+      lines.push(
+        standardLine(setTempValue(record.hightEmp), t('deploy.heatUpperLimit'), '#FF0000')
+      );
     }
     if (record?.lowtEmp) {
-      lines.push(standardLine(setTempValue(record.lowtEmp), '温度阈值下限', '#0000FF'));
+      lines.push(standardLine(setTempValue(record.lowtEmp), t('deploy.heatLowerLimit'), '#0000FF'));
     }
     return lines;
   };
@@ -231,7 +238,10 @@ const SummaryGraph: React.FC = () => {
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
         power.includes('setHighHumi') ? t('home.humidity') : '',
       ],
-      [device?.record.hightEmp, device?.record.lowtEmp]
+      [
+        Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
+        Math.min(device?.record.lowtEmp, device?.record.lowHumi || device?.record.lowtEmp),
+      ]
     );
     setOption(chat);
   };
@@ -366,11 +376,11 @@ const SummaryRight: React.FC = () => {
     const sensorType = {
       M2H: (
         <div>
-          {t('home.temperature')}、{t('home.humidity')}
+          {t('home.internal') + t('home.temperature')}、{t('home.humidity')}
         </div>
       ),
-      M2D: <div>{t('home.temperature')}</div>,
-      M2E: <div>{t('home.humidity')}</div>,
+      M2D: <div>{t('home.internal') + t('home.temperature')}</div>,
+      M2E: <div>{t('home.probe') + t('home.humidity')}</div>,
     };
     return device?.record.deviceType ? sensorType[device?.record.deviceType] : '---';
   };
@@ -400,10 +410,15 @@ const SummaryRight: React.FC = () => {
       label: t('home.startDelay'),
       children: device != null ? secondsToTime(device?.record.startDelayTime) : '---',
     },
-    // {
-    //   label: t('home.repetitionPriming'),
-    //   children: device != null ? device?.record.repetitionPriming : '---',
-    // },
+    {
+      label: t('home.repetitionPriming'),
+      children:
+        device != null
+          ? device?.record.multIdMulton == 0
+            ? t('deploy.prohibit')
+            : t('deploy.allow')
+          : '---',
+    },
     {
       label: t('home.displayTime'),
       children: device != null ? `${device?.record.multIdSleepTime || 0} S` : '---',
@@ -428,14 +443,10 @@ const SummaryRight: React.FC = () => {
       label: t('home.lowTemperatureAlarm'),
       children: device != null ? setTempValue(device?.record.lowtEmp) : '---',
     },
-    // {
-    //   label: t('home.runLengthCoding'),
-    //   children: device != null ? device?.record.runLengthCoding : '---',
-    // },
-    // {
-    //   label: t('home.journeyDescription'),
-    //   children: device != null ? device?.record.journeyDescription : '---',
-    // },
+    {
+      label: t('home.runLengthCoding'),
+      children: device != null ? device?.record.shipmentId || '---' : '---',
+    },
   ];
 
   return (
@@ -452,6 +463,27 @@ const SummaryRight: React.FC = () => {
             }}
             contentStyle={{
               color: '#000000',
+            }}
+            size="small"
+          />
+        </div>
+        <div className="record">
+          <Descriptions
+            items={[
+              {
+                label: t('home.journeyDescription'),
+                children: device != null ? device?.record.shipment || '---' : '---',
+              },
+            ]}
+            column={1}
+            labelStyle={{
+              color: '#000000',
+              marginLeft: '16px',
+            }}
+            layout="vertical"
+            contentStyle={{
+              color: '#000000',
+              marginLeft: '16px',
             }}
             size="small"
           />

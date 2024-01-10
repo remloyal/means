@@ -198,7 +198,7 @@ export const zh = {
   PDF_HUMI_HIGH_ALARM: '高湿警报：',
   PDF_TEMP2_LOW_ALARM: '低温2警报：',
   PDF_TEMP2_HIGH_ALARM: '高温2警报：',
-  PDF_STOP_MODE: '停止方式：',
+  PDF_STOP_MODE: '停止模式：',
 
   PDF_DEVICE_INFO: '设备信息',
   PDF_DEVICEID: '设备 ID：',
@@ -207,11 +207,11 @@ export const zh = {
   PDF_HARD_VERSION: '硬件版本：',
 
   PDF_DEVICE_CONFIG: '设备配置',
-  PDF_DEVICE_START_DELAY: '启动延时：',
-  PDF_DEVICE_LOG: '日志间隔：',
+  PDF_DEVICE_START_DELAY: '延时开始：',
+  PDF_DEVICE_LOG: '存储间隔：',
   PDF_DEVICE_START_TIME: '开始时间：',
   PDF_DEVICE_END_TIME: '结束时间：',
-  PDF_DEVICE_DATA_POINT: '数据点：',
+  PDF_DEVICE_DATA_POINT: '数据条数：',
 
   PDF_ORDER_INFO: '订单信息',
   PDF_COMPANY_NAME: '公司名称：',
@@ -313,4 +313,12 @@ export const zh = {
   EXCEL_DEVICE_NUMBER: '行程编号',
   EXCEL_DEVICE_NOTES: '行程备注',
   EXCEL_DEVICE_TIME: '时间',
+
+  NETWORK_CONNECTION_FAILED: '网络连接失败',
+  NETWORK_PROMPT: '请检查您的网络连接，或者稍后再试！',
+  APP_UPDATE: '应用更新',
+  PDF_IDFO_TRIP_ID: '行程 ID：',
+  PDF_IDFO_TRIP_NOTE: '行程描述：',
+
+  CONNECT_TEXT: '',
 };

@@ -5,7 +5,7 @@ import path from 'path';
 import { pdfType } from './pdfType';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { c2f, convertToCSV, f2c, findMinMax } from '../../unitls/tool';
+import { c2f, convertToCSV, f2c, findMinMax, formatUtc } from '../../unitls/tool';
 import { Device, FileData } from '../model';
 import { encrypt } from '../../unitls/encryption';
 import { dbPath } from '../controllers/device';
@@ -58,7 +58,7 @@ const handlePdf = async (params, filePath) => {
     humidity: JSON.stringify(result.humi),
     dataStorage_type: 0,
     otherData: JSON.stringify(other_data),
-    alarm: result.c.max > record.highHumi ? 1 : 0,
+    alarm: result.c.max > record.hightEmp ? 1 : result.c.min < record.lowtEmp ? 1 : 0,
     mode: record.mode || 5,
     timeZone: record.timeZone,
   });
@@ -86,9 +86,9 @@ const setFormatData = async data => {
   );
 
   const startDelay = parseInt(
-    data.startDelay.trim().replace('Min', '').replace('Mins', '').replace('-', '') || 0
+    data.startDelay.trim().replace('Mins', '').replace('Min', '').replace('-', '') || 0
   );
-  const logInterval = parseInt(data.logInterval.trim().replace('Min', '').replace('Mins', '') || 0);
+  const logInterval = parseInt(data.logInterval.trim().replace('Mins', '').replace('Min', '') || 0);
   return {
     result,
     record: {
@@ -131,8 +131,11 @@ const setFormatData = async data => {
       maximumValue: result.c.max,
       minimumValue: result.c.min,
       timeZone: data.timeZone || 'UTC+08:00',
-      firmwareVersion: data.firmwareVersion,
+      firmwareVersion: data.firmwareVersion || '',
+      hardwareVersion: data.hardwareVersion || '',
       stopMode: data.stopMode,
+      shipmentId: data.shipmentId || null,
+      shipment: data.shipment || null,
     },
     operateConfig: {},
     isComplete: true,
@@ -171,7 +174,22 @@ const openFile = (): Promise<string[] | boolean> => {
 // 查询PDF UTC
 export const deviceUtcUpdate = async param => {
   // console.log(param);
-  const { drive, database } = param;
+  const { drive, database, record, csvTimeZone } = param;
+  const oldData = await Device.findOne({
+    where: {
+      gentsn: database.gentsn,
+      type: database.type,
+      id: database.id,
+    },
+  });
+  if (!oldData) return false;
+  if (csvTimeZone) {
+    oldData.update({
+      timeZone: formatUtc(csvTimeZone),
+    });
+    await oldData.save();
+    return oldData.toJSON();
+  }
   if (drive.drivePath) {
     const files = fs.readdirSync(drive.drivePath);
     console.log(files);
@@ -181,16 +199,8 @@ export const deviceUtcUpdate = async param => {
     }
     const pdfFile = pdfFiles[0];
     const filePath = path.join(drive.drivePath, pdfFile);
-    const pdfReadData = await importPDFFile(filePath as string);
+    const pdfReadData = await importPDFFile(filePath as string, record.pdfPwd || '', true);
     if (pdfReadData.timeZone) {
-      const oldData = await Device.findOne({
-        where: {
-          gentsn: database.gentsn,
-          type: database.type,
-          id: database.id,
-        },
-      });
-      if (!oldData) return false;
       oldData.update({
         timeZone: pdfReadData.timeZone,
       });

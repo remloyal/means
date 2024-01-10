@@ -24,7 +24,7 @@ import * as _util from '../unitl';
 import * as _common from '../gloable/common';
 import { text } from '../gloable/language';
 import { isTempSenosr, transFahr } from '../unitl';
-
+import { tempMkT } from '../../unitls/tool';
 /**
  pdf坐标
 (0,0)
@@ -456,7 +456,7 @@ const calcuteSummary = ({
   timeZone,
   mask = null,
 }) => {
-  const { minOrigin = 0, maxOrigin = 0 } = threshold || {};
+  const { minOrigin = 0, maxOrigin = 0, type } = threshold || {};
   const { pdfMktShow = false } = product || {};
 
   let alarm = false;
@@ -488,6 +488,8 @@ const calcuteSummary = ({
   // 计算average、mkt等，是计算有效值的个数，而不是所有数据的个数
   let valideDataCnt = 0;
   let firstValideDataIndex = -1; // 为了MKT
+  const priceList = [];
+
   data.forEach((m, i) => {
     if (m.val === SENSOR_EXC_DEFAULT) alarm = true; // 如果存在异常数据 设备存在异常
     // 更新最高温度 与 最高温报警温度时间
@@ -574,6 +576,7 @@ const calcuteSummary = ({
         beforeStatus = curStatus;
         beforeSensor = m;
       }
+      priceList.push(m.val);
     }
     timestampBefore = m.timestamp;
   });
@@ -609,6 +612,9 @@ const calcuteSummary = ({
     const sec = Math.floor(seconds % 60);
     return `${hour ? `${hour}h` : ''}${min ? `${min}m` : ''}${sec}s`;
   };
+  if (type == 'temp' && priceList.length > 0) {
+    mkt = tempMkT(priceList);
+  }
   return {
     alarm,
     alarms: {

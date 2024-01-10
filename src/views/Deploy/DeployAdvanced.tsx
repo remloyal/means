@@ -105,15 +105,60 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
 export const PDFLanguageDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     if (state) {
-      //   setTempPeriod();
+      setOperation();
     }
   }, [state]);
 
   const { t } = useTranslation();
-  const [startMode, setStartMode] = useState(1);
+  const [startValue, setStartValue] = useState(1);
   const [device, setDevice] = useRecoilState(equipment);
-  const handleChange = value => {
-    setStartMode(value);
+  const power = useRecoilValue(typePower);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const [disabled, setDisabled] = useState(true);
+  useEffect(() => {
+    if (power.includes('pdfLan')) {
+      init();
+    } else {
+      setDisabled(true);
+    }
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (disabled == false) {
+        setStartValue(deviceData.pdfLan);
+      }
+    });
+    return () => {
+      window.eventBus.removeAllListeners('deviceConfig');
+    };
+  }, []);
+  const init = async () => {
+    const value = device?.record.pdfLan || '';
+    if (value) {
+      setStartValue(parseInt(value));
+    }
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        pdfLan: value,
+      };
+    });
+    setDisabled(false);
+  };
+  const handleChange = e => {
+    console.log(e);
+
+    setStartValue(e);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        pdfLan: e,
+      };
+    });
+  };
+
+  const setOperation = async () => {
+    if (disabled == false && startValue != device?.record.pdfLan) {
+      await deviceOperate.setPdfLan(startValue);
+    }
   };
   return (
     <Col span={8}>
@@ -121,11 +166,10 @@ export const PDFLanguageDom = ({ state }: { state: boolean }) => {
       <div className="deploy-select">
         <Select
           size="small"
-          defaultValue={0}
-          value={startMode}
+          value={startValue}
           style={{ width: WIDTH }}
           onChange={handleChange}
-          disabled
+          disabled={disabled}
           options={[
             { label: t('language.chinese'), value: 0 },
             { label: t('language.english'), value: 1 },
@@ -151,9 +195,9 @@ export const SensorTypeDom = ({ state }: { state: boolean }) => {
     setStartMode(value);
   };
   const sensorType = {
-    M2H: `${t('home.temperature')}、${t('home.humidity')}`,
-    M2D: t('home.temperature'),
-    M2E: t('home.humidity'),
+    M2H: `${t('home.internal')}${t('home.temperature')}、${t('home.humidity')}`,
+    M2D: t('home.internal') + t('home.temperature'),
+    M2E: t('home.probe') + t('home.humidity'),
   };
   useEffect(() => {
     if (device?.record.deviceType) {
@@ -242,7 +286,7 @@ export const ScreenOffTimeDom = ({ state }: { state: boolean }) => {
 const timeOption = () => {
   const options: { label: string; value: number }[] = [];
   for (let i = 5; i <= 60; i++) {
-    options.push({ label: `${i}s`, value: i });
+    options.push({ label: `${i} S`, value: i });
   }
   return options;
 };
@@ -296,7 +340,11 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
   }, []);
 
   const setOperation = async () => {
-    if (!checked) return;
+    if (!checked) {
+      await deviceOperate.setPdfPwd('');
+      setStartValue('');
+      return;
+    }
     if (startValue != device?.record.pdfPwd) {
       await deviceOperate.setPdfPwd(startValue);
     }
@@ -451,25 +499,56 @@ const TemporaryPdfDom = ({ state }: { state: boolean }) => {
 const RepetitionPrimingDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     if (state) {
-      //   setOperation();
+      setOperation();
     }
   }, [state]);
-  const [startValue, setStartValue] = useState(0);
+  const [startValue, setStartValue] = useState(1);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
+  const power = useRecoilValue(typePower);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const [disabled, setDisabled] = useState(true);
+  useEffect(() => {
+    if (power.includes('multIdMulton')) {
+      init();
+    } else {
+      setDisabled(true);
+    }
+    window.eventBus.on('deviceConfig', deviceData => {
+      if (disabled == false) {
+        setStartValue(deviceData.multIdMulton);
+      }
+    });
+    return () => {
+      window.eventBus.removeAllListeners('deviceConfig');
+    };
+  }, []);
+  const init = async () => {
+    const value = device?.record.multIdMulton || '';
+    if (value) {
+      setStartValue(parseInt(value));
+    }
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        multIdMulton: value,
+      };
+    });
+    setDisabled(false);
+  };
   const handleChange = e => {
     setStartValue(e);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        multIdMulton: e,
+      };
+    });
   };
 
-  useEffect(() => {
-    // const value = device?.record.keyStopEnableget;
-    // if (value) {
-    //   setStartValue(parseInt(value));
-    // }
-  }, []);
   const setOperation = async () => {
-    if (startValue != device?.record.keyStopEnableget) {
-      await deviceOperate.setKeyStopEnableset(startValue);
+    if (disabled == false && startValue != device?.record.multIdMulton) {
+      await deviceOperate.setMultIdMulton(startValue);
     }
   };
   return (
@@ -478,7 +557,7 @@ const RepetitionPrimingDom = ({ state }: { state: boolean }) => {
       <div className="deploy-select">
         <Select
           size="small"
-          disabled
+          disabled={disabled}
           defaultValue={0}
           value={startValue}
           style={{ width: WIDTH }}

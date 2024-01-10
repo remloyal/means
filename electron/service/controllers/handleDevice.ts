@@ -9,8 +9,14 @@ dayjs.extend(timezone);
 const pdfData = (data, monitors, markList) => {
   const { record, param } = data;
   const deviceInfo = data.database;
-  const bounded = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss:SSS');
+  const bounded = dayjs(monitors.temp[monitors.temp.length - 1].timestamp).format(
+    'YYYY-MM-DD HH:mm:ss:SSS'
+  );
   const unit = param.tempUnit == '℃' ? 'cels' : 'fahr';
+  let mold = record.batvol && record.batvol != '' ? 'device' : 'index';
+  if (record.shipmentId && record.shipmentId) {
+    mold = 'device';
+  }
   return {
     info: {
       filter: {
@@ -28,8 +34,8 @@ const pdfData = (data, monitors, markList) => {
       },
       product: {
         alertStrategy: 1,
-        hardwareVersion: 'DW_V02',
-        pdfChartType: 1,
+        hardwareVersion: record.hardwareVersion || 'M2MR21',
+        pdfChartType: param.data.length == 1 ? 0 : 1,
         pdfLanguage: param.pdfTongue,
         pdfLogoColor: '',
         pdfLogoText: '',
@@ -54,6 +60,8 @@ const pdfData = (data, monitors, markList) => {
         usage: 1,
         firmwareVersion: record.firmwareVersion,
         model: record.deviceType,
+        shipmentID: record.shipmentId || '',
+        shipmentNote: record.shipment || '',
         params: {
           assetId: '',
           content: '',
@@ -93,6 +101,7 @@ const pdfData = (data, monitors, markList) => {
       },
       customer: { name: 'frigga', filePath: data.filePath },
       markList: markList || [],
+      mold,
     },
     monitors,
   };
@@ -146,8 +155,12 @@ const setMonitorData = (data, todo) => {
   }
   const markData: any = [];
   if (markList.length > 0) {
-    for (let index = 0; index < markList.length; index++) {
-      const item = markList[index];
+    const markFilterList = markList.filter(
+      item => item.timeStamp >= param.startTime && item.timeStamp <= param.endTime
+    );
+
+    for (let index = 0; index < markFilterList.length; index++) {
+      const item = markFilterList[index];
       let time;
       if (timeZoneState) {
         time = dayjs(item.timeStamp).valueOf();

@@ -8,7 +8,7 @@
       "needBtPrintnfo": false,
       "needFilePath": false,
       "downloadHost": "http://localhost:8090",
-      "sensors": ["temp","humi"],
+      "sensors": ["temp", "humi"],
       "pdfTimeInterval": 0,
       "startTime": "2022-12-11T17:57:27.000Z",
       "endTime": "2022-12-11T17:57:27.000Z",
@@ -108,9 +108,7 @@
       { "timestamp": 1670787600000, "val": 17.6, "lbstime": 1670787420000 },
       { "timestamp": 1670788600000, "val": 17.6, "lbstime": 1670788420000 }
     ],
-    "subTemp": [
-      { "timestamp": 1670781600000, "val": 3276.7, "lbstime": 1670781420000 }
-    ],
+    "subTemp": [{ "timestamp": 1670781600000, "val": 3276.7, "lbstime": 1670781420000 }],
     "humi": [
       { "timestamp": 1670781600000, "val": 76.7, "lbstime": 1670781420000 },
       { "timestamp": 1670783600000, "val": 27.6, "lbstime": 1670782420000 },
@@ -122,5 +120,4 @@
     ]
   }
 }
-
 ```

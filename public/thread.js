@@ -1,5 +1,3 @@
-
-
 // hid-process.js
 const HID = require('node-hid');
 let device = null;
@@ -25,12 +23,54 @@ process.parentPort.on('message', async message => {
     process.parentPort.postMessage({ event: 'hidError', data: error });
   }
 });
+let timeout;
+let bufferAll = [];
 const createHid = path => {
   if (path) {
     device = new HID.HID(path);
     device.on('data', res => {
-      const todo = Uint8ArrayToString(res);
-      process.parentPort.postMessage({ event: 'hidData', data: { key: item.key, value: todo } });
+      // 判断是否需要延时
+      if (item.delayState) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        bufferAll.push(res);
+        timeout = setTimeout(() => {
+          if (bufferAll.length > 1) {
+            const buffer = [];
+            bufferAll.forEach(res => {
+              if (buffer.length > 0) {
+                const list = [...res];
+                //   list.shift();
+                buffer.push(...list);
+              } else {
+                buffer.push(...res);
+              }
+            });
+            const todo = Uint8ArrayToString(new Uint8Array(buffer));
+            bufferAll = [];
+            process.parentPort.postMessage({
+              event: 'hidData',
+              data: { key: item.key, value: todo },
+            });
+          } else {
+            const data = bufferAll[0];
+            const todo = Uint8ArrayToString(data);
+            bufferAll = [];
+            process.parentPort.postMessage({
+              event: 'hidData',
+              data: { key: item.key, value: todo },
+            });
+          }
+        }, item.delayTime || 150);
+      } else {
+        const todo = Uint8ArrayToString(res);
+        process.parentPort.postMessage({
+          event: 'hidData',
+          data: { key: item.key, value: todo },
+        });
+      }
     });
     device.on('error', err => {
       process.parentPort.postMessage({ event: 'hidError', data: err });
@@ -38,17 +78,21 @@ const createHid = path => {
   }
 };
 function Uint8ArrayToString(fileData) {
-  var dataString = '';
-  for (var i = 0; i < fileData.length; i++) {
+  let dataString = '';
+  for (let i = 0; i < fileData.length; i++) {
     dataString += String.fromCharCode(fileData[i]);
   }
-  console.log(dataString);
-  return dataString.replace('\u0002', '').replaceAll('\u0000', '');
+  const decoder = new TextDecoder('utf8');
+  const str = decoder.decode(fileData);
+  console.log('解析数据 ==>', str);
+  return str
+    .trim()
+    .replaceAll('\u0002', '')
+    .replaceAll('\u0000', '')
+    .replaceAll('�', '')
+    .replaceAll('', '');
 }
-
 process.parentPort.once('error', err => {
   console.error('子进程发生错误:', err);
   process.parentPort.postMessage({ event: 'error', data: err });
 });
-
-

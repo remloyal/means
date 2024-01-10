@@ -169,7 +169,7 @@ export function formatUtc(utcStr) {
   if (utcStr == '' || utcStr == null || utcStr == undefined) {
     return utcStr;
   }
-  const regex = /UTC([+-]\d{1,2}):(\d{2})/;
+  const regex = /UTC([+-]?\d{1,2}):(\d{2})/;
   const match = utcStr.match(regex);
 
   if (!match) {
@@ -182,11 +182,12 @@ export function formatUtc(utcStr) {
   let minutes = match[2];
   if (hours.includes('+')) {
     sign = '+';
-  } else {
+  }
+  if (hours.includes('-')) {
     sign = '-';
   }
 
-  hours = parseInt(hours).toString();
+  hours = Math.abs(hours).toString();
   if (hours.length === 1) {
     hours = `0${hours}`;
   }
@@ -195,4 +196,39 @@ export function formatUtc(utcStr) {
   }
 
   return `UTC${sign}${hours}:${minutes}`;
+}
+
+// 平均热力学温度 （MKT）
+// 开尔文
+const kelvin = 273.15;
+// h 热能值
+const caloricValue = 83.14472;
+// 气体常数
+const gasConstant = 8.314;
+// 温度求MKT
+export function tempMkT(tempList: number[]) {
+  // 长度
+  const len = tempList.length;
+  // 求和
+  let sum = 0;
+  const kelvinList: any = [];
+  const coefficient: any = [];
+  for (let i = 0; i < len; i++) {
+    sum += tempList[i];
+    const kelvinValue = kelvin + tempList[i];
+    kelvinList[i] = kelvinValue;
+    coefficient[i] = Math.exp(-caloricValue / (gasConstant * kelvinValue));
+  }
+  // 求coefficient 和
+  let sumC = 0;
+  for (let i = 0; i < len; i++) {
+    sumC += coefficient[i];
+  }
+  // 求coefficient 平均值
+  const coefficientAvg = sumC / len;
+  const result = -Math.log(coefficientAvg);
+  //   MKT值
+  const mkt = caloricValue / gasConstant / result;
+  const mktC = (mkt - kelvin).toFixed(1);
+  return Number(mktC);
 }

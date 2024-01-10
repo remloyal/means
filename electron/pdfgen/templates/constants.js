@@ -22,14 +22,14 @@ export const PADDING_TOP_DATA_TABLE = padding => PADDING_BOTTOM_FOOT(padding);
 export const PADDING_TOP_ENDORSEMENT = padding => PADDING_BOTTOM_FOOT(padding);
 const simsunPath = filePath('/static/font/simsun.ttf');
 const arialPath = filePath('/static/font/arial.ttf');
-
+const FangZhengHeiTiJianTi = filePath('/static/font/FangZhengHeiTiJianTi.ttf');
 export const PDF_INFO = {
     SIZE: 'A4',
     OWNER_PASSWORD: '20210606',
     VERSION: '1.4',
     SUBJECT: 'Platform PDF',
   },
-  FONT_SIMSUN = simsunPath, // 中文字体 宋体
+  FONT_SIMSUN = FangZhengHeiTiJianTi, // 中文字体 黑体
   FONT_ARIAL = arialPath, // 俄语会用到，葡萄牙语应该也会用到
   FONT_HELVETICA = 'Helvetica', // 英文字体 常规
   FONT_HELVETICA_BOLD = 'Helvetica-Bold', // 英文字体 粗体
@@ -89,8 +89,8 @@ export const PDF_INFO = {
   THREE_SENSOR_DELTAY_DATA_SUMMARY = 5,
   DELTA_Y_LABEL_LINE = 18, // 每个大写label与下面横线的距离
   CHART_INNER_HEIG = (padding = 228) => padding, //Record Chart坐标轴边框高度 要满足CHART_Y_PARTS均分
-  CHART_X_PARTS = 12, //Record Chart X轴分多少块
-  CHART_Y_PARTS = 12, //Record Chart Y轴分多少块
+  CHART_X_PARTS = 8, //Record Chart X轴分多少块
+  CHART_Y_PARTS = 10, //Record Chart Y轴分多少块
   CHART_Y_PARTS_YIYAO_HUMI = 10,
   CHART_Y_PARTS_SHENGSHENG = 10,
   ALARM_COLOR = [255, 0, 0],
@@ -106,6 +106,7 @@ export const PDF_INFO = {
     LINE_COLORS: [[0, 0, 255], [0, 255, 0], '#00FFE7'],
     THRESH_LINE_COLORS: [[255, 0, 0], [255, 0, 255], '#E800FF'],
     XY_LINE_COLOR: [211, 211, 211], // light gray
+    CHAT_LINE_COLOR: [153, 153, 153],
     MARK_DATA_LINE_COLOR: [250, 112, 250],
   },
   /*source contents原始数据打印*/

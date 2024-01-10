@@ -5,10 +5,14 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { DYNAMIC_CONFIG, LANGUAGE, WINDOW_PARAM } from '../config';
-import { IsOnlineService, isOnline } from '../unitls/request';
+import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, LOG_PARAM, WINDOW_PARAM } from '../config';
+import { IsOnlineService, isNetworkState } from '../unitls/request';
 import log from '../unitls/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
+import { text } from '../pdfgen/gloable/language';
+import { getUserStart, setUserStart } from '../service/user/user';
+import { detectionStatus } from '../service/db';
+
 // The built directory structure
 //
 // ├─┬ dist-electron
@@ -48,9 +52,9 @@ const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, 'index.html');
 
 let tray;
-let updateState = false;
+let updateState = true;
 export async function createWindow() {
-  updateState = false;
+  // updateState = false;
   win = new BrowserWindow({
     autoHideMenuBar: true,
     title: WINDOW_PARAM.TITLE,
@@ -145,8 +149,10 @@ export async function createWindow() {
 
 // 当应用准备就绪时，执行下面的函数
 app.whenReady().then(async () => {
+  initUser();
+  DYNAMIC_CONFIG.language = LANGUAGE_PDF[app.getLocale() || 'default'] || 'en';
   // 调用isOnline函数，获取网络连接状态
-  const state = await isOnline();
+  const state = await isNetworkState();
   // 如果网络连接状态正常，则创建窗口
   if (state) {
     createWindow();
@@ -154,29 +160,29 @@ app.whenReady().then(async () => {
   } else {
     log.error('Network connection failed');
     dialog.showErrorBox(
-      'Network connection failed',
-      'Please check your network connection or try again later!'
+      text('NETWORK_CONNECTION_FAILED', DYNAMIC_CONFIG.language),
+      text('NETWORK_PROMPT', DYNAMIC_CONFIG.language)
     );
     app.exit();
   }
   // 创建一个IsOnlineService实例
-  const online = new IsOnlineService();
-  // 监听网络连接状态的变化
-  online.on('status', res => {
-    console.log(res);
-    // 如果网络连接状态不正常，则关闭窗口，并退出应用
-    if (res == false) {
-      win?.close();
-      mainWindow?.close();
-      log.error('Network connection failed');
-      dialog.showMessageBoxSync(win!, {
-        type: 'error',
-        title: 'Network connection failed',
-        message: 'Please check your network connection or try again later!',
-      });
-      app.exit();
-    }
-  });
+  // const online = new IsOnlineService();
+  // // 监听网络连接状态的变化
+  // online.on('status', res => {
+  //   console.log(res);
+  //   // 如果网络连接状态不正常，则关闭窗口，并退出应用
+  //   if (res == false) {
+  //     win?.close();
+  //     mainWindow?.close();
+  //     log.error('Network connection failed');
+  //     dialog.showMessageBoxSync(win!, {
+  //       type: 'error',
+  //       title: 'Network connection failed',
+  //       message: 'Please check your network connection or try again later!',
+  //     });
+  //     app.exit();
+  //   }
+  // });
 });
 
 app.on('window-all-closed', () => {
@@ -228,13 +234,17 @@ ipcMain.on('window-reset', () => {
 });
 
 ipcMain.handle('lang', (_, data) => {
+  if (updateState) {
+    updateState = false;
+  }
   const lang = {
-    en_US: 1,
-    zh_CN: 2,
+    en: 1,
+    zh: 2,
   };
   DYNAMIC_CONFIG.lan = lang[data] || 1;
   setTray(DYNAMIC_CONFIG.lan);
-  return LANGUAGE[app.getLocale()];
+  setUserStart({ name: 'language', value: data });
+  return LANGUAGE_PDF[app.getLocale()];
 });
 
 // 处理获取版本号的事件
@@ -251,7 +261,10 @@ ipcMain.handle('open-url', (event, url) => {
 // 处理退出类型的事件
 ipcMain.handle('exitType', (event, type) => {
   setTimeout(async () => {
-    if (type == 1) {
+    if (type == 3) {
+      app.exit(0);
+      app.relaunch();
+    } else if (type == 1) {
       win?.hide();
     } else {
       await hidProcess?.kill();
@@ -287,4 +300,10 @@ const setTray = lan => {
 // 设置更新状态
 export const setUpdateState = state => {
   updateState = state;
+};
+
+const initUser = async () => {
+  await detectionStatus();
+  const state = await getUserStart();
+  LOG_PARAM.COLLECT_STATE = state;
 };

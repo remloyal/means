@@ -19,20 +19,32 @@ const readCSVFilesFromDrive = async drive => {
     let csvName = '';
     let stopMode = '';
     let markList = [];
+    let timeZone = '';
+    if (csvFiles.length === 0) {
+      return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [] };
+    }
     for (const csvFile of csvFiles) {
       csvName = csvFile;
       const filePath = path.join(drivePath, csvFile);
       const data = fs.readFileSync(filePath, 'utf-8');
       // console.log(`读取到CSV文件 ${csvFile} 的内容：`);
       // console.log(data);
-      const { data: todo, stopMode: mode, markList: mark } = parseCSVData(data);
+      const { data: todo, stopMode: mode, markList: mark, timeZone: zone } = parseCSVData(data);
       dataParsed = todo;
       stopMode = mode;
       markList = mark;
+      timeZone = zone;
     }
-    return { drive, csvData: dataParsed, csvName: csvName.split('.')[0], stopMode, markList };
+    return {
+      drive,
+      csvData: dataParsed,
+      csvName: csvName.split('.')[0],
+      stopMode,
+      markList,
+      timeZone,
+    };
   } catch (error) {
-    return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [] };
+    return { drive, csvData: [], csvName: drive.name, stopMode: '--', markList: [], timeZone: '' };
   }
 };
 
@@ -44,15 +56,32 @@ const readCSVFilesFromDrive = async drive => {
 const parseCSVData = csvString => {
   const lines = csvString.split('\n');
   const data: TimeType[] = [];
-  // Stop Mode,USB Stop,
-  const stopMode = lines[1].split(',');
-  // 我们从第3行开始处理，因为前几行包含元数据或标题。
-  for (let i = 3; i < lines.length; i++) {
+  let startHandle = false;
+  let timeZoneText = '';
+  let stopModeText = '';
+  for (let i = 0; i < lines.length; i++) {
     const line: string = lines[i].trim();
+    if (line.includes('Stop Mode')) {
+      stopModeText = line;
+      continue;
+    }
+    if (line.includes('Zone')) {
+      timeZoneText = line;
+      continue;
+    }
+    // 查询开始位置
+    if (!startHandle) {
+      const state = line.includes('Date');
+      startHandle = state;
+      continue;
+    }
     if (!line) continue; // 跳过空行
-    if (line.indexOf('Output') != -1) break; //结束语句
+    if (line.indexOf('Output') != -1) {
+      startHandle = false;
+      break; //结束语句
+    }
+    if (!startHandle) continue;
     const fields = line.split(',');
-
     const date = fields[0];
     const time = fields[1];
     const celsius = parseFloat(fields[2]);
@@ -106,7 +135,12 @@ const parseCSVData = csvString => {
       });
     }
   }
-  return { data, stopMode: stopMode[1], markList };
+  return {
+    data,
+    stopMode: stopModeText.split(',')[1] || '',
+    markList,
+    timeZone: timeZoneText.split(',')[1] || '',
+  };
 };
 
 export let usbData;
@@ -133,9 +167,11 @@ export const loadUsbData = async data => {
         operation.markList = csvData.markList;
         const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
         operation.database = data;
-
         // 获取PDF UTC
-        const oldData = await ipcRenderer.invoke('deviceUtcUpdate', Object.assign({}, operation));
+        const oldData = await ipcRenderer.invoke(
+          'deviceUtcUpdate',
+          Object.assign({}, operation, { csvTimeZone: csvData.timeZone })
+        );
         if (oldData) {
           operation.database = oldData;
         }
@@ -161,3 +197,9 @@ ipcRenderer.on('deviceRemoval', async (event, data) => {
     setTypePower();
   }
 });
+
+export const setDeviceError = () => {
+  usbData = null;
+  window.eventBus.emit('friggaDevice:out');
+  setTypePower();
+};

@@ -55,14 +55,15 @@ export const Menu: React.FC = () => {
       },
       icon: () => <ImgMenu.HistoryImg />,
     },
-    // {
-    //   name: 'header.cfr',
-    //   clock: () => {
-    //     setFirstPage(false);
-    //     setHeadKey(3);
-    //   },
-    //   icon: () => <ImgMenu.CfrImg />,
-    // },
+    {
+      name: 'header.cfr',
+      clock: () => {
+        navigate('cfrHome');
+        setFirstPage(false);
+        setHeadKey(3);
+      },
+      icon: () => <ImgMenu.CfrImg />,
+    },
     {
       name: 'header.preferences',
       clock: () => showModal(),

@@ -8,18 +8,65 @@ import pdfjsLib from 'pdfjs-dist';
 dayjs.extend(customParseFormat);
 import log from '../../unitls/log';
 import { parsePDF } from './pad_json';
+import { ipcMain, ipcRenderer } from 'electron';
+import { win } from '../../main/index';
+import path from 'path';
 
 // let pdfjsLib;
-export const importPDFFile = async (filePath: string) => {
+const attempts = 5;
+export const importPDFFile = async (filePath: string, pdfPassword = '', deviceRead = false) => {
   // if (!pdfjsLib) {
   //   pdfjsLib = await import('pdfjs-dist');
   // }
-  const data = new Uint8Array(fs.readFileSync(filePath));
-  const loadingTask = pdfjsLib.getDocument(data);
+  // const data = new Uint8Array(fs.readFileSync(filePath));
+  const loadingTask = pdfjsLib.getDocument({
+    url: filePath,
+    cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
+    cMapPacked: true,
+  });
   let lang = 'en'; //zh
   let type = pdfType[lang];
   let list: any = [];
   let total = 0;
+  const fileName = path.basename(filePath).split('.')[0];
+  let password = '';
+  let passwordNumber = 0;
+  loadingTask.onPassword = async (updatePassword, reason) => {
+    if (deviceRead) {
+      // pdf 使用设备密码读取，次数限制
+      if (passwordNumber > attempts) {
+        updatePassword('');
+        loadingTask.onPassword = Function;
+        return;
+      }
+      passwordNumber++;
+      updatePassword(pdfPassword);
+      ipcMain.removeHandler('callPassword');
+      ipcMain.removeHandler('pdfPassword');
+      ipcMain.removeHandler('pdfEnterPassword');
+      return;
+    }
+    // 取消
+    ipcMain.handle('callPassword', (event, params) => {
+      password = '';
+      ipcMain.removeHandler('callPassword');
+      ipcMain.removeHandler('pdfPassword');
+      ipcMain.removeHandler('pdfEnterPassword');
+      updatePassword('');
+      loadingTask.onPassword = Function;
+      return;
+    });
+    await win?.webContents.send('pdfPassword', { fileName, reason });
+    ipcMain.handle('pdfEnterPassword', (event, params) => {
+      console.log(params);
+      password = params;
+      ipcMain.removeHandler('callPassword');
+      ipcMain.removeHandler('pdfPassword');
+      ipcMain.removeHandler('pdfEnterPassword');
+      updatePassword(params);
+      return;
+    });
+  };
   await loadingTask.promise.then(
     async pdf => {
       total = pdf.numPages;
@@ -60,7 +107,7 @@ export const importPDFFile = async (filePath: string) => {
   //   console.log(list);
   if (list.length > 1 && list[1] == '') {
     // 乱码解析
-    const data = await parsePDF(filePath, list.length);
+    const data = await parsePDF(filePath, list.length, pdfPassword || password);
     if (data) {
       list = data;
     }
@@ -114,7 +161,7 @@ const readFirst = (text, type) => {
           todo[key] = result.replace('[', '').replace(']', '');
         }
       } catch (error) {
-        log.error(`正则匹配错误===》 ${item} `, error);
+        console.error(`正则匹配错误===》 ${item}  ${error}`);
       }
     });
   });
@@ -138,13 +185,13 @@ const readData = async (text, todo, pageFooting) => {
     key = '℉';
     unit = '℉';
   }
-  if (text.includes('RH')) {
+  if (text.includes('RH') || text.includes('%RH')) {
     size += 1;
     key = 'RH';
   }
   text.replace('wwww.friggatech.com', '');
   let data = text.replace('wwww.friggatech.com', '').replace(pageFooting, '').trim();
-  data = await formatText(data);
+  data = await formatText(data, todo.type);
   const chunkedData = splitData(data, size, unit, todo);
   return chunkedData;
 };
@@ -187,13 +234,13 @@ function splitData(data, size, unit, todo) {
   return result;
 }
 
-function formatText(text) {
+function formatText(text, type) {
   const rule = [
     'www.friggatech.com',
     'Date',
     'Time',
-    'RH',
     '%RH',
+    'RH',
     '日期',
     '时间',
     '°C',
@@ -207,7 +254,7 @@ function formatText(text) {
     '쪱볤',
     'ꇦ',
   ];
-  let character = text;
+  let character = newFromat(text, type);
   rule.forEach(item => {
     character = character.replaceAll(item, '');
   });
@@ -277,4 +324,29 @@ function getThreshold(data, type) {
   }
 
   return { hightEmp: 0, lowtEmp: 0, highHumi: 0, lowHumi: 0 };
+}
+
+function newFromat(text, type) {
+  if (type == 'currency') {
+    let timeIndex = text.indexOf('日期 时间');
+    if (timeIndex == -1) {
+      timeIndex = text.indexOf('Date Time');
+    }
+    let deviceIndex = text.indexOf('设备 ID');
+    if (deviceIndex == -1) {
+      deviceIndex = text.indexOf('Device ID');
+    }
+    const str = text.substring(timeIndex, deviceIndex);
+    return str || text;
+  }
+  // 新设备端
+  if (text.includes('设备 ID') || text.includes('Device ID')) {
+    let timeIndex = text.indexOf('日期 时间');
+    if (timeIndex == -1) {
+      timeIndex = text.indexOf('Date Time');
+    }
+    const str = text.substring(timeIndex, text.length);
+    return str;
+  }
+  return text;
 }

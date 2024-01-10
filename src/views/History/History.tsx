@@ -535,6 +535,60 @@ const HistoryLift = () => {
     return foundArr;
   };
 
+  // PDF 读取密码弹窗
+  const PdfPassword = () => {
+    useEffect(() => {
+      function pdfPassword(event, data) {
+        setFileName(data.fileName);
+        setSaving(true);
+        if (data.reason == 2) {
+          message.error(t('history.passwordError'));
+        }
+      }
+      ipcRenderer.on('pdfPassword', pdfPassword);
+      return () => {
+        ipcRenderer.removeAllListeners('pdfPassword');
+      };
+    }, []);
+    const [fileName, setFileName] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [password, setPassword] = useState('');
+    const pdfEnterPassword = () => {
+      if (password.length == 0) {
+        message.error(t('history.enterPassword'));
+        return;
+      }
+      ipcRenderer.invoke('pdfEnterPassword', password);
+      setSaving(false);
+    };
+    const callPassword = () => {
+      ipcRenderer.invoke('callPassword');
+      setSaving(false);
+    };
+    const onPasswordChange = (e: any) => {
+      setPassword(e.target.value);
+    };
+    return (
+      <Modal
+        open={saving}
+        centered
+        width={500}
+        title={`PDF ${t('history.password')}`}
+        closeIcon={null}
+        onOk={pdfEnterPassword}
+        onCancel={callPassword}
+      >
+        <label htmlFor="">{t('history.fileName')}：</label>
+        <div style={{ padding: '10px 0' }}>{fileName}</div>
+        <label htmlFor="">PDF {t('history.password')}：</label>
+        <Input
+          style={{ margin: '10px 0' }}
+          placeholder={t('history.enterPassword')}
+          onChange={onPasswordChange}
+        />
+      </Modal>
+    );
+  };
   return (
     <div style={{ padding: '0 10px' }}>
       <Space direction="vertical" size="middle">
@@ -564,6 +618,7 @@ const HistoryLift = () => {
         <DataFiltering />
         <EditData />
       </Space>
+      <PdfPassword />
     </div>
   );
 };

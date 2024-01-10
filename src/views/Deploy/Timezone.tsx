@@ -1,3 +1,4 @@
+import { UTC_PARAM } from '@/config';
 import { timeZoneCollection, timeZoneList } from '@/locale/timeZone';
 import { deviceConfigParam, equipment, language } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
@@ -7,6 +8,10 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const getTimeZones = (() => {
   // const data = timeZoneCollection[localStorage.getItem('language') || 'zh_CN'];
@@ -21,13 +26,13 @@ const getTimeZones = (() => {
   return timeZones;
 })();
 
+let interval;
 // 设置时区
 export const TimeZone = ({ state }: { state: boolean }) => {
   const { t } = useTranslation();
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
   const [device, setDevice] = useRecoilState(equipment);
   const [timeZone, setTimeZone] = useState(0);
-  const [timeOption, setTimeOption] = useState('');
   const [timeZoneList, setTimeZoneList] =
     useState<{ value: string | number; label: string | number; name: string | number }[]>(
       getTimeZones
@@ -48,10 +53,10 @@ export const TimeZone = ({ state }: { state: boolean }) => {
         setTime(dayjs(deviceData.time));
       }
     });
-    const interval = setInterval(() => {
-      timeChange(dayjs(new Date()));
-    }, 1000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      interval = null;
+    };
   }, []);
 
   // useEffect(() => {
@@ -91,17 +96,18 @@ export const TimeZone = ({ state }: { state: boolean }) => {
         time: times,
       };
     });
+    setUtcTimeZone(UTC_PARAM[timeZoneData]);
   };
 
   const timeZoneChange = (value, option) => {
     setTimeZone(value);
-    setTimeOption(option);
     setDeviceConfig(item => {
       return {
         ...item,
         timeZone: value,
       };
     });
+    setUtcTimeZone(UTC_PARAM[option.name]);
   };
 
   const setTimeZoneOperate = async () => {
@@ -127,6 +133,28 @@ export const TimeZone = ({ state }: { state: boolean }) => {
         };
       });
     }
+  };
+
+  const [utcTimeZone, setUtcTimeZone] = useState<string>('Asia/Shanghai');
+  const newUtcTime = () => {
+    if (utcTimeZone == 'Europe/London') {
+      return dayjs(dayjs(dayjs()).tz('Europe/London').format('YYYY-MM-DD HH:mm:ss'));
+    }
+    const newYorkTime = dayjs().tz(utcTimeZone);
+    return newYorkTime;
+  };
+  useEffect(() => {
+    console.log(utcTimeZone);
+    setupInterval();
+  }, [utcTimeZone]);
+  const setupInterval = () => {
+    if (interval) {
+      clearInterval(interval);
+      interval = null;
+    }
+    interval = setInterval(() => {
+      timeChange(newUtcTime());
+    }, 1000);
   };
 
   return (
