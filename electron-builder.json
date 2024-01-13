@@ -8,7 +8,18 @@
   "files": ["dist-electron", "dist"],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
-    "target": ["dmg", "zip"]
+    "target": ["dmg", "zip"],
+    "entitlementsInherit": "build/entitlements.mac.plist",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": true,
+    "extendInfo": {
+      "NSAppleEventsUsageDescription": "Let me use Apple Events.",
+      "NSCameraUsageDescription": "Let me use the camera.",
+      "NSScreenCaptureDescription": "Let me take screenshots.",
+      "NSMicrophoneUsageDescription": "Application requests access to the device's microphone",
+      "NSDocumentsFolderUsageDescription": "NSDocumentsFolderUsageDescription",
+      "NSDownloadsFolderUsageDescription": "NSDownloadsFolderUsageDescription"
+    }
   },
   "win": {
     "target": [

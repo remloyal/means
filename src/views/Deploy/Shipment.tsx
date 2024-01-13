@@ -42,11 +42,19 @@ export const ShipmentIdDom = ({ state }: { state: boolean }) => {
     });
   };
   const handleChange = e => {
-    setText(e.target.value);
+    const val = e.target.value;
+    let text = '';
+    if (Buffer.byteLength(val, 'utf8') > 32) {
+      text = getNewStrByByte(val, 32);
+      setText(text);
+    } else {
+      text = val;
+      setText(val);
+    }
     setDeviceConfig(item => {
       return {
         ...item,
-        shipmentId: e.target.value,
+        shipmentId: text,
       };
     });
   };
@@ -59,7 +67,7 @@ export const ShipmentIdDom = ({ state }: { state: boolean }) => {
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('home.runLengthCoding')}</div>
       <div className="deploy-select">
-        <Input onChange={handleChange} value={text} maxLength={13} />
+        <Input onChange={handleChange} value={text} />
       </div>
     </Col>
   );
@@ -101,18 +109,19 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
     });
   };
   const handleChange = e => {
-    let val = e.target.value;
-    if (Buffer.from(val, 'utf-8').length >= 270) {
-      const buffer = Buffer.from(val, 'utf-8');
-      val = buffer.subarray(0, 270).toString().replaceAll('�', '');
-      setText(val);
+    const val = e.target.value;
+    let text = '';
+    if (Buffer.byteLength(val, 'utf8') > 273) {
+      text = getNewStrByByte(val, 273);
+      setText(text);
     } else {
+      text = val;
       setText(val);
     }
     setDeviceConfig(item => {
       return {
         ...item,
-        shipment: val,
+        shipment: text,
       };
     });
   };
@@ -124,27 +133,6 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
       await deviceOperate.setShipmentDescribe(textList);
     }
   };
-  /**
-   * 根据字符串每个字符的字节大小分割
-   */
-  function getNewStrArrByByte(str: string, len = 40) {
-    const strList = str.split('');
-    const strArr: string[] = [];
-    let size = 0;
-    let term = 0;
-    strList.forEach((item, index) => {
-      const extent = Buffer.byteLength(item, 'utf8');
-      if (size + extent < len) {
-        strArr[term] = (strArr[term] || '') + (item || '\xa0');
-        size = size + extent;
-      } else {
-        term++;
-        strArr[term] = (strArr[term] || '') + (item || '\xa0');
-        size = extent;
-      }
-    });
-    return strArr;
-  }
 
   return (
     <Col span={8}>
@@ -160,3 +148,40 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
     </Col>
   );
 };
+
+/**
+ * 根据字符串每个字符的字节大小分割
+ */
+function getNewStrArrByByte(str: string, len = 40) {
+  const strList = str.split('');
+  const strArr: string[] = [];
+  let size = 0;
+  let term = 0;
+  strList.forEach((item, index) => {
+    const extent = Buffer.byteLength(item, 'utf8');
+    if (size + extent <= len) {
+      strArr[term] = (strArr[term] || '') + (item || '\xa0');
+      size = size + extent;
+    } else {
+      term++;
+      strArr[term] = (strArr[term] || '') + (item || '\xa0');
+      size = extent;
+    }
+  });
+  return strArr;
+}
+
+/** 根据字符串每个字符的字节大小,截取所需长度 */
+function getNewStrByByte(str: string, len = 280) {
+  const strList = str.split('');
+  let strArr: string = '';
+  let size = 0;
+  strList.forEach((item, index) => {
+    const extent = Buffer.byteLength(item, 'utf8');
+    if (size + extent <= len) {
+      strArr = (strArr || '') + (item || '\xa0');
+      size = size + extent;
+    }
+  });
+  return strArr;
+}

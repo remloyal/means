@@ -81,6 +81,7 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
     setTime(val);
     if (val === 43200) {
       setMinuteState(true);
+      setMinute(0);
     } else {
       setMinuteState(false);
     }
@@ -247,6 +248,8 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
     if (day === 86400) {
       setTimeState(true);
       setMinuteState(true);
+      setTime(0);
+      setMinute(0);
     } else {
       setTimeState(false);
       setMinuteState(false);

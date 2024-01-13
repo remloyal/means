@@ -319,6 +319,4 @@ export const zh = {
   APP_UPDATE: '应用更新',
   PDF_IDFO_TRIP_ID: '行程 ID：',
   PDF_IDFO_TRIP_NOTE: '行程描述：',
-
-  CONNECT_TEXT: '',
 };

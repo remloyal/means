@@ -19,6 +19,7 @@ import DianLiangImg from '@/assets/img/dianliang.png';
 import { loadUsbData, setDeviceError, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
 import { QuitPrompt } from './ExitPrompt';
+import { HUMI_UNIT } from '@/config';
 const DeviceImg = {
   M2H,
   M1H,
@@ -29,6 +30,15 @@ const setTimeFormat = (time: string): string => {
 };
 let errorModal;
 let deviceStates = false;
+let timeout;
+// 清除延时
+const clearTimeSave = () => {
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+};
+
 const Left: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -75,6 +85,9 @@ const Left: React.FC = () => {
         deviceStates = false;
         setDeviceMent(false);
         setDevice(null);
+        setSaving(false);
+        setLoading(false);
+        clearTimeSave();
       });
       ipcRenderer.on('resizeEvent', (event, data) => {
         setResizeData(data);
@@ -83,11 +96,12 @@ const Left: React.FC = () => {
         setLoading(false);
         // alert(t('left.errotText'));
         // message.error(t('left.errotText'));
-        if (!errorModal) {
+        if (errorModal == null) {
           errorModal = Modal.error({
             centered: true,
             content: t('left.errotText'),
             cancelButtonProps: { style: { display: 'none' } },
+            zIndex: 8888,
             onOk() {
               deviceStates = false;
               errorModal = null;
@@ -95,6 +109,7 @@ const Left: React.FC = () => {
               setSaving(false);
               setLoading(false);
               setDevice(null);
+              clearTimeSave();
             },
           });
         }
@@ -129,15 +144,15 @@ const Left: React.FC = () => {
           message.success(t('history.dataUpdateSuccessful'));
           setDevice(deviceData);
           setSaving(false);
+          clearTimeSave();
         }
       });
       window.eventBus.on('saving', res => {
         setSaving(true);
-        setTimeout(() => {
-          if (saving) {
-            setSaving(false);
-          }
-        }, 10000);
+        timeout = setTimeout(() => {
+          setSaving(false);
+          clearTimeSave();
+        }, 20000);
       });
     }
     return () => {
@@ -278,14 +293,26 @@ const Left: React.FC = () => {
       children: device != null ? setTimeFormat(device?.record.lastRecordedTime) : '---',
     },
     {
-      label: t('left.maximumValue'),
+      label: `${t('home.temperature')} ${t('left.maximumValue')}`,
       children: device != null ? setTempValue(device?.record.maximumValue) : '---',
     },
     {
-      label: t('left.minimumValue'),
+      label: `${t('home.temperature')} ${t('left.minimumValue')}`,
       children: device != null ? setTempValue(device?.record.minimumValue) : '---',
     },
   ];
+  if (device?.record.highHumi != null && device?.record.lowHumi != null) {
+    items.push(
+      {
+        label: `${t('home.humidity')} ${t('left.maximumValue')}`,
+        children: device != null ? `${device?.database.humidity.max || 0} ${HUMI_UNIT}` : '---',
+      },
+      {
+        label: `${t('home.humidity')} ${t('left.minimumValue')}`,
+        children: device != null ? `${device?.database.humidity.min || 0} ${HUMI_UNIT}` : '---',
+      }
+    );
+  }
   const quickReset = () => {
     deviceOperate.resetDevice();
   };
@@ -318,19 +345,42 @@ const Left: React.FC = () => {
   };
 
   const getImageClass = () => {
+    let imageClass = 'image-alarm';
     if (device == null) {
-      return 'image-alarm';
+      imageClass = 'image-alarm';
+      return imageClass;
+    }
+    if (device?.record.mode == 2) {
+      return 'image-alarm image-alarm-green';
     }
     if (device?.record.lowtEmp == 0 && device?.record.hightEmp == 0) {
-      return 'image-alarm image-alarm-green';
+      imageClass = 'image-alarm image-alarm-green';
+      return imageClass;
     }
     if (
       device?.database.temperature.max > device?.record.hightEmp ||
       device?.database.temperature.min < device?.record.lowtEmp
     ) {
-      return 'image-alarm image-alarm-red';
+      imageClass = 'image-alarm image-alarm-red';
+    } else {
+      imageClass = 'image-alarm image-alarm-green';
     }
-    return 'image-alarm image-alarm-green';
+    if (device?.record.highHumi && device?.record.lowHumi) {
+      if (device?.record.highHumi == 0 && device?.record.lowHumi == 0) {
+        imageClass = 'image-alarm image-alarm-green';
+        return imageClass;
+      }
+      if (
+        device?.database.humidity.max > device?.record.highHumi ||
+        device?.database.humidity.min < device?.record.lowHumi
+      ) {
+        imageClass = 'image-alarm image-alarm-red';
+      } else {
+        imageClass = 'image-alarm image-alarm-green';
+      }
+    }
+    // return 'image-alarm image-alarm-green';
+    return imageClass;
   };
   return (
     <MainLeft>

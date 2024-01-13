@@ -48,7 +48,7 @@ function findMinValue(data: number[]): number {
       min = data[i];
     }
   }
-  return min;
+  return min || 0;
 }
 
 function getAverage(arr) {
@@ -56,7 +56,7 @@ function getAverage(arr) {
     arr.reduce((sum, value) => {
       return sum + value;
     }, 0) / arr.length;
-  return res.toFixed(1) || 0;
+  return res.toFixed(1);
 }
 
 interface DataType {

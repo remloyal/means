@@ -39,12 +39,20 @@ const DataSheet = () => {
       align: 'center',
     },
     {
-      title: MultidUnit[device?.record.multidUnit || 0],
+      title: `${t('home.temperature')} (${MultidUnit[device?.record.multidUnit || 0]})`,
       dataIndex: 'heat',
       width: 120,
       align: 'center',
     },
   ];
+  if (device?.record.highHumi != null && device?.record.lowHumi != null) {
+    columns.push({
+      title: `${t('home.humidity')} (%RH)`,
+      dataIndex: 'humi',
+      width: 120,
+      align: 'center',
+    });
+  }
 
   const [title, setTitle] = useState('');
   const [csvData, setCsvData] = useState<RecordType[]>();
@@ -93,6 +101,7 @@ const DataSheet = () => {
         id: index + 1,
         time: `${item.timeStamp}`,
         heat: MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? `${item.f}` : `${item.c}`,
+        humi: item.humi || 0,
       }));
       setCsvData(data);
     } else {

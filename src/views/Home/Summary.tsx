@@ -28,6 +28,7 @@ import { DataExport } from './DataExport';
 import { c2f, secondsToTime } from '@/utils/utils';
 import { DataFilter } from './DataFilter';
 import dayjs from 'dayjs';
+import { HUMI_UNIT } from '@/config';
 
 // 温度单位
 const MultidUnit = {
@@ -309,7 +310,12 @@ const ExportData: React.FC = () => {
   return (
     <>
       <div className="summary-graph-labor">
-        <Button type="primary" size="large" onClick={showModal}>
+        <Button
+          type="primary"
+          size="large"
+          onClick={showModal}
+          disabled={device?.record.mode == 2 ? true : false}
+        >
           {t('home.exportData')}
         </Button>
         <Button size="large" onClick={() => setScreen(true)}>
@@ -448,6 +454,20 @@ const SummaryRight: React.FC = () => {
       children: device != null ? device?.record.shipmentId || '---' : '---',
     },
   ];
+  if (device?.record.highHumi != null && device?.record.lowHumi != null) {
+    items.splice(
+      -1,
+      0,
+      {
+        label: t('deploy.humiUpperLimit'),
+        children: device != null ? `${device?.record.highHumi} ${HUMI_UNIT}` : '---',
+      },
+      {
+        label: t('deploy.humiLowerLimit'),
+        children: device != null ? `${device?.record.lowHumi} ${HUMI_UNIT}` : '---',
+      }
+    );
+  }
 
   return (
     <MainRight>

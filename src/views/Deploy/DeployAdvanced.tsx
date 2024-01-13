@@ -547,7 +547,7 @@ const RepetitionPrimingDom = ({ state }: { state: boolean }) => {
   };
 
   const setOperation = async () => {
-    if (disabled == false && startValue != device?.record.multIdMulton) {
+    if (disabled == false) {
       await deviceOperate.setMultIdMulton(startValue);
     }
   };

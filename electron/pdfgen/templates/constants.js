@@ -22,14 +22,14 @@ export const PADDING_TOP_DATA_TABLE = padding => PADDING_BOTTOM_FOOT(padding);
 export const PADDING_TOP_ENDORSEMENT = padding => PADDING_BOTTOM_FOOT(padding);
 const simsunPath = filePath('/static/font/simsun.ttf');
 const arialPath = filePath('/static/font/arial.ttf');
-const FangZhengHeiTiJianTi = filePath('/static/font/FangZhengHeiTiJianTi.ttf');
+const Msyhl = filePath('/static/font/Msyhl.ttf');
 export const PDF_INFO = {
     SIZE: 'A4',
     OWNER_PASSWORD: '20210606',
     VERSION: '1.4',
     SUBJECT: 'Platform PDF',
   },
-  FONT_SIMSUN = FangZhengHeiTiJianTi, // 中文字体 黑体
+  FONT_SIMSUN = Msyhl, // 中文字体 黑体
   FONT_ARIAL = arialPath, // 俄语会用到，葡萄牙语应该也会用到
   FONT_HELVETICA = 'Helvetica', // 英文字体 常规
   FONT_HELVETICA_BOLD = 'Helvetica-Bold', // 英文字体 粗体

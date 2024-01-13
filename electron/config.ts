@@ -84,16 +84,14 @@ export const PATH_PARAM = {
 // 数据库
 export const DB_PARAM = {
   DB_PATH: path.join(process.cwd(), CACHE_PATH, 'database/frigga.db'),
-  DB_USER_PATH: path.join(process.cwd(), CACHE_PATH, 'database/friggaInfo.db'),
+  DB_USER_PATH: path.join(process.cwd(), CACHE_PATH, 'database/friggaUser.db'),
   DB_PASSWORD: 'frigga',
 };
 
 export const DATE = dayjs().format('YYYY-MM-DD').split('-');
 // 日志
 export const LOG_PARAM = {
-  LOG_PATH: path.join(process.cwd(), CACHE_PATH, 'logs/work.log'),
-  COLLECT_PATH: path.join(process.cwd(), CACHE_PATH, 'logs/collect.log'),
-  COLLECT_STATE: false,
+  LOG_PATH: path.join(process.cwd(), CACHE_PATH, `logs/${DATE[0]}/${DATE[1]}/work`),
 };
 
 // UTC 对应时区
@@ -119,8 +117,4 @@ export const HID_PARAM = {
     'setShipment7',
   ],
   DELAY_TIME: 100,
-};
-
-export const USER_PARAM = {
-  USER_NAME: '',
 };

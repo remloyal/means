@@ -15,11 +15,7 @@ export const MainBody = ({
 };
 
 export const MainRight = ({ children }) => {
-  return (
-    <ConfigProvider theme={Theme}>
-      <div className="summary-right">{children}</div>
-    </ConfigProvider>
-  );
+  return <div className="summary-right">{children}</div>;
 };
 
 export const MainLeft = ({ children }) => {
@@ -40,9 +36,6 @@ const Theme = {
       contentColor: '#FFFFFF',
       titleColor: '#FFFFFF',
       extraColor: '#ffffff',
-    },
-    Table: {
-      rowHoverBg: 'var(--bg-right-color)',
     },
   },
 };

@@ -23,7 +23,7 @@ export const setTypePower = (type: any = null, batvolVal = '') => {
     if (!DeviceTypeAT[type]) {
       throw new Error('DeviceTypeAT is null');
     }
-    DeviceAttribute = DeviceTypeAT[type];
+    DeviceAttribute = Object.create(DeviceTypeAT[type]);
     instructRead = DeviceAttribute.read;
     instructSetup = DeviceAttribute.setup;
     if (batvolVal != '') {
@@ -51,9 +51,9 @@ export const createDeviceInstance = async (deviceInfo): Promise<DeviceInstance> 
   // 初始化设备记录
   deviceExample.record = {};
   // 获取设备类型
-  const deviceTypeDate = await deviceExample.getType(deviceType);
+  const deviceTypeDate = await deviceExample.getType(Object.create(deviceType));
   // 根据是否有电量参数判断配置
-  const batvolData = await deviceExample.getType(batvol);
+  const batvolData = await deviceExample.getType(Object.create(batvol));
   // 设置设备操作类型
   setTypePower(deviceTypeDate.value, batvolData.value);
   // 初始化设备
@@ -118,7 +118,7 @@ class DeviceInstance {
   public repeatOperation() {
     try {
       if (this.actionList.length > 0) {
-        this.write(this.actionList[0]);
+        this.write(Object.create(this.actionList[0]));
       } else {
         this.operate = null;
         this.isComplete = true;
@@ -210,12 +210,8 @@ class DeviceInstance {
       this.record.maximumValue = max;
       this.record.minimumValue = min;
     } else {
-      this.record.firstRecordTime = dayjs().format(
-        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-      );
-      this.record.lastRecordedTime = dayjs().format(
-        `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`
-      );
+      this.record.firstRecordTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+      this.record.lastRecordedTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
       this.record.maximumValue = 0;
       this.record.minimumValue = 0;
     }
@@ -432,7 +428,7 @@ export const deviceOperate = {
     ];
     for (let i = 0; i < 7; i++) {
       const str = val[i] || ' ';
-      const tempPeriod = instructSetup[`setShipment${i + 1}`];
+      const tempPeriod = Object.create(instructSetup[`setShipment${i + 1}`]);
       tempPeriod.param = str;
       await setOperateDevice(tempPeriod);
     }

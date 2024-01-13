@@ -113,7 +113,7 @@ const DeployBasic = ({ state }: { state: boolean }) => {
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>
         {data.map((Item, index) => {
-          if (!Item) return <></>;
+          if (!Item) return <div key={Math.random().toString(36).slice(-6)}></div>;
           return <Item state={state} key={index} />;
         })}
       </Row>

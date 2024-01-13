@@ -274,9 +274,7 @@
 .oddRow {
   background: #f0f1f5;
 }
-.clickRow {
-  background-color: var(--bg-right-color) !important;
-}
+
 .evenRow {
   // background: #EAECF0;
   background: var(--table-bg-color);
@@ -343,39 +341,6 @@
     color: var(--text-title-color);
     border-bottom: var(--text-title-color) 2px solid;
   }
-}
-.textarea-input::-webkit-scrollbar {
-  display: none;
-}
-
-.categoryView .ant-space-item:nth-child(1) .ant-radio-wrapper::before {
-  content: '';
-  display: block;
-  width: 10px;
-  height: 10px;
-  background: #5f85e7;
-  border-radius: 10%;
-  margin-right: 6px;
-}
-
-.categoryView .ant-space-item:nth-child(2) .ant-radio-wrapper::before {
-  content: '';
-  display: block;
-  width: 10px;
-  height: 10px;
-  background: #e65b5b;
-  border-radius: 10%;
-  margin-right: 6px;
-}
-
-.categoryView .ant-space-item:nth-child(3) .ant-radio-wrapper::before {
-  content: '';
-  display: block;
-  width: 10px;
-  height: 10px;
-  background: #16b44b;
-  border-radius: 10%;
-  margin-right: 6px;
 }
 
 .textarea-input::-webkit-scrollbar {

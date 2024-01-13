@@ -5,13 +5,11 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, LOG_PARAM, WINDOW_PARAM } from '../config';
+import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, WINDOW_PARAM } from '../config';
 import { IsOnlineService, isNetworkState } from '../unitls/request';
 import log from '../unitls/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
 import { text } from '../pdfgen/gloable/language';
-import { getUserStart, setUserStart } from '../service/user/user';
-import { detectionStatus } from '../service/db';
 
 // The built directory structure
 //
@@ -149,7 +147,6 @@ export async function createWindow() {
 
 // 当应用准备就绪时，执行下面的函数
 app.whenReady().then(async () => {
-  initUser();
   DYNAMIC_CONFIG.language = LANGUAGE_PDF[app.getLocale() || 'default'] || 'en';
   // 调用isOnline函数，获取网络连接状态
   const state = await isNetworkState();
@@ -243,7 +240,6 @@ ipcMain.handle('lang', (_, data) => {
   };
   DYNAMIC_CONFIG.lan = lang[data] || 1;
   setTray(DYNAMIC_CONFIG.lan);
-  setUserStart({ name: 'language', value: data });
   return LANGUAGE_PDF[app.getLocale()];
 });
 
@@ -261,10 +257,7 @@ ipcMain.handle('open-url', (event, url) => {
 // 处理退出类型的事件
 ipcMain.handle('exitType', (event, type) => {
   setTimeout(async () => {
-    if (type == 3) {
-      app.exit(0);
-      app.relaunch();
-    } else if (type == 1) {
+    if (type == 1) {
       win?.hide();
     } else {
       await hidProcess?.kill();
@@ -300,10 +293,4 @@ const setTray = lan => {
 // 设置更新状态
 export const setUpdateState = state => {
   updateState = state;
-};
-
-const initUser = async () => {
-  await detectionStatus();
-  const state = await getUserStart();
-  LOG_PARAM.COLLECT_STATE = state;
 };

@@ -69,17 +69,17 @@ ipcMain.handle('hidClose', (event, params: HidEventData) => {
     hidProcess?.postMessage({ event: 'hidClose', data: params });
     clearTimeout(timeoutClose);
     timeoutClose = null;
+    Object.values(timeout).map((e: any) => {
+      e && clearTimeout(e);
+    });
+    // 将timeout对象置空
+    timeout = {};
   }, 2000);
   // 杀死hidProcess
   // hidProcess?.kill();
   // hidProcess = null;
   //   console.log(hidProcess);
   // 遍历timeout对象，清除每一个timeout
-  Object.values(timeout).map((e: any) => {
-    e && clearTimeout(e);
-  });
-  // 将timeout对象置空
-  timeout = {};
 });
 
 function stringToUint8Array(str): number[] {

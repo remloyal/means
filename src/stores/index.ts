@@ -133,23 +133,3 @@ export const screenList = selector<any[]>({
     return device?.csvData || [];
   },
 });
-
-export const pageHeight = atom<number>({
-  key: 'pageHeight',
-  default: 960,
-});
-
-// 存储用户信息
-export const userInformation = atom<any>({
-  key: 'userInformation',
-  default: {
-    type: '',
-    data: {},
-  },
-});
-
-// 存储签注信息
-export const signInformation = atom<any>({
-  key: 'signInformation',
-  default: { type: '', data: {} },
-});

@@ -1704,7 +1704,8 @@ const printDeviceInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs 
   // 行程 id
   posY += ROW_DELTA;
   pdf.text(text('PDF_IDFO_TRIP_ID', LANGUAGE), labelLeftStartX, posY);
-  pdf.text(shipmentID, valueLeftStartX, posY);
+  pdf.font(getFont('zh')).text(shipmentID, valueLeftStartX, posY);
+  pdf.font(getFont(LANGUAGE));
 };
 
 /**
@@ -1846,7 +1847,7 @@ const printLoggingLessThreeSummay = (
   const { min: minTemp2, max: maxTemp2 } = thresholds[SENSORS.SUB_TEMP] || {};
   const unitTemp = SIGN.UNIT(SENSORS.TEMP, LANGUAGE, { unit: UNIT });
   const { min: minHumi, max: maxHumi } = thresholds[SENSORS.HUMI] || {};
-  const unitHumi = SIGN.UNIT(SENSORS.HUMI, LANGUAGE);
+  const unitHumi = `%${SIGN.UNIT(SENSORS.HUMI, LANGUAGE)}`;
 
   //* threshold
   // 温-湿

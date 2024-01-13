@@ -191,21 +191,26 @@ export const deviceUtcUpdate = async param => {
     return oldData.toJSON();
   }
   if (drive.drivePath) {
-    const files = fs.readdirSync(drive.drivePath);
-    console.log(files);
-    const pdfFiles = files.filter(file => file.endsWith('.pdf'));
-    if (pdfFiles.length == 0 || !pdfFiles) {
+    try {
+      const files = fs.readdirSync(drive.drivePath);
+      console.log(files);
+      const pdfFiles = files.filter(file => file.endsWith('.pdf'));
+      if (pdfFiles.length == 0 || !pdfFiles) {
+        return false;
+      }
+      const pdfFile = pdfFiles[0];
+      const filePath = path.join(drive.drivePath, pdfFile);
+      const pdfReadData = await importPDFFile(filePath as string, record.pdfPwd || '', true);
+      if (pdfReadData.timeZone) {
+        oldData.update({
+          timeZone: pdfReadData.timeZone,
+        });
+        await oldData.save();
+        return oldData.toJSON();
+      }
+    } catch (error) {
+      log.error('未找到PDF文件', error);
       return false;
-    }
-    const pdfFile = pdfFiles[0];
-    const filePath = path.join(drive.drivePath, pdfFile);
-    const pdfReadData = await importPDFFile(filePath as string, record.pdfPwd || '', true);
-    if (pdfReadData.timeZone) {
-      oldData.update({
-        timeZone: pdfReadData.timeZone,
-      });
-      await oldData.save();
-      return oldData.toJSON();
     }
   }
   return false;

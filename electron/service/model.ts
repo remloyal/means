@@ -36,7 +36,7 @@ export const Device = database.define(
       type: STRING,
       allowNull: false,
       get() {
-        return JSON.parse(this.getDataValue('fahrenheit'));
+        return JSON.parse(this.getDataValue('humidity'));
       },
     },
     dataStorage_type: { type: STRING, allowNull: false },
@@ -97,15 +97,3 @@ export const FileData = database.define(
 );
 
 // FileData.belongsTo(Device, { foreignKey: 'device_id', targetKey: 'id' });
-export const UserRelated = database.define(
-  'user_related',
-  {
-    id: { type: INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: STRING, allowNull: false },
-    value: { type: INTEGER, allowNull: false },
-  },
-  {
-    freezeTableName: true,
-    timestamps: false,
-  }
-);

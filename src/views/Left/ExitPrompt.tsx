@@ -29,6 +29,7 @@ export const QuitPrompt = () => {
         title={t('left.exitPrompt')}
         onCancel={() => setQuitState(false)}
         onOk={onExit}
+        zIndex={9999}
         // footer={null}
       >
         <div style={{ padding: '20px' }}>
