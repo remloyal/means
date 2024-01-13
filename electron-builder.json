@@ -1,0 +1,53 @@
+{
+  "productName": "Frigga Data Center",
+  "appId": "frigga.data.center",
+  "asar": true,
+  "directories": {
+    "output": "release/${version}"
+  },
+  "files": ["dist-electron", "dist"],
+  "mac": {
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": ["dmg", "zip"],
+    "entitlementsInherit": "build/entitlements.mac.plist",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": true,
+    "extendInfo": {
+      "NSAppleEventsUsageDescription": "Let me use Apple Events.",
+      "NSCameraUsageDescription": "Let me use the camera.",
+      "NSScreenCaptureDescription": "Let me take screenshots.",
+      "NSMicrophoneUsageDescription": "Application requests access to the device's microphone",
+      "NSDocumentsFolderUsageDescription": "NSDocumentsFolderUsageDescription",
+      "NSDownloadsFolderUsageDescription": "NSDownloadsFolderUsageDescription"
+    }
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "requestedExecutionLevel": "requireAdministrator",
+    "artifactName": "${productName}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "guid": "friggaDataCenter",
+    "include": "build/installer.nsh"
+  },
+  "extraResources": {
+    "from": "resources/static",
+    "to": "static"
+  },
+  "publish": {
+    "provider": "generic",
+    "url": "http://localhost:3000/files"
+  }
+}

@@ -1,0 +1,67 @@
+// 应用生成
+const ZHTYPE = {
+  title: ['日期', '时间', '℃', '℉', 'RH'],
+  rule: {
+    time: [/文件创建日期：(.*?)数据报告注：/],
+    timeFormat: [/24小时制，(.*?)低温警报：/, /24小时制，(.*?)]设备配置/],
+    lowAlarm: [/低温警报： (.*?)高温警报/],
+    highAlarm: [/高温警报：(.*?)低湿警报/],
+    humiLowAlarm: [/低湿警报： (.*?)高湿警报/],
+    humiHighAlarm: [/高湿警报： (.*?)数据条数/],
+    dataPoints: [/数据条数：(.*?)停止模式/],
+    stopMode: [/停止模式： (.*?)设备信息/],
+    deviceID: [/设备 ID： (.*?)设备型号/],
+    deviceModel: [/设备型号： (.*?)固件版本/],
+    firmwareVersion: [/固件版本： (.*?)硬件版本/],
+    hardwareVersion: [/硬件版本： (.*?)行程 ID：/, /硬件版本： (.*?)设备配置/],
+    startDelay: [/延时开始：(.*?)存储间隔：/, /延时开始：(.*?)日志间隔/],
+    logInterval: [/存储间隔：(.*?)开始时间/, /日志间隔：(.*?)开始时间/],
+    minsStartTime: [/开始时间： (.*?)结束时间/],
+    endTime: [/结束时间： (.*?)行程描述：/, /结束时间： (.*?)记录概要/],
+    threshold: [/阈值(.*?)数据条数/, /阈值(.*?)数据点/],
+    highestTemperature: [/最高温度： (.*?)最低温度：/],
+    lowestTemperature: [/最低温度： (.*?)最高湿度：/],
+    highestHumidity: [/最高湿度： (.*?)最低湿度：/],
+    lowestHumidity: [/最低湿度： (.*?)MKT/],
+    mkt: [/MKT： (.*?)平均温度：/],
+    average: [/平均温度： (.*?)警报信息/],
+    tempLow: [/低温警报 (.*?)高温警报/],
+    tempHigh: [/高温警报 (.*?)低湿警报/],
+    humiLow: [/低湿警报 (.*?)高湿警报/],
+    humiHigh: [/高湿警报 (.*?)记录图表/],
+    timeZone: [/所有时间基于(.*?)，24小时制/],
+    shipmentId: [/行程 ID：(.*?)设备配置/],
+    shipment: [/行程描述：(.*?)记录概要/],
+  },
+};
+
+// 设备生成
+const DEVICEENTYPE = {
+  ...ZHTYPE,
+  rule: {
+    ...ZHTYPE.rule,
+    timeFormat: [
+      /24小时制，(.*?)低温警报：/,
+      /24小时制，(.*?)]设备配置/,
+      /킡쪱훆ꎬ(.*?)]짨놸엤훃퇓쪱뾪/,
+    ],
+    lowAlarm: [/低温警报： (.*?)高温警报/],
+    highAlarm: [/高温警报：(.*?)低湿警报/],
+    humiLowAlarm: [/低湿警报： (.*?)高湿警报/],
+    humiHighAlarm: [/高湿警报： (.*?)数据条数/],
+    hardwareVersion: [
+      /펲볾냦놾:(.*?)퓋떥뇠뫅:/,
+      /Hardware Version:(.*?)Shipment ID:/,
+      /Hardware Version: (.*?)Logging Summary/,
+      /펲볾냦놾:(.*?)볇슼룅튪컂뛈횵/,
+    ],
+    // stopMode: [/Stop Mode: (.*?)Note:/],
+    // hardwareVersion: [/Hardware Version: (.*?)Logging Summary/],
+    // logInterval: [/Log Interval: (.*?) MinsStart Time/],
+    // minsStartTime: [/MinsStart Time: (.*?)End Time/],
+    // endTime: [/End Time: (.*?)Device Information/],
+    shipmentId: [/Shipment ID:(.*?)Logging Summary/, /퓋떥뇠뫅:(.*?)볇슼룅튪컂쪪/],
+    shipment: [/Shipment Note:(.*?)Device Information/, /탐돌쏨쫶(.*?)짨놸탅쾢짨놸/],
+  },
+};
+export default { currency: ZHTYPE, device: DEVICEENTYPE };
