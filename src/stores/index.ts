@@ -60,6 +60,8 @@ export const deviceConfigParam = atom<any>({
   key: 'deviceConfigParam',
   default: {},
 });
+// 导入设备参数
+export const importDeviceParam = atom<any>({ key: 'importDeviceParam', default: {} });
 
 // 设备数据
 export const deviceData = atom<any>({
@@ -71,6 +73,12 @@ export const deviceData = atom<any>({
 export const deviceSelectKey = atom<any>({
   key: 'deviceSelectKey',
   default: [],
+});
+
+// 历史数据缓存
+export const deviceDataCache = atom<any>({
+  key: 'deviceDataCache',
+  default: {},
 });
 
 // 日期格式

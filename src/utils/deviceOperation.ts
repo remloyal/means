@@ -482,4 +482,18 @@ export const deviceOperate = {
     await deviceExample.write(instructRead.lowTemp2);
     await updateDevice();
   },
+  /** 开始写参数时下发 */
+  setBootMode: async () => {
+    const instruct = instructSetup.setBootMode;
+    const data = await setOperateDevice(instruct);
+    return data;
+  },
+  /** 重启AT */
+  reboot: async () => {
+    console.log('reboot 重启AT ');
+
+    const instruct = instructSetup.setReBootMcu;
+    const data = await setOperateDevice(instruct);
+    return data;
+  },
 };

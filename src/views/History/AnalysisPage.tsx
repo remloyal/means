@@ -301,15 +301,27 @@ export const AnalysisPageLeft = () => {
   };
   const exportExcel = async () => {
     setExportTime(new Date().getTime().toString());
+    setTimeout(() => {
+      setExportTime('');
+    }, 500);
   };
   return (
-    <>
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        width: '80%',
+        height: '100%',
+        backgroundColor: '#F0F1F5',
+        transition: 'opacity 0.5s',
+      }}
+    >
       <Button onClick={handleClick} style={{ width: '100%' }}>
         {t('home.goBack')}
       </Button>
       <Button style={{ width: '100%', marginTop: '10px' }} onClick={exportExcel}>
         {t('home.exportData')}
       </Button>
-    </>
+    </div>
   );
 };

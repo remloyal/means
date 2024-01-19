@@ -7,7 +7,7 @@ import { c2f, f2c } from '../../utils/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilValue } from 'recoil';
-import { OPERATE_CONFIG } from '@/config';
+import { HUMI_UNIT, OPERATE_CONFIG } from '@/config';
 
 const range = (start: number, end: number) => {
   const result: number[] = [];
@@ -76,6 +76,8 @@ export const DataExport = ({ onCancel }) => {
         device?.record.multidUnit == 0 ? device?.record.hightEmp : c2f(device?.record.hightEmp),
       lowtEmp:
         device?.record.multidUnit == 0 ? device?.record.lowtEmp : c2f(device?.record.lowtEmp),
+      highHumi: device?.record.highHumi || 0,
+      lowHumi: device?.record.lowHumi || 0,
     }));
     setTime([dayjs(startTime), dayjs(endTime)]);
   };
@@ -151,6 +153,8 @@ export const DataExport = ({ onCancel }) => {
     data: ['temp', 'humi'],
     lowtEmp: 0,
     hightEmp: 0,
+    highHumi: 0,
+    lowHumi: 0,
   });
   const [time, setTime] = useState<any>();
   const timeChange = data => {
@@ -218,12 +222,30 @@ export const DataExport = ({ onCancel }) => {
       };
     });
   };
+
+  const highHumiChange = num => {
+    setParam(item => {
+      return {
+        ...item,
+        highHumi: num,
+      };
+    });
+  };
+
+  const lowHumiChange = num => {
+    setParam(item => {
+      return {
+        ...item,
+        lowHumi: num,
+      };
+    });
+  };
   return (
     <>
       <div className="basic">
         <label htmlFor="">{t('home.date')}：</label>
         <DatePicker.RangePicker
-          format={dateFormat}
+          format={`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`}
           showTime
           disabledDate={disabledDate}
           disabledTime={disabledRangeTime}
@@ -271,29 +293,57 @@ export const DataExport = ({ onCancel }) => {
         />
       </div>
       <div className="basic">
-        <label htmlFor="">{t('deploy.heatLowerLimit')}：</label>
-        <InputNumber
-          max={param.hightEmp}
-          min={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
-          onChange={lowtEmpChange}
-          value={param.lowtEmp}
-          style={{ width: 200 }}
-          step="0.1"
-        />
-        ({param.tempUnit})
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <label htmlFor="">{t('home.temperature') + t('deploy.threshold')}：</label>
+          <InputNumber
+            max={param.hightEmp}
+            min={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
+            onChange={lowtEmpChange}
+            value={param.lowtEmp}
+            style={{ width: 100 }}
+            step="0.1"
+          />
+          <span style={{ fontSize: '20px', margin: '0 10px' }}>~</span>
+          <InputNumber
+            min={param.lowtEmp}
+            max={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
+            onChange={hightEmpChange}
+            value={param.hightEmp}
+            style={{ width: 100 }}
+            step="0.1"
+          />
+          <span style={{ margin: '0 10px' }}>({param.tempUnit})</span>
+        </div>
       </div>
-      <div className="basic">
-        <label htmlFor="">{t('deploy.heatUpperLimit')}：</label>
-        <InputNumber
-          min={param.lowtEmp}
-          max={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
-          onChange={hightEmpChange}
-          value={param.hightEmp}
-          style={{ width: 200 }}
-          step="0.1"
-        />
-        ({param.tempUnit})
-      </div>
+      {/* 湿度阈值配置 */}
+      {device && device?.record.highHumi != null && device?.record.lowHumi != null ? (
+        <div className="basic">
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <label htmlFor="">{t('home.humidity') + t('deploy.threshold')}：</label>
+            <InputNumber
+              max={param.highHumi}
+              min={0}
+              onChange={lowHumiChange}
+              value={param.lowHumi}
+              style={{ width: 100 }}
+              step="1"
+            />
+            <span style={{ fontSize: '20px', margin: '0 10px' }}>~</span>
+            <InputNumber
+              min={param.lowHumi}
+              max={100}
+              onChange={highHumiChange}
+              value={param.highHumi}
+              style={{ width: 100 }}
+              step="1"
+            />
+            <span style={{ margin: '0 10px' }}>({HUMI_UNIT})</span>
+          </div>
+        </div>
+      ) : (
+        <div></div>
+      )}
+
       <div className="basic" style={{ display: 'flex', justifyContent: 'right' }}>
         <Button onClick={onCancel}>{t('home.cancellation')}</Button>
         <Button

@@ -1,4 +1,4 @@
-import { deviceConfigParam, equipment, typePower } from '@/stores';
+import { deviceConfigParam, equipment, importDeviceParam, typePower } from '@/stores';
 import { Col, Input, Radio, Row, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -60,9 +60,6 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
 
   useEffect(() => {
     init();
-    window.eventBus.on('deviceConfig', deviceData => {
-      setStartMode(deviceData.multidUnit || startMode);
-    });
   }, []);
 
   const init = async () => {
@@ -71,7 +68,7 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        multidUnit,
+        multidUnit: parseInt(multidUnit),
       };
     });
   };
@@ -80,6 +77,13 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
     // console.log(startMode, device?.record.multidUnit);
     await deviceOperate.setMultidUnit(startMode);
   };
+
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    if (importConfig && Object.keys(importConfig).includes('multidUnit')) {
+      setStartMode(Number(importConfig.multidUnit));
+    }
+  }, [importConfig]);
 
   return (
     <Col span={8}>
@@ -121,14 +125,6 @@ export const PDFLanguageDom = ({ state }: { state: boolean }) => {
     } else {
       setDisabled(true);
     }
-    window.eventBus.on('deviceConfig', deviceData => {
-      if (disabled == false) {
-        setStartValue(deviceData.pdfLan);
-      }
-    });
-    return () => {
-      window.eventBus.removeAllListeners('deviceConfig');
-    };
   }, []);
   const init = async () => {
     const value = device?.record.pdfLan || '';
@@ -138,7 +134,7 @@ export const PDFLanguageDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        pdfLan: value,
+        pdfLan: parseInt(value),
       };
     });
     setDisabled(false);
@@ -160,6 +156,13 @@ export const PDFLanguageDom = ({ state }: { state: boolean }) => {
       await deviceOperate.setPdfLan(startValue);
     }
   };
+
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    if (importConfig && Object.keys(importConfig).includes('pdfLan') && disabled == false) {
+      setStartValue(Number(importConfig.pdfLan));
+    }
+  }, [importConfig]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>PDF {t('home.language')}</div>
@@ -245,9 +248,6 @@ export const ScreenOffTimeDom = ({ state }: { state: boolean }) => {
 
   useEffect(() => {
     init();
-    window.eventBus.on('deviceConfig', deviceData => {
-      setStartMode(deviceData.multIdSleepTime || startMode);
-    });
   }, []);
   const init = async () => {
     const multIdSleepTime = device?.record.multIdSleepTime;
@@ -265,6 +265,16 @@ export const ScreenOffTimeDom = ({ state }: { state: boolean }) => {
       await deviceOperate.setMultidSleepTime(startMode);
     }
   };
+
+  const initConfig = deviceData => {
+    if (deviceData && Object.keys(deviceData).includes('multIdSleepTime')) {
+      setStartMode(deviceData.multIdSleepTime);
+    }
+  };
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
 
   return (
     <Col span={8}>
@@ -313,7 +323,6 @@ const EquipmentName = ({ state }: { state: boolean }) => {
 };
 
 //设置PDF密码
-
 const PDFPasswordDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     if (state) {
@@ -323,8 +332,15 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
   const [startValue, setStartValue] = useState('');
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
   const handleChange = e => {
     setStartValue(e.target.value);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        pdfPwd: e.target.value,
+      };
+    });
   };
 
   const [checked, setChecked] = useState(false);
@@ -337,6 +353,12 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
       setStartValue(pdfPwd);
       setChecked(true);
     }
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        pdfPwd,
+      };
+    });
   }, []);
 
   const setOperation = async () => {
@@ -349,6 +371,24 @@ const PDFPasswordDom = ({ state }: { state: boolean }) => {
       await deviceOperate.setPdfPwd(startValue);
     }
   };
+
+  const initConfig = deviceData => {
+    if (Object.keys(deviceData).includes('pdfPwd')) {
+      setStartValue(deviceData.pdfPwd);
+      if (deviceData.pdfPwd != '') {
+        setChecked(true);
+      } else {
+        setChecked(false);
+      }
+    }
+  };
+
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    console.log(importConfig);
+
+    initConfig(importConfig);
+  }, [importConfig]);
 
   return (
     <Col span={8}>
@@ -406,9 +446,6 @@ const DeviceKeyStopDom = ({ state }: { state: boolean }) => {
 
   useEffect(() => {
     init();
-    window.eventBus.on('deviceConfig', deviceData => {
-      setStartValue(deviceData.multidUnit || startValue);
-    });
   }, []);
 
   const init = async () => {
@@ -429,6 +466,17 @@ const DeviceKeyStopDom = ({ state }: { state: boolean }) => {
       await deviceOperate.setKeyStopEnableset(startValue);
     }
   };
+
+  const initConfig = deviceData => {
+    if (deviceData && Object.keys(deviceData).includes('keyStopEnableget')) {
+      setStartValue(deviceData.keyStopEnableget);
+    }
+  };
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
+
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.buttonStop')}</div>
@@ -514,14 +562,6 @@ const RepetitionPrimingDom = ({ state }: { state: boolean }) => {
     } else {
       setDisabled(true);
     }
-    window.eventBus.on('deviceConfig', deviceData => {
-      if (disabled == false) {
-        setStartValue(deviceData.multIdMulton);
-      }
-    });
-    return () => {
-      window.eventBus.removeAllListeners('deviceConfig');
-    };
   }, []);
   const init = async () => {
     const value = device?.record.multIdMulton || '';
@@ -551,6 +591,17 @@ const RepetitionPrimingDom = ({ state }: { state: boolean }) => {
       await deviceOperate.setMultIdMulton(startValue);
     }
   };
+
+  const initConfig = deviceData => {
+    if (Object.keys(deviceData).includes('multIdMulton') && disabled == false) {
+      setStartValue(Number(deviceData.multIdMulton));
+    }
+  };
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
+
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('home.repetitionPriming')}</div>
@@ -558,7 +609,6 @@ const RepetitionPrimingDom = ({ state }: { state: boolean }) => {
         <Select
           size="small"
           disabled={disabled}
-          defaultValue={0}
           value={startValue}
           style={{ width: WIDTH }}
           onChange={handleChange}

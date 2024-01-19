@@ -156,7 +156,7 @@ const SummaryGraph: React.FC = () => {
       humiList,
       [
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
-        power.includes('setHighHumi') ? t('home.humidity') : '',
+        power.includes('setHighHumi') ? `${t('home.humidity')}(%RH)` : '',
       ],
       [
         Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
@@ -237,7 +237,7 @@ const SummaryGraph: React.FC = () => {
       humiList,
       [
         `${t('home.temperature')}(${MultidUnit[device?.record.multidUnit || 0]})`,
-        power.includes('setHighHumi') ? t('home.humidity') : '',
+        power.includes('setHighHumi') ? `${t('home.humidity')}(%RH)` : '',
       ],
       [
         Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),

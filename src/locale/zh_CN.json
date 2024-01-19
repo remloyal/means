@@ -109,7 +109,9 @@
     "monotypic": "单一型",
     "accumulating": "累积型",
     "overtop": "高于",
-    "below": "低于"
+    "below": "低于",
+    "threshold": "阈值",
+    "configuringDevice": "正在配置设备"
   },
   "history": {
     "cloudStorage": "云端存储",

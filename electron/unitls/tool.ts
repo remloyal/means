@@ -33,15 +33,21 @@ export function findMinMax(data: Data[]): {
 }
 
 function findMaxValue(numbers) {
+  if (numbers.length === 0) {
+    return 0.0;
+  }
   let max = -Infinity;
   for (let i = 0; i < numbers.length; i++) {
     if (numbers[i] > max) {
       max = numbers[i];
     }
   }
-  return max;
+  return max ? max : 0.0;
 }
 function findMinValue(data: number[]): number {
+  if (data.length === 0) {
+    return 0.0;
+  }
   let min = Number.POSITIVE_INFINITY;
   for (let i = 0; i < data.length; i++) {
     if (data[i] < min) {
@@ -52,11 +58,14 @@ function findMinValue(data: number[]): number {
 }
 
 function getAverage(arr) {
+  if (arr.length === 0) {
+    return 0.0;
+  }
   const res =
     arr.reduce((sum, value) => {
       return sum + value;
     }, 0) / arr.length;
-  return res.toFixed(1);
+  return res ? res.toFixed(1) : 0.0;
 }
 
 interface DataType {
@@ -169,7 +178,7 @@ export function formatUtc(utcStr) {
   if (utcStr == '' || utcStr == null || utcStr == undefined) {
     return utcStr;
   }
-  const regex = /UTC([+-]?\d{1,2}):(\d{2})/;
+  const regex = /UTC([+-]?\d{1,2}):(\d{1,2})/;
   const match = utcStr.match(regex);
 
   if (!match) {

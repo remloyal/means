@@ -2,6 +2,7 @@ import { MainBody, MainRight } from '@/components/main';
 import {
   analysisState,
   deviceData,
+  deviceDataCache,
   deviceSelectKey,
   equipment,
   historyDevice,
@@ -45,7 +46,10 @@ const History: React.FC = () => {
           </div>
         )}
       </MainBody>
-      <MainRight>{pageState ? <HistoryLift /> : <AnalysisPageLeft />}</MainRight>
+      <MainRight style={{ position: 'relative', overflow: 'hidden' }}>
+        <HistoryRight />
+        {pageState ? <div /> : <AnalysisPageLeft />}
+      </MainRight>
     </div>
   );
 };
@@ -128,7 +132,7 @@ const HistoryMain = () => {
       render(value: any, record: any, index: number) {
         return (
           <span>
-            {record.temperature.max}
+            {record.temperature.max ? record.temperature.max.toFixed(1) : '0.0'}
             {unit}
           </span>
         );
@@ -142,7 +146,7 @@ const HistoryMain = () => {
       render(value: any, record: any, index: number) {
         return (
           <span>
-            {record.temperature.min}
+            {record.temperature.min ? record.temperature.min.toFixed(1) : '0.0'}
             {unit}
           </span>
         );
@@ -165,6 +169,7 @@ const HistoryMain = () => {
   const device = useRecoilValue(equipment);
   const [deviceList, setDeviceList] = useRecoilState(deviceData);
   const [deviceListKey, setDeviceListKey] = useRecoilState(deviceSelectKey);
+  const [paramCache, setParamCache] = useRecoilState(deviceDataCache);
 
   useEffect(() => {
     const Y = document.getElementsByClassName('summary-main')[0].clientHeight;
@@ -178,7 +183,6 @@ const HistoryMain = () => {
 
   useEffect(() => {
     setDeviceRecord(deviceList);
-    // console.log(deviceList);
     setSelectedRowKeys([]);
   }, [deviceList]);
 
@@ -191,7 +195,16 @@ const HistoryMain = () => {
   useEffect(() => {
     getData();
     getList();
+    if (paramCache.deviceSelectKey) {
+      setDeviceListKey(paramCache.deviceSelectKey);
+      setSelectedRowKeys(paramCache.deviceSelectKey);
+    }
   }, []);
+  useEffect(() => {
+    setParamCache(res => {
+      return { ...res, deviceSelectKey: [...deviceListKey] };
+    });
+  }, [deviceListKey]);
   const getList = () => {
     ipcRenderer.on('renewDevice', async (event, data) => {
       if (data && data.length > 0) {
@@ -227,7 +240,7 @@ const HistoryMain = () => {
   };
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const onSelectChange = (neWselectedRowKeys, selectedRows, info: { type }) => {
-    console.log('selectedRowKeys changed: ', neWselectedRowKeys, selectedRows, info);
+    // console.log('selectedRowKeys changed: ', neWselectedRowKeys, selectedRows, info);
     setSelectedRowKeys(neWselectedRowKeys);
     setDeviceListKey(neWselectedRowKeys);
   };
@@ -264,17 +277,29 @@ const HistoryMain = () => {
   );
 };
 
-const HistoryLift = () => {
+const format = 'YYYY-MM-DD HH:mm:ss';
+const HistoryRight = () => {
   const { t } = useTranslation();
 
   const [deviceList, setDeviceList] = useRecoilState(deviceData);
   const [deviceListKey, setDeviceListKey] = useRecoilState(deviceSelectKey);
+  const [paramCache, setParamCache] = useRecoilState(deviceDataCache);
 
+  const [param, setParam] = useState<any>({
+    time: ['', ''],
+    dataType: 1,
+    selectType: 0,
+  });
   const timeChange = async (dates, dateStrings: [string, string]) => {
     if (dateStrings[0] == '' && dateStrings[1] == '') {
-      queryDevice();
+      setParam(res => {
+        return { ...res, time: ['', ''] };
+      });
     } else {
-      queryDevice(dateStrings);
+      const timeList = [dates[0].format(format), dates[1].format(format)];
+      setParam(res => {
+        return { ...res, time: timeList };
+      });
     }
   };
 
@@ -285,11 +310,15 @@ const HistoryLift = () => {
 
   const handleChange = value => {
     if (value == 0) {
-      queryDevice();
+      setParam(res => {
+        return { ...res, time: ['', ''], selectType: value };
+      });
       return;
     }
     const data = prevMonth(value);
-    queryDevice(data);
+    setParam(res => {
+      return { ...res, time: data, selectType: value };
+    });
   };
   const prevMonth = t => {
     return [
@@ -309,7 +338,7 @@ const HistoryLift = () => {
     return (
       <>
         <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('home.dataFilter')}：</div>
-        <Radio.Group onChange={dataChange} value={value} size="small">
+        <Radio.Group onChange={dataChange} value={value} size="small" disabled>
           <Space direction="vertical">
             <Radio value={1}>{t('history.allData')}</Radio>
             <Radio value={2}>{t('history.localData')}</Radio>
@@ -437,7 +466,6 @@ const HistoryLift = () => {
     const importPDF = async () => {
       setLoading(true);
       const todo = await ipcRenderer.invoke('importPDF');
-      console.log(todo);
       if (todo == 'nopath') {
         setTimeout(() => {
           setLoading(false);
@@ -589,16 +617,38 @@ const HistoryLift = () => {
       </Modal>
     );
   };
+  useEffect(() => {
+    if (paramCache.param) {
+      setParam(paramCache.param);
+    }
+  }, []);
+
+  useEffect(() => {
+    queryDevice(param);
+    setParamCache(res => {
+      return { ...res, param };
+    });
+  }, [param]);
   return (
     <div style={{ padding: '0 10px' }}>
       <Space direction="vertical" size="middle">
         <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.timeOptions')}：</div>
-        <RangePicker showTime size="small" onChange={timeChange} style={{ height: '30px' }} />
+        <RangePicker
+          format={`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`}
+          value={[
+            param.time[0] == '' ? null : dayjs(param.time[0]),
+            param.time[1] == '' ? null : dayjs(param.time[1]),
+          ]}
+          showTime
+          size="small"
+          onChange={timeChange}
+          style={{ height: '30px' }}
+        />
         <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.quickView')}：</div>
         <div className="deploy-select" style={{ padding: '0' }}>
           <Select
-            defaultValue={0}
             style={{ width: '100%' }}
+            value={param.selectType}
             onChange={handleChange}
             popupClassName="deploy-select-popup"
             options={[

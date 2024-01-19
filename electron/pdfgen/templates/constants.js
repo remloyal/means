@@ -29,7 +29,7 @@ export const PDF_INFO = {
     VERSION: '1.4',
     SUBJECT: 'Platform PDF',
   },
-  FONT_SIMSUN = Msyhl, // 中文字体 黑体
+  FONT_SIMSUN = simsunPath, // 中文字体 黑体
   FONT_ARIAL = arialPath, // 俄语会用到，葡萄牙语应该也会用到
   FONT_HELVETICA = 'Helvetica', // 英文字体 常规
   FONT_HELVETICA_BOLD = 'Helvetica-Bold', // 英文字体 粗体

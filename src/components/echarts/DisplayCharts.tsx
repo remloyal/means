@@ -119,6 +119,13 @@ export const foldLine = (
             color: '#666666', // 设置网格线颜色
           },
         },
+        axisLabel: {
+          showMaxLabel: true,
+          show: true,
+          textStyle: {
+            color: '#000000',
+          },
+        },
       },
     ],
     yAxis: [

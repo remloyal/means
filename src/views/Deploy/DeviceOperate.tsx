@@ -1,11 +1,11 @@
 import { HUMI_UNIT, OPERATE_CONFIG } from '@/config';
-import { deviceConfigParam, equipment } from '@/stores';
+import { deviceConfigParam, equipment, importDeviceParam } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { c2f, f2c } from '@/utils/utils';
 import { Col, Input, InputNumber, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 const getTimeOptions = (index: number = 12) => {
   const option: { value: string | number; label: string | number }[] = [];
@@ -38,11 +38,6 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     initTime();
-    window.eventBus.on('deviceConfig', deviceData => {
-      if (deviceData.tempPeriod) {
-        initTime(deviceData.tempPeriod);
-      }
-    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
@@ -114,6 +109,16 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
       };
     });
   }, [time, minute]);
+
+  const initConfig = deviceData => {
+    if (deviceData && Object.keys(deviceData).includes('tempPeriod')) {
+      initTime(deviceData.tempPeriod);
+    }
+  };
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
 
   return (
     <Col span={8}>
@@ -241,6 +246,12 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
     const minute = timePart % 60;
     setTime(hour * 3600);
     setMinute(minute * 60);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        startDelayTime: times,
+      };
+    });
   };
 
   const dayChange = day => {
@@ -280,7 +291,15 @@ export const StartDelayDom = ({ state }: { state: boolean }) => {
       };
     });
   }, [day, time, minute]);
-
+  const initConfig = deviceData => {
+    if (deviceData && Object.keys(deviceData).includes('startDelayTime')) {
+      initTime(deviceData.startDelayTime);
+    }
+  };
+  const importConfig = useRecoilValue(importDeviceParam);
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('home.startDelay')}</div>
@@ -334,23 +353,19 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     init();
-    window.eventBus.on('deviceConfig', deviceData => {
-      if (deviceData.hightEmp) {
-        setEmp(deviceData.hightEmp || emp);
-      }
-    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0);
-  const [unit, setUnit] = useState('\u2103');
+  const [unit, setUnit] = useState(1);
   const empChange = num => {
     setEmp(num);
     setDeviceConfig(item => {
       return {
         ...item,
-        hightEmp: num,
+        hightEmp: unit == 1 ? f2c(num) : num,
       };
     });
   };
@@ -360,18 +375,43 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
     let value = hightEmp || 0;
     if (parseInt(multidUnit) == 0) {
       value = hightEmp;
-      setUnit('\u2103');
     } else {
-      setUnit('\u2109');
       value = c2f(hightEmp);
     }
+    setUnit(parseInt(multidUnit));
     setEmp(value);
     setDeviceConfig(item => {
       return {
         ...item,
         hightEmp: value,
+        // 记录配置时 是华氏度还是摄氏度
+        multidUnitConfig: multidUnit,
       };
     });
+  };
+
+  const initConfig = deviceData => {
+    if (deviceData && Object.keys(deviceData).includes('hightEmp')) {
+      const highTemp = Number(deviceData.hightEmp);
+      if (device?.record.multidUnit == 0) {
+        // 摄氏度
+        if (highTemp > OPERATE_CONFIG.MAX_TEMP) {
+          // 读取可能大于最大温度限制，按照是华氏度处理
+          setEmp(f2c(highTemp));
+        } else {
+          setEmp(highTemp);
+        }
+      } else {
+        // 华氏度
+        const temp = c2f(highTemp);
+        if (temp > c2f(OPERATE_CONFIG.MAX_TEMP)) {
+          // 转换后大于限制值，可能原本就是确认值
+          setEmp(highTemp);
+        } else {
+          setEmp(c2f(highTemp));
+        }
+      }
+    }
   };
 
   const setHightEmp = async () => {
@@ -386,20 +426,24 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     init();
   }, [device]);
+
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatUpperLimit')}</div>
       <div className="deploy-select">
         <InputNumber
           size="small"
-          min={deviceConfig.lowtEmp}
-          max={unit == '\u2109' ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
+          min={unit == 1 ? c2f(deviceConfig.lowtEmp) : deviceConfig.lowtEmp}
+          max={unit == 1 ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
           onChange={empChange}
           value={emp}
           style={{ width: '80%' }}
           step="0.1"
         />
-        <span className="deploy-span">{unit}</span>
+        <span className="deploy-span">{unit == 0 ? '\u2103' : '\u2109'}</span>
       </div>
     </Col>
   );
@@ -414,17 +458,13 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     init();
-    window.eventBus.on('deviceConfig', deviceData => {
-      if (deviceData.lowtEmp) {
-        setEmp(deviceData.lowtEmp || emp);
-      }
-    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0.0);
-  const [unit, setUnit] = useState('\u2103');
+  const [unit, setUnit] = useState(0);
   const empChange = num => {
     setEmp(num);
     setDeviceConfig(item => {
@@ -434,24 +474,36 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
       };
     });
   };
+
   const init = () => {
     const multidUnit = device?.record.multidUnit;
     const lowtEmp = device?.record.lowtEmp;
     let value = lowtEmp || 0;
     if (parseInt(multidUnit) == 0) {
       value = lowtEmp;
-      setUnit('\u2103');
     } else {
       value = c2f(lowtEmp);
-      setUnit('\u2109');
     }
+    setUnit(parseInt(multidUnit));
     setEmp(value);
     setDeviceConfig(item => {
       return {
         ...item,
-        lowtEmp: value,
+        // 统一记录为摄氏度
+        lowtEmp: unit == 1 ? f2c(value) : value,
       };
     });
+  };
+
+  const initConfig = deviceData => {
+    if (deviceData && Object.keys(deviceData).includes('lowtEmp')) {
+      const lowTemp = Number(deviceData.lowtEmp);
+      if (device?.record.multidUnit == 0) {
+        setEmp(lowTemp);
+      } else {
+        setEmp(c2f(lowTemp));
+      }
+    }
   };
 
   const setLowtEmp = async () => {
@@ -467,21 +519,23 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     init();
   }, [device]);
-
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatLowerLimit')}</div>
       <div className="deploy-select">
         <InputNumber
           size="small"
-          max={deviceConfig.hightEmp}
-          min={unit == '\u2109' ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
+          max={unit == 1 ? c2f(deviceConfig.hightEmp) : deviceConfig.hightEmp}
+          min={unit == 1 ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
           onChange={empChange}
           value={emp}
           style={{ width: '80%' }}
           step="0.1"
         />
-        <span className="deploy-span">{unit}</span>
+        <span className="deploy-span">{unit == 0 ? '\u2103' : '\u2109'}</span>
       </div>
     </Col>
   );
@@ -496,15 +550,11 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     init();
-    window.eventBus.on('deviceConfig', deviceData => {
-      if (deviceData.highHumi) {
-        setEmp(deviceData.highHumi || emp);
-      }
-    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0);
   const empChange = num => {
     setEmp(parseInt(num));
@@ -525,13 +575,19 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
       };
     });
   };
-
+  const initConfig = (deviceData: any) => {
+    if (deviceData && Object.keys(deviceData).includes('highHumi')) {
+      setEmp(deviceData.highHumi);
+    }
+  };
   const setHighHumi = async () => {
     if (emp != parseInt(device?.record.highHumi)) {
       await deviceOperate.setHightHumi(emp);
     }
   };
-
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.humiUpperLimit')}</div>
@@ -559,15 +615,11 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     init();
-    window.eventBus.on('deviceConfig', deviceData => {
-      if (deviceData.lowHumi) {
-        setEmp(deviceData.lowHumi || emp);
-      }
-    });
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0);
   const empChange = num => {
     setEmp(parseInt(num));
@@ -588,13 +640,19 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
       };
     });
   };
-
+  const initConfig = (deviceData: any) => {
+    if (deviceData && Object.keys(deviceData).includes('lowHumi')) {
+      setEmp(deviceData.lowHumi);
+    }
+  };
   const setLowHumi = async () => {
     if (emp != parseInt(device?.record.lowHumi)) {
       await deviceOperate.setLowtHumi(emp);
     }
   };
-
+  useEffect(() => {
+    initConfig(importConfig);
+  }, [importConfig]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.humiLowerLimit')}</div>

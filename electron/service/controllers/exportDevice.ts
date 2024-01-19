@@ -20,15 +20,19 @@ export const exportDevicePdf = params => {
     }
   });
 };
+const typeList = {
+  pdf: { name: '', extensions: ['pdf'] },
+  xlsx: { name: '', extensions: ['xlsx'] },
+};
 
 // 选择保存路径
-export const selectSavePath = (name = '') => {
+export const selectSavePath = (name = '', type = ['pdf']) => {
   return new Promise((resolve, reject) => {
     dialog
       .showSaveDialog(win!, {
-        defaultPath: `${name}.pdf`,
+        defaultPath: `${name}`,
         // properties: ['openDirectory', 'createDirectory'],
-        filters: [{ name: name || '', extensions: ['pdf'] }],
+        filters: type.map(key => typeList[key]),
       })
       .then(result => {
         console.log(result);

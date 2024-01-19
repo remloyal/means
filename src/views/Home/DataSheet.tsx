@@ -100,7 +100,10 @@ const DataSheet = () => {
       const data: RecordType[] = todo.map((item, index) => ({
         id: index + 1,
         time: `${item.timeStamp}`,
-        heat: MultidUnit[device?.record.multidUnit || 0] == '\u2109' ? `${item.f}` : `${item.c}`,
+        heat:
+          MultidUnit[device?.record.multidUnit || 0] == '\u2109'
+            ? `${item.f}`
+            : `${item.c.toFixed(1)}`,
         humi: item.humi || 0,
       }));
       setCsvData(data);

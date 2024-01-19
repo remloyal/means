@@ -2,7 +2,7 @@ import { ConfigProvider } from 'antd';
 
 export const MainBody = ({
   children,
-  style,
+  style = {},
 }: {
   children: React.ReactNode;
   style?: React.CSSProperties;
@@ -14,8 +14,12 @@ export const MainBody = ({
   );
 };
 
-export const MainRight = ({ children }) => {
-  return <div className="summary-right">{children}</div>;
+export const MainRight = ({ children, style = {} }) => {
+  return (
+    <div className="summary-right" style={style}>
+      {children}
+    </div>
+  );
 };
 
 export const MainLeft = ({ children }) => {

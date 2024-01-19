@@ -1,5 +1,7 @@
 // hid-process.js
 const HID = require('node-hid');
+const iconv = require('iconv-lite');
+
 let device = null;
 let item;
 process.parentPort.on('message', async message => {
@@ -20,6 +22,8 @@ process.parentPort.on('message', async message => {
       }
     }
   } catch (error) {
+    device.close();
+    device = null;
     process.parentPort.postMessage({ event: 'hidError', data: error });
   }
 });
@@ -83,8 +87,11 @@ function Uint8ArrayToString(fileData) {
     dataString += String.fromCharCode(fileData[i]);
   }
   const decoder = new TextDecoder('utf8');
-  const str = decoder.decode(fileData);
+  let str = decoder.decode(fileData);
   console.log('解析数据 ==>', str);
+  if (hidGbkKeys.includes(item.key)) {
+    str = iconv.decode(fileData, 'GB2312');
+  }
   return str
     .trim()
     .replaceAll('\u0002', '')
@@ -96,3 +103,22 @@ process.parentPort.once('error', err => {
   console.error('子进程发生错误:', err);
   process.parentPort.postMessage({ event: 'error', data: err });
 });
+
+const hidGbkKeys = [
+  'shipmentId',
+  'setShipmentId',
+  'shipment1',
+  'setShipment1',
+  'shipment2',
+  'setShipment2',
+  'shipment3',
+  'setShipment3',
+  'shipment4',
+  'setShipment4',
+  'shipment5',
+  'setShipment5',
+  'shipment6',
+  'setShipment6',
+  'shipment7',
+  'setShipment7',
+];

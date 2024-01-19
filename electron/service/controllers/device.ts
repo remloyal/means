@@ -82,18 +82,25 @@ export const handleDeviceData = async params => {
 };
 
 export const queryDevice = async params => {
-  // const data = await Device.findAll({...query});
-  const data = await Device.findAll({
-    // group: [database.col('date')],
-    where: {
-      startTime: {
-        [Op.gte]: new Date(params[0]), // 查询大于当前时间的记录
-        [Op.lt]: new Date(params[1]),
+  console.log(params);
+  const { time } = params;
+  if (time.length > 0 && time[0] != '' && time[1] != '') {
+    const data = await Device.findAll({
+      // group: [database.col('date')],
+      where: {
+        createdAt: {
+          [Op.gte]: new Date(time[0]), // 查询大于当前时间的记录
+          [Op.lte]: new Date(time[1]),
+        },
       },
-    },
-  });
-  const todo = data.map(item => item.toJSON());
-  return todo;
+    });
+    const todo = data.reverse().map(item => item.toJSON());
+    return todo;
+  } else {
+    const data = await Device.findAll();
+    const todo = data.reverse().map(item => item.toJSON());
+    return todo;
+  }
 };
 
 export const deleteDevice = async params => {

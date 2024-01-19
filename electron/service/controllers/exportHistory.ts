@@ -9,7 +9,7 @@ import { text } from '../../pdfgen/gloable/language';
 
 export const exportHistory = async params => {
   const deviceList = await queryHistoryDeviceList(params.key);
-  const excelPath = await selectSavePath();
+  const excelPath = await selectSavePath('', ['xlsx']);
 
   if (!excelPath) return false;
 
@@ -39,7 +39,7 @@ const createExcel = async (params, deviceList) => {
   dataListSheet(workbook, { params, data: deviceList });
   log.info('====【3】==== 创建数据表');
 
-  const newpath = `${params.excelPath}/frigga_${dayjs().format('YYYYMMDDHHmmss')}.xlsx`;
+  const newpath = `${params.excelPath}`;
   workbook.xlsx.writeFile(newpath);
   log.info('====【4】==== 创建Excel,路径：', newpath);
 };

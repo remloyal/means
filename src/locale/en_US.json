@@ -73,7 +73,7 @@
     "exportAs": "Export As",
     "language": "Language",
     "confirm": "Confirm",
-    "cancellation": "Cancellation",
+    "cancellation": "Cancel",
     "screen": "Screen",
     "exportFailed": "Export Failed",
     "exportSuccess": "Export Success",
@@ -109,7 +109,9 @@
     "monotypic": "Monotypic",
     "accumulating": "Accumulating",
     "overtop": "overtop",
-    "below": "below"
+    "below": "below",
+    "threshold": "Threshold",
+    "configuringDevice": "Configuring device"
   },
   "history": {
     "cloudStorage": "cloud storage",

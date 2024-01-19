@@ -74,7 +74,10 @@ const pdfData = (data, monitors, markList) => {
           predicatedStart: param.endTime,
           projectId: '',
           recipient: '',
-          startDelayTime: parseInt(record.startDelayTime) / 60,
+          startDelayTime:
+            record.startDelayTime < 60
+              ? parseFloat(record.startDelayTime)
+              : parseInt(record.startDelayTime) / 60,
           timeZone: record.timeZone.replace('UTC', '') || '+08:00',
           to: record.getsn,
           tripId: record.deviceType,
@@ -83,9 +86,9 @@ const pdfData = (data, monitors, markList) => {
             {
               type: 'humi',
               unit: 'RH',
-              min: parseFloat(record.lowHumi),
+              min: param.lowHumi || parseFloat(record.lowHumi),
               receiveAlert: true,
-              max: parseFloat(record.highHumi),
+              max: param.highHumi || parseFloat(record.highHumi),
             },
             {
               type: 'temp',

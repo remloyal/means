@@ -93,7 +93,7 @@ export const TimeZone = ({ state }: { state: boolean }) => {
       return {
         ...item,
         timeZone: index,
-        time: times,
+        // time: times,
       };
     });
     setUtcTimeZone(UTC_PARAM[timeZoneData]);
@@ -178,7 +178,7 @@ export const TimeZone = ({ state }: { state: boolean }) => {
             value={time}
             onChange={timeChange}
             disabledDate={disabledDate}
-            format="YYYY-MM-DD HH:mm:ss"
+            format={`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`}
             size="small"
             disabled
             showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}

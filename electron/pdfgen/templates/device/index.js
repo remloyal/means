@@ -1704,7 +1704,7 @@ const printDeviceInfo = (pdf, { deviceInfo, pdfInfo, globalInfo, paddingConfigs 
   // 行程 id
   posY += ROW_DELTA;
   pdf.text(text('PDF_IDFO_TRIP_ID', LANGUAGE), labelLeftStartX, posY);
-  pdf.font(getFont('zh')).text(shipmentID, valueLeftStartX, posY);
+  pdf.font(getFont('zh')).text(shipmentID, valueLeftStartX, posY, { width: 150 });
   pdf.font(getFont(LANGUAGE));
 };
 

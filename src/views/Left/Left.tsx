@@ -104,12 +104,12 @@ const Left: React.FC = () => {
             zIndex: 8888,
             onOk() {
               deviceStates = false;
-              errorModal = null;
               setDeviceError();
               setSaving(false);
               setLoading(false);
               setDevice(null);
               clearTimeSave();
+              errorModal = null;
             },
           });
         }
@@ -148,13 +148,22 @@ const Left: React.FC = () => {
         }
       });
       window.eventBus.on('saving', res => {
+        if (res && res.text) {
+          setSavingText(res.text);
+        } else {
+          setSavingText('');
+        }
         setSaving(true);
         timeout = setTimeout(() => {
           setSaving(false);
           clearTimeSave();
         }, 20000);
       });
+      window.eventBus.on('savingClose', res => {
+        setSaving(false);
+      });
     }
+
     return () => {
       window.eventBus.removeAllListeners('friggaDevice:in');
       window.eventBus.removeAllListeners('friggaDevice:out');
@@ -163,6 +172,7 @@ const Left: React.FC = () => {
       window.eventBus.removeAllListeners('loadingCompleted');
       window.eventBus.removeAllListeners('updateDevice');
       window.eventBus.removeAllListeners('saving');
+      window.eventBus.removeAllListeners('savingClose');
     };
   }, []);
 
@@ -205,7 +215,6 @@ const Left: React.FC = () => {
 
   const DianLiang = val => {
     if (val && val != '') {
-      console.log('DianLiang', val);
       return (
         <div className="dianliang" style={{ position: 'relative', overflow: 'hidden' }}>
           <img
@@ -301,7 +310,7 @@ const Left: React.FC = () => {
       children: device != null ? setTempValue(device?.record.minimumValue) : '---',
     },
   ];
-  if (device?.record.highHumi != null && device?.record.lowHumi != null) {
+  if (device && device?.record.highHumi != null && device?.record.lowHumi != null) {
     items.push(
       {
         label: `${t('home.humidity')} ${t('left.maximumValue')}`,
@@ -340,6 +349,7 @@ const Left: React.FC = () => {
   }, [deviceHistory]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [savingText, setSavingText] = useState<string>('');
   const reloading = () => {
     loadUsbData(usbData);
   };
@@ -388,7 +398,16 @@ const Left: React.FC = () => {
         <div className="image">
           {device != null ? (
             <div className="image-device">
-              <img src={DeviceImg[device?.record.deviceType || 'M2H']} alt="" />
+              <img
+                src={
+                  DeviceImg[
+                    Object.keys(DeviceImg).includes(device?.record.deviceType)
+                      ? device?.record.deviceType
+                      : 'M2H'
+                  ]
+                }
+                alt=""
+              />
             </div>
           ) : (
             <div className="disconnect">
@@ -460,7 +479,11 @@ const Left: React.FC = () => {
           style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
           <div style={{ height: 100, width: 100 }}>
-            <Spin size="large" tip={`${t('left.saving')}...`} style={{ height: 100 }}>
+            <Spin
+              size="large"
+              tip={`${savingText != '' ? savingText : t('left.saving')}...`}
+              style={{ height: 100 }}
+            >
               <div className="content" />
             </Spin>
           </div>

@@ -119,16 +119,39 @@ export async function createWindow() {
   });
 
   win.on('close', async e => {
-    if (updateState) {
-      await hidProcess?.kill();
-      // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
-      win?.removeAllListeners();
-      win = null;
-    } else {
-      e.preventDefault();
-      win?.show();
-      win?.webContents.send('exitPrompt');
-    }
+    // if (updateState) {
+    //   await hidProcess?.kill();
+    //   // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
+    //   win?.removeAllListeners();
+    //   win = null;
+    // } else {
+    // }
+    e.preventDefault();
+    win?.show();
+    // win?.webContents.send('exitPrompt');
+    dialog
+      .showMessageBox(win!, {
+        type: 'info',
+        message: text('EXIT_PROMPT', DYNAMIC_CONFIG.language || 'en'),
+        buttons: [
+          text('MINIMIZE_TRAY', DYNAMIC_CONFIG.language || 'en'),
+          text('EXIT_APP', DYNAMIC_CONFIG.language || 'en'),
+        ],
+        // noLink: true,
+        // defaultId: 0,
+        cancelId: 8,
+      })
+      .then(async res => {
+        if (res.response == 0) {
+          win?.hide();
+        }
+        if (res.response == 1) {
+          await hidProcess?.kill();
+          win?.removeAllListeners();
+          win = null;
+          app.quit();
+        }
+      });
   });
 
   Menu.setApplicationMenu(Menu.buildFromTemplate([]));
@@ -239,6 +262,7 @@ ipcMain.handle('lang', (_, data) => {
     zh: 2,
   };
   DYNAMIC_CONFIG.lan = lang[data] || 1;
+  DYNAMIC_CONFIG.language = data;
   setTray(DYNAMIC_CONFIG.lan);
   return LANGUAGE_PDF[app.getLocale()];
 });

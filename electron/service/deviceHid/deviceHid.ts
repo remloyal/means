@@ -6,6 +6,7 @@ import log from '../../unitls/log';
 import drivelist from 'drivelist';
 import HID from 'node-hid';
 import { PATH_PARAM, HID_PARAM } from '../../config';
+import { hidGbkKeys, toGBK } from './hidUnit';
 
 let mainWindow: BrowserWindow | null = null;
 export let hidProcess: Electron.UtilityProcess | null;
@@ -74,7 +75,7 @@ ipcMain.handle('hidClose', (event, params: HidEventData) => {
     });
     // 将timeout对象置空
     timeout = {};
-  }, 2000);
+  }, 1200);
   // 杀死hidProcess
   // hidProcess?.kill();
   // hidProcess = null;
@@ -82,8 +83,11 @@ ipcMain.handle('hidClose', (event, params: HidEventData) => {
   // 遍历timeout对象，清除每一个timeout
 });
 
-function stringToUint8Array(str): number[] {
-  const buffer = Buffer.from(str, 'utf8');
+function stringToUint8Array(str, key): number[] {
+  if (hidGbkKeys.includes(key)) {
+    return toGBK(str);
+  }
+  const buffer = Buffer.from(str, 'utf-8');
   return [1, ...buffer];
 }
 
@@ -108,7 +112,7 @@ const hidWrite = async (params): Promise<{ key: string; value: string } | boolea
       // 发送hidWrite事件和参数给hidProcess线程
       hidProcess?.postMessage({
         event: 'hidWrite',
-        data: { ...params, value: stringToUint8Array(params.value) },
+        data: { ...params, value: stringToUint8Array(params.value, params.key) },
       });
 
       // 监听hidProcess线程的消息

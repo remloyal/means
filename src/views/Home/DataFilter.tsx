@@ -112,7 +112,11 @@ export const DataFilter = ({ onCancel }) => {
     }));
   };
   const onConfirm = () => {
-    setFilterTime(param);
+    const format = `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`;
+    setFilterTime({
+      startTime: dayjs(param.startTime).format(format),
+      endTime: dayjs(param.endTime).format(format),
+    });
     onCancel();
   };
   const [scrub, setScrub] = useState(true);
@@ -129,7 +133,7 @@ export const DataFilter = ({ onCancel }) => {
           <label style={{ marginLeft: '140px' }}>{t('home.endTime')}：</label>
         </div>
         <DatePicker.RangePicker
-          format={dateFormat}
+          format={`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`}
           showTime
           disabledDate={disabledDate}
           disabledTime={disabledRangeTime}

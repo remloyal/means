@@ -319,4 +319,7 @@ export const zh = {
   APP_UPDATE: '应用更新',
   PDF_IDFO_TRIP_ID: '行程 ID：',
   PDF_IDFO_TRIP_NOTE: '行程描述：',
+  EXIT_PROMPT: '关闭提示',
+  MINIMIZE_TRAY: '最小化至托盘',
+  EXIT_APP: '退出应用',
 };

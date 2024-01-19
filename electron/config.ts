@@ -101,6 +101,7 @@ export const HID_PARAM = {
   // hid 延迟读取key
   DELAY_LIST: [
     'shipmentId',
+    'setShipmentId',
     'shipment1',
     'setShipment1',
     'shipment2',
@@ -116,5 +117,5 @@ export const HID_PARAM = {
     'shipment7',
     'setShipment7',
   ],
-  DELAY_TIME: 100,
+  DELAY_TIME: 120,
 };

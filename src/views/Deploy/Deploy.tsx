@@ -13,11 +13,12 @@ import {
 } from './DeviceOperate';
 import { ipcRenderer } from 'electron';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { deviceConfigParam, equipment, typePower } from '@/stores';
+import { deviceConfigParam, equipment, importDeviceParam, typePower } from '@/stores';
 import { TimeZone } from './Timezone';
 import { DeployAdvanced } from './DeployAdvanced';
 import { ShipmentDescribeDom, ShipmentIdDom } from './Shipment';
 import { MultipleAlarm } from './MultipleAlarm';
+import { deviceOperate } from '@/utils/deviceOperation';
 
 const Deploy: React.FC = () => {
   return (
@@ -50,19 +51,30 @@ const DeployMain: React.FC = () => {
       children: <DeployAdvanced state={isUpdate} />,
     },
   ];
-  if (device.record.hardwareVersion == 'V2' && power.includes('setHighTemp1')) {
+  if (device && device.record.hardwareVersion == 'V2' && power.includes('setHighTemp1')) {
     items?.push({
       key: '3',
       label: t('deploy.multipleAlarmSettings'),
       children: <MultipleAlarm state={isUpdate} />,
     });
   }
-  const save = () => {
-    setIsUpdate(true);
-    window.eventBus.emit('saving');
+  const save = async () => {
+    if (power.includes('setBootMode')) {
+      window.eventBus.emit('saving', { text: t('deploy.configuringDevice') });
+      const state = await deviceOperate.setBootMode();
+      if (state) {
+        setIsUpdate(true);
+      } else {
+        setIsUpdate(false);
+        window.eventBus.emit('savingClose');
+      }
+    } else {
+      setIsUpdate(true);
+      window.eventBus.emit('saving', { text: t('deploy.configuringDevice') });
+    }
     setTimeout(() => {
       setIsUpdate(false);
-    }, 1000);
+    }, 2000);
   };
 
   const [activeKey, setActiveKey] = useState(0);
@@ -126,6 +138,7 @@ const DataOperate = ({ save }: { save: () => void }) => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
+  const [importConfig, setImportConfig] = useRecoilState(importDeviceParam);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -148,7 +161,14 @@ const DataOperate = ({ save }: { save: () => void }) => {
     ipcRenderer.on('select-config-reply', (event, arg) => {
       window.eventBus.emit('deviceConfig', arg);
       setDeviceConfig(arg);
+      setImportConfig(arg);
+      setTimeout(() => {
+        setImportConfig({});
+      }, 1000);
     });
+    return () => {
+      ipcRenderer.removeAllListeners('select-config-reply');
+    };
   }, []);
   return (
     <>

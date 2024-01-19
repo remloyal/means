@@ -44,8 +44,8 @@ export const ShipmentIdDom = ({ state }: { state: boolean }) => {
   const handleChange = e => {
     const val = e.target.value;
     let text = '';
-    if (Buffer.byteLength(val, 'utf8') > 32) {
-      text = getNewStrByByte(val, 32);
+    if (Buffer.byteLength(val, 'utf8') > 40) {
+      text = getNewStrByByte(val, 40);
       setText(text);
     } else {
       text = val;

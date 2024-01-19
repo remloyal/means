@@ -15,7 +15,9 @@ import enUS from 'antd/locale/en_US';
 import { useRecoilState } from 'recoil';
 import { dateFormat, language } from './stores';
 import { Locale } from 'antd/es/locale';
-
+import dayjs from 'dayjs';
+zhCN.Calendar!.lang.shortWeekDays = '日_一_二_三_四_五_六'.split('_');
+zhCN.Calendar!.lang.shortMonths = '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_');
 const languageData = {
   zh: zhCN,
   en: enUS,
@@ -30,10 +32,16 @@ const App: React.FC = () => {
     message.config({ prefixCls: 'antd-message', maxCount: 3, duration: 2 });
     setTongue(localStorage.getItem('language') || 'zh');
     setDate(localStorage.getItem('dateFormat') || 'YYYY-MM-DD');
+    setLocal(languageData[tongue || 'zh']);
   }, []);
 
   useEffect(() => {
     setLocal(languageData[tongue || 'zh']);
+    if (tongue == 'en') {
+      dayjs.locale('en');
+    } else {
+      dayjs.locale('zh-cn');
+    }
   }, [tongue]);
 
   return (

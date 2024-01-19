@@ -369,4 +369,7 @@ export const en = {
   APP_UPDATE: 'App update',
   PDF_IDFO_TRIP_ID: 'Shipment ID:',
   PDF_IDFO_TRIP_NOTE: 'Shipment Note:',
+  EXIT_PROMPT: 'Turn off prompts',
+  MINIMIZE_TRAY: 'Minimize to tray',
+  EXIT_APP: 'Exit the application',
 };
