@@ -134,6 +134,13 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
     }
   };
 
+  const handleKeyDown = e => {
+    if (e.keyCode === 13) {
+      // 按下回车键
+      e.preventDefault(); // 阻止默认的换行行为
+    }
+  };
+
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('home.journeyDescription')}</div>
@@ -143,6 +150,7 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
           onChange={handleChange}
           style={{ height: '120px', resize: 'none' }}
           className="textarea-input"
+          onKeyDown={handleKeyDown}
         />
       </div>
     </Col>

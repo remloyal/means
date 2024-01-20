@@ -91,7 +91,7 @@
     "saveParameters": "Save parameters",
     "importTemplate": "Import Template",
     "exportTemplate": "Export Template",
-    "currentConfiguration": "Do you want to save the current configuration?",
+    "currentConfiguration": "Saving parameters will clear all data. Are you sure you want to continue?",
     "recordInterval": "Record Interval",
     "buttonStart": "Button Start",
     "timingOn": "Timing Start",

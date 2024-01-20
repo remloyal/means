@@ -292,7 +292,10 @@ const read = {
     name: '获取shipment ID',
     order: () => 'AT+GETMULTID:SID:',
     getData: data => {
-      return data.replaceAll(';', '').split(':')[2];
+      const key = 'AT+GETMULTID:SID:';
+      let str = data.replaceAll(key, '');
+      str = str.substring(0, str.length - 1);
+      return str;
     },
   },
   pdfLan: {
@@ -413,6 +416,16 @@ const setup = {
       return data;
     },
   },
+  // 格式化磁盘的AT：
+  // AT+FORMATFS:
+  setFromAtfs: {
+    key: 'setFromAtfs',
+    name: '格式化磁盘',
+    order: str => 'AT+FORMATFS:',
+    getData: data => {
+      return data;
+    },
+  },
 };
 export const getNewInstruct = () => {
   [...new Array(7).keys()].map((_, i) => {
@@ -422,7 +435,10 @@ export const getNewInstruct = () => {
       name: `获取shipment描述${i}`,
       order: () => `AT+GETMULTID:SD${i}:`,
       getData: (data: string) => {
-        return data.replaceAll(';', '').split(':')[2];
+        const key = `AT+GETMULTID:SD${i}:`;
+        let str = data.replaceAll(key, '');
+        str = str.substring(0, str.length - 1);
+        return str;
       },
     };
     setup[`setShipment${i}`] = {

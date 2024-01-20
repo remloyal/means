@@ -11,6 +11,9 @@ export let instructSetup;
 
 // 设备属性变量
 export let DeviceAttribute;
+
+let typePower: any[] = [];
+
 // 导出一个函数，用于设置设备类型
 export const setTypePower = (type: any = null, batvolVal = '') => {
   // 如果type参数存在
@@ -32,10 +35,8 @@ export const setTypePower = (type: any = null, batvolVal = '') => {
       instructSetup = Object.assign({}, DeviceAttribute.setup, newInstruct.setup);
     }
     // 向window.eventBus发送一个typePower事件，参数为instructRead和instructSetup中的属性
-    window.eventBus.emit('typePower', [
-      ...Object.keys(instructRead),
-      ...Object.keys(instructSetup),
-    ]);
+    typePower = [...Object.keys(instructRead), ...Object.keys(instructSetup)];
+    window.eventBus.emit('typePower', typePower);
   } else {
     // 如果type参数不存在，则将instructRead和instructSetup赋值为空数组
     instructRead = [];
@@ -290,6 +291,11 @@ const updateDevice = () => {
   timeout = setTimeout(() => {
     deviceExample.setCsvData(deviceExample.csvData);
     window.eventBus.emit('updateDevice', Object.assign({}, deviceExample));
+    clearTimeout(timeout);
+    timeout = null;
+    if (typePower.includes('setFromAtfs')) {
+      deviceOperate.setFromAtfs();
+    }
   }, 3000);
 };
 
@@ -495,5 +501,13 @@ export const deviceOperate = {
     const instruct = instructSetup.setReBootMcu;
     const data = await setOperateDevice(instruct);
     return data;
+  },
+  /**格式化磁盘 */
+  setFromAtfs: async () => {
+    const instruct = instructSetup.setFromAtfs;
+    if (instruct) {
+      console.log('重启AT，格式化磁盘', instruct);
+      deviceExample.getType(instruct);
+    }
   },
 };

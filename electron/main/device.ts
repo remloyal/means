@@ -11,9 +11,11 @@ const PRODUCT_ID = 631; // 517
 
 try {
   usb.on('attach', async device => {
-    const data = await filterUsbList();
-    console.log('attach==>', data);
-    win?.webContents.send('deviceInsertion', data);
+    setTimeout(async () => {
+      const data = await filterUsbList();
+      console.log('attach==>', data);
+      win?.webContents.send('deviceInsertion', data);
+    }, 1000);
   });
 
   usb.on('detach', async device => {
@@ -21,7 +23,7 @@ try {
     console.log('detach ==>', data);
     setTimeout(() => {
       win?.webContents.send('deviceRemoval', data);
-    }, 500);
+    }, 1000);
   });
 } catch (error) {
   console.log(error);
