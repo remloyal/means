@@ -11,6 +11,7 @@ import { parsePDF } from './pad_json';
 import { ipcMain, ipcRenderer } from 'electron';
 import { win } from '../../main/index';
 import path from 'path';
+const iconv = require('iconv-lite');
 
 // let pdfjsLib;
 const attempts = 5;
@@ -19,9 +20,10 @@ export const importPDFFile = async (filePath: string, pdfPassword = '', deviceRe
   //   pdfjsLib = await import('pdfjs-dist');
   // }
   // const data = new Uint8Array(fs.readFileSync(filePath));
+  let isGarbled = false;
   const loadingTask = pdfjsLib.getDocument({
     url: filePath,
-    cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
+    // cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/cmaps/',
     cMapPacked: true,
   });
   let lang = 'en'; //zh
@@ -109,6 +111,17 @@ export const importPDFFile = async (filePath: string, pdfPassword = '', deviceRe
     // 乱码解析
     const data = await parsePDF(filePath, list.length, pdfPassword || password);
     if (data) {
+      isGarbled = true;
+      list = data;
+    }
+  }
+
+  const newDeviceType = ['°C°C°C°C°C', '°C°C°C°C°C°C', '°F°F°F°F°F', '°F°F°F°F°F°F'];
+  if (list.length >= 1 && newDeviceType.includes(list[1])) {
+    // 新设备端中文识别 可能错误 ，重新解析
+    const data = await parsePDF(filePath, list.length, pdfPassword || password);
+    if (data) {
+      isGarbled = true;
       list = data;
     }
   }
@@ -128,6 +141,11 @@ export const importPDFFile = async (filePath: string, pdfPassword = '', deviceRe
   //   console.log(deviceInstance, csvData.length);
   if (deviceInstance.timeZone) {
     deviceInstance.timeZone = formatUtc(deviceInstance.timeZone);
+  }
+  if (deviceInstance.shipment || deviceInstance.shipmentId) {
+    deviceInstance.shipment = iconv.decode(deviceInstance.shipment, 'GB2312');
+    deviceInstance.shipmentId = iconv.decode(deviceInstance.shipmentId, 'GB2312');
+    console.log(iconv.decode(deviceInstance.shipment, 'GBK'));
   }
   return { ...deviceInstance, ...threshold };
   // console.log(csvData);
@@ -262,8 +280,7 @@ function formatText(text, type) {
 }
 
 // 温湿度 阈值
-function getThreshold(data, type) {
-  console.log('getThreshold===>', data);
+function getThreshold(data, type, isGarbled = false) {
   let unit = '℃';
   if (data.includes('°C') || data.includes('℃') || data.includes('ꇦ')) {
     // size += 1;
