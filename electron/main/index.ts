@@ -130,14 +130,14 @@ export async function createWindow() {
     win?.show();
     // win?.webContents.send('exitPrompt');
     dialog
-      .showMessageBox(win!, {
+      .showMessageBox(win! || null, {
         type: 'info',
         message: text('EXIT_PROMPT', DYNAMIC_CONFIG.language || 'en'),
         buttons: [
           text('MINIMIZE_TRAY', DYNAMIC_CONFIG.language || 'en'),
           text('EXIT_APP', DYNAMIC_CONFIG.language || 'en'),
         ],
-        // noLink: true,
+        noLink: true,
         // defaultId: 0,
         cancelId: 8,
       })

@@ -38,7 +38,7 @@ const createThread = async () => {
         log.error('子进程发生错误 hidError:', msg.data);
         hidProcess?.kill();
         hidProcess = null;
-        // mainWindow?.webContents.send('hidError', msg.data);
+        mainWindow?.webContents.send('hidError', msg.data);
       }
     });
 

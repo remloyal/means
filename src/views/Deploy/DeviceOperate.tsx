@@ -359,7 +359,7 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
   const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0);
-  const [unit, setUnit] = useState(1);
+  const [unit, setUnit] = useState(0);
   const empChange = num => {
     setEmp(num);
     setDeviceConfig(item => {
@@ -383,9 +383,7 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        hightEmp: value,
-        // 记录配置时 是华氏度还是摄氏度
-        multidUnitConfig: multidUnit,
+        hightEmp: device?.record.hightEmp,
       };
     });
   };
@@ -470,7 +468,7 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        lowtEmp: num,
+        lowtEmp: unit == 1 ? f2c(num) : num,
       };
     });
   };
@@ -490,7 +488,7 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
       return {
         ...item,
         // 统一记录为摄氏度
-        lowtEmp: unit == 1 ? f2c(value) : value,
+        lowtEmp: device?.record.lowtEmp,
       };
     });
   };

@@ -1,3 +1,4 @@
+import { ipcMain } from 'electron';
 import { LOG_PARAM, SYSTEM } from '../config';
 import log4js from 'log4js';
 const isDev = SYSTEM.IS_DEV;
@@ -31,7 +32,20 @@ log4js.configure({
   },
 });
 const logger = log4js.getLogger('work');
-
+const LogCollection = {
+  debug: (...text) => {
+    isDev && logger.debug(text.toString());
+  },
+  info: (...text) => {
+    isDev && logger.info(text.toString());
+  },
+  db: (...text) => {
+    isDev && logger.info(text.toString());
+  },
+  error: (...text) => {
+    logger.error(text.toString());
+  },
+};
 export default {
   debug: (...text) => {
     isDev && logger.debug(text.toString());
@@ -46,3 +60,9 @@ export default {
     logger.error(text.toString());
   },
 };
+
+ipcMain.handle('setLog', (event, res) => {
+  const { type, data } = res;
+  const logSet = LogCollection[type || 'error'];
+  logSet(data);
+});

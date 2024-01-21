@@ -314,7 +314,7 @@ const ExportData: React.FC = () => {
           type="primary"
           size="large"
           onClick={showModal}
-          disabled={device?.record.mode == 2 ? true : false}
+          disabled={device?.csvData.length == 0 ? true : device?.record.mode == 2 ? true : false}
         >
           {t('home.exportData')}
         </Button>

@@ -42,7 +42,7 @@ export const ShipmentIdDom = ({ state }: { state: boolean }) => {
     });
   };
   const handleChange = e => {
-    const val = e.target.value;
+    const val = e.target.value.replace(/\n/g, '');
     let text = '';
     if (Buffer.byteLength(val, 'utf8') > 40) {
       text = getNewStrByByte(val, 40);
@@ -109,7 +109,7 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
     });
   };
   const handleChange = e => {
-    const val = e.target.value;
+    const val = e.target.value.replace(/\n/g, '');
     let text = '';
     if (Buffer.byteLength(val, 'utf8') > 273) {
       text = getNewStrByByte(val, 273);
@@ -148,7 +148,7 @@ export const ShipmentDescribeDom = ({ state }: { state: boolean }) => {
         <TextArea
           value={text}
           onChange={handleChange}
-          style={{ height: '120px', resize: 'none' }}
+          style={{ height: '170px', resize: 'none' }}
           className="textarea-input"
           onKeyDown={handleKeyDown}
         />

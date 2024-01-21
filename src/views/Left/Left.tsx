@@ -16,7 +16,7 @@ import M2H from '@/assets/img/M2H.png';
 import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
 import DianLiangImg from '@/assets/img/dianliang.png';
-import { loadUsbData, setDeviceError, usbData } from '@/utils/detectDevice';
+import { loadUsbData, reIdentification, setDeviceError, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
 import { QuitPrompt } from './ExitPrompt';
 import { HUMI_UNIT } from '@/config';
@@ -95,23 +95,38 @@ const Left: React.FC = () => {
       ipcRenderer.on('hidError', (event, err) => {
         setLoading(false);
         // alert(t('left.errotText'));
-        // message.error(t('left.errotText'));
         if (errorModal == null) {
-          errorModal = Modal.error({
-            centered: true,
-            content: t('left.errotText'),
-            cancelButtonProps: { style: { display: 'none' } },
-            zIndex: 8888,
-            onOk() {
-              deviceStates = false;
-              setDeviceError();
-              setSaving(false);
-              setLoading(false);
-              setDevice(null);
-              clearTimeSave();
-              errorModal = null;
-            },
+          // errorModal = message.error(t('left.errotText'));
+          // console.log(errorModal);
+          ipcRenderer.invoke('setLog', {
+            data: t('left.errotText'),
+            type: 'error',
           });
+          errorModal = setTimeout(() => {
+            deviceStates = false;
+            setDeviceError();
+            setSaving(false);
+            setLoading(false);
+            setDevice(null);
+            clearTimeSave();
+            errorModal = null;
+            reIdentification();
+          }, 1000);
+          // errorModal = Modal.error({
+          //   centered: true,
+          //   content: t('left.errotText'),
+          //   cancelButtonProps: { style: { display: 'none' } },
+          //   zIndex: 8888,
+          //   onOk() {
+          //     deviceStates = false;
+          //     setDeviceError();
+          //     setSaving(false);
+          //     setLoading(false);
+          //     setDevice(null);
+          //     clearTimeSave();
+          //     errorModal = null;
+          //   },
+          // });
         }
       });
 
@@ -173,6 +188,8 @@ const Left: React.FC = () => {
       window.eventBus.removeAllListeners('updateDevice');
       window.eventBus.removeAllListeners('saving');
       window.eventBus.removeAllListeners('savingClose');
+      ipcRenderer.removeAllListeners('resizeEvent');
+      ipcRenderer.removeAllListeners('hidError');
     };
   }, []);
 

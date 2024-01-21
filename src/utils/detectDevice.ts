@@ -180,11 +180,15 @@ export const loadUsbData = async data => {
         window.eventBus.emit('loadingCompleted');
       });
     } catch (error) {
-      window.eventBus.emit('loadingCompleted', {
-        error: 'The application does not support this device!',
+      ipcRenderer.invoke('setLog', {
+        data: 'The application does not support this device!',
+        type: 'error',
       });
       usbData = null;
       // console.log(error);
+      // 尝试重新获取一次设备
+      setDeviceError();
+      setTimeout(() => reIdentification(), 2000);
     }
   }
 };
@@ -206,4 +210,18 @@ export const setDeviceError = () => {
   deviceExample.close();
   window.eventBus.emit('friggaDevice:out');
   setTypePower();
+};
+
+// 识别设备
+export const reIdentification = () => {
+  const deviceFirst = async () => {
+    const data = await ipcRenderer.invoke('deviceFirst');
+    if (data) {
+      loadUsbData(data);
+    }
+  };
+  setTimeout(() => {
+    if (usbData) return;
+    deviceFirst();
+  }, 3000);
 };
