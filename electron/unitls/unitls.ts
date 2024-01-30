@@ -75,9 +75,19 @@ export function getUrl() {
 
   const localTimestamp = dayjs().valueOf().toString();
   const hash = cryptMd5(localTimestamp);
-  const url = `${BASE_URL}cmsapi/tools/check/${localTimestamp}/${hash}?lan=${DYNAMIC_CONFIG.lan}&type=1&ver=${DYNAMIC_CONFIG.ver}&env=${DYNAMIC_CONFIG.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
+  const url = `${BASE_URL}/cmsapi/tools/check/${localTimestamp}/${hash}?lan=${DYNAMIC_CONFIG.lan}&type=1&ver=${DYNAMIC_CONFIG.ver}&env=${DYNAMIC_CONFIG.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
   return url;
 }
+export const getPdfUrl = () => {
+  const plan = {
+    1: 'en',
+    2: 'zh',
+  };
+  const url = `${BASE_URL}/userguidDownload/M_tool_help_${plan[DYNAMIC_CONFIG.lan]}.pdf`;
+  // const url = `${BASE_URL}/userguidDownload/M_series_user_guide_en.pdf`;
+  console.log('pdfUrl', url);
+  return url;
+};
 
 export const judgingSpaces = pathData => {
   let directoryPath = path.join(pathData);
@@ -85,4 +95,11 @@ export const judgingSpaces = pathData => {
     directoryPath = `"${directoryPath}"`;
   }
   return directoryPath;
+};
+
+export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
+export const isfileExist = (path: string): Promise<boolean> => {
+  return new Promise<any>(resolve =>
+    fs.access(path, fs.constants.F_OK, (err: any) => resolve(!err))
+  );
 };

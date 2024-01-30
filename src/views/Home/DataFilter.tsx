@@ -112,10 +112,9 @@ export const DataFilter = ({ onCancel }) => {
     }));
   };
   const onConfirm = () => {
-    const format = `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`;
     setFilterTime({
-      startTime: dayjs(param.startTime).format(format),
-      endTime: dayjs(param.endTime).format(format),
+      startTime: dayjs(param.startTime).format(dateFormat),
+      endTime: dayjs(param.endTime).format(dateFormat),
     });
     onCancel();
   };

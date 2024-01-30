@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { Device } from './model';
 import {
   deleteDevice,
+  deviceHelp,
   handleDeviceData,
   queryDevice,
   queryHistoryDevice,
@@ -129,6 +130,19 @@ ipcMain.handle('importPDF', (event, params) => {
     try {
       const data = importPDF();
       resolve(data);
+    } catch (error) {
+      log.error(error);
+      resolve(false);
+    }
+  });
+});
+
+// 帮助
+ipcMain.handle('deviceHelp', (event, params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const state = await deviceHelp();
+      resolve(state);
     } catch (error) {
       log.error(error);
       resolve(false);

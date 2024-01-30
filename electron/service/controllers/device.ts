@@ -8,6 +8,9 @@ import { database } from '../db';
 import { decrypt, encrypt } from '../../unitls/encryption';
 import log from '../../unitls/log';
 import { PATH_PARAM } from '../../config';
+import axios from 'axios';
+import { getPdfUrl } from '../../unitls/unitls';
+import { shell } from 'electron';
 
 if (!fs.existsSync(PATH_PARAM.CACHE_PATH)) {
   fs.mkdirSync(PATH_PARAM.CACHE_PATH);
@@ -204,4 +207,33 @@ const getDeviceList = (device, file) => {
   device.csvData = todo;
   device.duration = duration;
   return device;
+};
+
+export const deviceHelp = async (): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    const pdfUrl = getPdfUrl();
+    if (!fs.existsSync(PATH_PARAM.PDF_PATH)) {
+      fs.mkdirSync(PATH_PARAM.PDF_PATH);
+    }
+    const pdfPath = path.join(PATH_PARAM.PDF_PATH, 'M_tool_help.pdf');
+    axios({
+      method: 'get',
+      url: pdfUrl,
+      responseType: 'arraybuffer',
+      timeout: 10000,
+    })
+      .then(res => {
+        console.log('headers', res.data);
+        fs.writeFileSync(pdfPath, res.data);
+        shell.openExternal(`file://${pdfPath}`);
+        resolve(true);
+      })
+      .catch(err => {
+        if (fs.existsSync(pdfPath)) {
+          shell.openExternal(`file://${pdfPath}`);
+        }
+        log.error(err);
+        resolve(false);
+      });
+  });
 };

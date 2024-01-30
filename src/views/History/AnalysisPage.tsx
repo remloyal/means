@@ -177,11 +177,9 @@ export const AnalysisTable = ({ data, ondelete }) => {
       render(value: any, record: any, index: number) {
         return (
           <span
+            className="analysis-lable"
             style={{
               backgroundColor: record.color,
-              padding: '2px 6px',
-              color: '#FFFFFF',
-              fontSize: '10px',
             }}
           >
             {record.id}
@@ -275,13 +273,13 @@ export const AnalysisTable = ({ data, ondelete }) => {
   };
 
   return (
-    <div>
+    <div className="analysis-table">
       <Table
         bordered
         virtual
         size="small"
         columns={columns}
-        scroll={{ x: 1000, y: axle }}
+        scroll={{ x: 800, y: 300 }}
         rowKey="id"
         dataSource={deviceRecord}
         pagination={false}
@@ -311,7 +309,7 @@ export const AnalysisPageLeft = () => {
         position: 'absolute',
         top: 0,
         width: '80%',
-        height: '100%',
+        // height: '100%',
         backgroundColor: '#F0F1F5',
         transition: 'opacity 0.5s',
       }}

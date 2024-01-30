@@ -4,19 +4,27 @@ import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { deviceOperate } from '@/utils/deviceOperation';
 import { useTranslation } from 'react-i18next';
+import { PDF_PASSWORD_NOT_VERSION } from '@/config';
 
 const WIDTH = 200;
 
 // 高级参数
 export const DeployAdvanced = ({ state }: { state: boolean }) => {
   const power = useRecoilValue(typePower);
+  const device = useRecoilValue(equipment);
   const data = [
     TempUnitDom,
     PDFLanguageDom,
     SensorTypeDom,
     ScreenOffTimeDom,
     EquipmentName,
-    PDFPasswordDom,
+
+    // 老版支持设置PDF密码 , 新版v1不支持
+    power.includes('batvol') == false
+      ? PDFPasswordDom
+      : PDF_PASSWORD_NOT_VERSION.includes(device?.record?.hardwareVersion) == false
+        ? PDFPasswordDom
+        : null,
 
     DeviceSwitch,
     DeviceKeyStopDom,
@@ -27,7 +35,7 @@ export const DeployAdvanced = ({ state }: { state: boolean }) => {
     <div style={{ padding: '0 20px' }}>
       <Row gutter={[16, 16]}>
         {data.map(Item => {
-          if (!Item) return <></>;
+          if (!Item) return <i key={Math.random().toString(36).slice(-6)}></i>;
           return <Item state={state} key={Item.name} />;
         })}
       </Row>
@@ -81,7 +89,7 @@ export const TempUnitDom = ({ state }: { state: boolean }) => {
   const importConfig = useRecoilValue(importDeviceParam);
   useEffect(() => {
     if (importConfig && Object.keys(importConfig).includes('multidUnit')) {
-      setStartMode(Number(importConfig.multidUnit));
+      handleChange(Number(importConfig.multidUnit));
     }
   }, [importConfig]);
 

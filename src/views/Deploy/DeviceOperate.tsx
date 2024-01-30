@@ -1,7 +1,7 @@
 import { HUMI_UNIT, OPERATE_CONFIG } from '@/config';
 import { deviceConfigParam, equipment, importDeviceParam } from '@/stores';
 import { deviceOperate } from '@/utils/deviceOperation';
-import { c2f, f2c } from '@/utils/utils';
+import { c2f, f2c, dealInt } from '@/utils/utils';
 import { Col, Input, InputNumber, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +18,9 @@ const getTimeOptions = (index: number = 12) => {
   return option;
 };
 
-const getMinuteOptions = (startIndex = 0) => {
+const getMinuteOptions = (startIndex = 0, endIndex = 60) => {
   const option: { value: string | number; label: string | number }[] = [];
-  for (let i = startIndex; i < 60; i++) {
+  for (let i = startIndex; i < endIndex; i++) {
     option.push({
       value: i * 60,
       label: i,
@@ -28,6 +28,18 @@ const getMinuteOptions = (startIndex = 0) => {
   }
   return option;
 };
+const getOptions = (list: number[]) => {
+  const option: { value: string | number; label: string | number }[] = [];
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    option.push({
+      value: item * 60,
+      label: item,
+    });
+  }
+  return option;
+};
+const PeriodDomTime: number[] = [60, 120, 300, 600, 1800, 3600];
 // 记录间隔
 export const TempPeriodDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
@@ -41,78 +53,50 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
-  const [time, setTime] = useState(0);
   const [minute, setMinute] = useState(0);
-  const [minuteState, setMinuteState] = useState(false);
-  const timeOptions = getTimeOptions();
-  // const minuteOptions = getMinuteOptions(1);
-  const [minuteOptions, setMinuteOptions] = useState(getMinuteOptions(1));
+  const [minuteOptions, setMinuteOptions] = useState(getOptions([1, 2, 5, 10, 30, 60]));
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
 
-  const initTime = (data = null) => {
-    let times = (device?.record.tempPeriod as number) ?? 0;
-    if (data) {
-      times = data;
-    }
+  const initTime = () => {
+    let times = (device?.record.tempPeriod as number) ?? 60;
     if (times === 0) {
-      setTime(0);
-      setMinute(0);
-      return;
+      times = 60;
     }
-    // 秒数转时分
-    const timePart = times / 60;
-    const hour = Math.floor(timePart / 60);
-    const minute = timePart % 60;
-    setTime(hour * 3600);
-    setMinute(minute * 60);
     if (times >= 3600) {
-      setMinuteOptions(getMinuteOptions());
-    } else {
-      setMinuteOptions(getMinuteOptions(1));
+      times = 3600;
     }
-  };
-
-  const timeChange = val => {
-    setTime(val);
-    if (val === 43200) {
-      setMinuteState(true);
-      setMinute(0);
-    } else {
-      setMinuteState(false);
+    if (!PeriodDomTime.includes(times)) {
+      times = 60;
     }
-    if (val > 0) {
-      setMinuteOptions(getMinuteOptions());
-    } else {
-      setMinuteOptions(getMinuteOptions(1));
-      if (minute == 0) {
-        setMinute(60);
-      }
-    }
-  };
-
-  const minuteChange = val => {
-    setMinute(val);
-  };
-  const setTempPeriod = async () => {
-    const times = time === 43200 ? time : time + minute;
-    if (times != device?.record.tempPeriod) {
-      await deviceOperate.setTempPeriod(times);
-    }
-  };
-
-  useEffect(() => {
-    const times = time === 43200 ? time : time + minute;
+    setMinute(times);
     setDeviceConfig(item => {
       return {
         ...item,
         tempPeriod: times,
       };
     });
-  }, [time, minute]);
+  };
+
+  const minuteChange = val => {
+    setMinute(val);
+    setDeviceConfig(item => {
+      return {
+        ...item,
+        tempPeriod: val,
+      };
+    });
+  };
+
+  const setTempPeriod = async () => {
+    // const times = time === 43200 ? time : time + minute;
+    if (minute != device?.record.tempPeriod) {
+      await deviceOperate.setTempPeriod(minute);
+    }
+  };
 
   const initConfig = deviceData => {
     if (deviceData && Object.keys(deviceData).includes('tempPeriod')) {
-      initTime(deviceData.tempPeriod);
+      minuteChange(deviceData.tempPeriod);
     }
   };
   const importConfig = useRecoilValue(importDeviceParam);
@@ -125,20 +109,12 @@ export const TempPeriodDom = ({ state }: { state: boolean }) => {
       <div style={{ padding: '10px 0' }}>{t('deploy.recordInterval')}</div>
       <div className="deploy-select">
         <Select
-          value={time}
-          onChange={timeChange}
-          options={timeOptions}
-          popupClassName="deploy-select-popup"
-          size="small"
-        />
-        <span className="deploy-span">H</span>
-        <Select
           value={minute}
           onChange={minuteChange}
           options={minuteOptions}
           popupClassName="deploy-select-popup"
           size="small"
-          disabled={minuteState}
+          style={{ width: '50%' }}
         />
         <span className="deploy-span">M</span>
       </div>
@@ -353,6 +329,9 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   }, [state]);
   useEffect(() => {
     init();
+    return () => {
+      setDeviceConfig({});
+    };
   }, []);
   const { t } = useTranslation();
   const [device, setDevice] = useRecoilState(equipment);
@@ -360,12 +339,14 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0);
   const [unit, setUnit] = useState(0);
+  const [configState, setConfigState] = useState(false);
   const empChange = num => {
+    num = dealInt(num, deviceConfig.lowtEmp, 1);
     setEmp(num);
     setDeviceConfig(item => {
       return {
         ...item,
-        hightEmp: unit == 1 ? f2c(num) : num,
+        hightEmp: num,
       };
     });
   };
@@ -378,43 +359,28 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
     } else {
       value = c2f(hightEmp);
     }
-    setUnit(parseInt(multidUnit));
     setEmp(value);
     setDeviceConfig(item => {
       return {
         ...item,
-        hightEmp: device?.record.hightEmp,
+        hightEmp: value,
       };
     });
+    setUnit(multidUnit);
+    setConfigState(true);
   };
 
   const initConfig = deviceData => {
-    if (deviceData && Object.keys(deviceData).includes('hightEmp')) {
-      const highTemp = Number(deviceData.hightEmp);
-      if (device?.record.multidUnit == 0) {
-        // 摄氏度
-        if (highTemp > OPERATE_CONFIG.MAX_TEMP) {
-          // 读取可能大于最大温度限制，按照是华氏度处理
-          setEmp(f2c(highTemp));
-        } else {
-          setEmp(highTemp);
-        }
-      } else {
-        // 华氏度
-        const temp = c2f(highTemp);
-        if (temp > c2f(OPERATE_CONFIG.MAX_TEMP)) {
-          // 转换后大于限制值，可能原本就是确认值
-          setEmp(highTemp);
-        } else {
-          setEmp(c2f(highTemp));
-        }
-      }
+    if (deviceData && Object.keys(deviceData).includes('hightEmp') && configState) {
+      setTimeout(() => {
+        empChange(deviceData.hightEmp);
+      });
     }
   };
 
   const setHightEmp = async () => {
-    if (emp != parseInt(device?.record.hightEmp)) {
-      if (parseInt(device?.record.multidUnit) == 0) {
+    if (emp != device?.record.hightEmp) {
+      if (unit == 0) {
         await deviceOperate.setHightEmp(emp * 10);
       } else {
         await deviceOperate.setHightEmp(f2c(emp) * 10);
@@ -428,13 +394,44 @@ export const HightEmpDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     initConfig(importConfig);
   }, [importConfig]);
+
+  useEffect(() => {
+    if (deviceConfig && Object.keys(deviceConfig).includes('multidUnit') && configState) {
+      const unity = unit;
+      const data = emp;
+      // 1 ==> 0
+      if (unity > deviceConfig.multidUnit) {
+        const num = f2c(data);
+        setUnit(deviceConfig.multidUnit);
+        setEmp(num);
+        setDeviceConfig(item => {
+          return {
+            ...item,
+            hightEmp: num,
+          };
+        });
+      }
+      // 0 ==> 1
+      if (unity < deviceConfig.multidUnit) {
+        const num = c2f(data);
+        setUnit(deviceConfig.multidUnit);
+        setEmp(num);
+        setDeviceConfig(item => {
+          return {
+            ...item,
+            hightEmp: num,
+          };
+        });
+      }
+    }
+  }, [deviceConfig.multidUnit]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatUpperLimit')}</div>
       <div className="deploy-select">
         <InputNumber
           size="small"
-          min={unit == 1 ? c2f(deviceConfig.lowtEmp) : deviceConfig.lowtEmp}
+          min={deviceConfig.lowtEmp}
           max={unit == 1 ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
           onChange={empChange}
           value={emp}
@@ -463,12 +460,14 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0.0);
   const [unit, setUnit] = useState(0);
+  const [configState, setConfigState] = useState(false);
   const empChange = num => {
+    num = dealInt(num, 0, 1);
     setEmp(num);
     setDeviceConfig(item => {
       return {
         ...item,
-        lowtEmp: unit == 1 ? f2c(num) : num,
+        lowtEmp: num,
       };
     });
   };
@@ -487,26 +486,24 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
     setDeviceConfig(item => {
       return {
         ...item,
-        // 统一记录为摄氏度
-        lowtEmp: device?.record.lowtEmp,
+        lowtEmp: value,
       };
     });
+    setConfigState(true);
   };
 
   const initConfig = deviceData => {
-    if (deviceData && Object.keys(deviceData).includes('lowtEmp')) {
-      const lowTemp = Number(deviceData.lowtEmp);
-      if (device?.record.multidUnit == 0) {
-        setEmp(lowTemp);
-      } else {
-        setEmp(c2f(lowTemp));
-      }
+    if (deviceData && Object.keys(deviceData).includes('lowtEmp') && configState) {
+      // const unity = deviceData.multidUnit;
+      setTimeout(() => {
+        empChange(deviceData.lowtEmp);
+      });
     }
   };
 
   const setLowtEmp = async () => {
-    if (emp != parseInt(device?.record.lowtEmp)) {
-      if (parseInt(device?.record.multidUnit) == 0) {
+    if (emp != device?.record.lowtEmp) {
+      if (unit == 0) {
         await deviceOperate.setLowtEmp(emp * 10);
       } else {
         await deviceOperate.setLowtEmp(f2c(emp) * 10);
@@ -520,13 +517,44 @@ export const LowEmpDom = ({ state }: { state: boolean }) => {
   useEffect(() => {
     initConfig(importConfig);
   }, [importConfig]);
+
+  useEffect(() => {
+    if (deviceConfig && Object.keys(deviceConfig).includes('multidUnit') && configState) {
+      const unity = unit;
+      const data = emp;
+      // 1 ==> 0
+      if (unity > deviceConfig.multidUnit) {
+        const num = f2c(data);
+        setUnit(deviceConfig.multidUnit);
+        setEmp(num);
+        setDeviceConfig(item => {
+          return {
+            ...item,
+            lowtEmp: num,
+          };
+        });
+      }
+      // 0 ==> 1
+      if (unity < deviceConfig.multidUnit) {
+        const num = c2f(data);
+        setUnit(deviceConfig.multidUnit);
+        setEmp(num);
+        setDeviceConfig(item => {
+          return {
+            ...item,
+            lowtEmp: num,
+          };
+        });
+      }
+    }
+  }, [deviceConfig.multidUnit]);
   return (
     <Col span={8}>
       <div style={{ padding: '10px 0' }}>{t('deploy.heatLowerLimit')}</div>
       <div className="deploy-select">
         <InputNumber
           size="small"
-          max={unit == 1 ? c2f(deviceConfig.hightEmp) : deviceConfig.hightEmp}
+          max={deviceConfig.hightEmp}
           min={unit == 1 ? c2f(OPERATE_CONFIG.MIN_TEMP) : OPERATE_CONFIG.MIN_TEMP}
           onChange={empChange}
           value={emp}
@@ -555,7 +583,8 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
   const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0);
   const empChange = num => {
-    setEmp(parseInt(num));
+    num = dealInt(num, deviceConfig.lowHumi, 0);
+    setEmp(num);
     setDeviceConfig(item => {
       return {
         ...item,
@@ -596,7 +625,7 @@ export const HightHumiDom = ({ state }: { state: boolean }) => {
           max={OPERATE_CONFIG.MAX_HUMI}
           onChange={empChange}
           value={emp}
-          style={{ width: '80%' }}
+          style={{ width: '70%' }}
         />
         <span className="deploy-span">{HUMI_UNIT}</span>
       </div>
@@ -620,7 +649,8 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
   const importConfig = useRecoilValue(importDeviceParam);
   const [emp, setEmp] = useState(0);
   const empChange = num => {
-    setEmp(parseInt(num));
+    num = dealInt(num, OPERATE_CONFIG.MIN_HUMI, 0);
+    setEmp(num);
     setDeviceConfig(item => {
       return {
         ...item,
@@ -661,7 +691,7 @@ export const LowHumiDom = ({ state }: { state: boolean }) => {
           max={deviceConfig.highHumi}
           onChange={empChange}
           value={emp}
-          style={{ width: '80%' }}
+          style={{ width: '70%' }}
         />
         <span className="deploy-span">{HUMI_UNIT}</span>
       </div>

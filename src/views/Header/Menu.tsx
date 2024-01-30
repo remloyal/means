@@ -1,4 +1,4 @@
-import { Modal } from 'antd';
+import { Modal, Spin, message } from 'antd';
 import Preferences from './Preferences';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
@@ -70,7 +70,16 @@ export const Menu: React.FC = () => {
     },
     {
       name: 'header.help',
-      clock: () => {},
+      clock: async () => {
+        setObtain(true);
+        const state = await ipcRenderer.invoke('deviceHelp');
+        if (state == false) {
+          message.error(t('header.openPdfFailed'));
+        }
+        setTimeout(() => {
+          setObtain(false);
+        }, 1000);
+      },
       icon: () => <ImgMenu.HelpImg />,
     },
     {
@@ -92,7 +101,7 @@ export const Menu: React.FC = () => {
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [deviceStateTime, setDeviceStateTime] = useRecoilState(deviceTime);
   const [headKey, setHeadKey] = useRecoilState(menuKey);
-
+  const [obtain, setObtain] = useState(false);
   const restitution = (index: any) => {
     if (deviceMent) {
       const data = Object.assign({}, deviceExample);
@@ -159,6 +168,17 @@ export const Menu: React.FC = () => {
         centered
       >
         <About />
+      </Modal>
+      <Modal open={obtain} centered width={200} closeIcon={null} footer={null}>
+        <div
+          style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <div style={{ height: 100, width: 100 }}>
+            <Spin size="large" tip={`${t('header.obtaining')}...`} style={{ height: 100 }}>
+              <div className="content" />
+            </Spin>
+          </div>
+        </div>
       </Modal>
     </>
   );

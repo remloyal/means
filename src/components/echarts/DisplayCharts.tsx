@@ -98,7 +98,7 @@ export const foldLine = (
   temp: number[]
 ) => {
   const tempValue = temp;
-
+  const len = localStorage.getItem('dateFormat')?.length;
   return {
     tooltip: {
       show: true,
@@ -124,6 +124,28 @@ export const foldLine = (
           show: true,
           textStyle: {
             color: '#000000',
+          },
+          formatter(params) {
+            let newParamsName = '';
+            const paramsNameNumber = params.length;
+            const provideNumber = len || 10; //一行显示几个字
+            const rowNumber = Math.ceil(paramsNameNumber / provideNumber);
+            if (paramsNameNumber > provideNumber) {
+              for (let p = 0; p < rowNumber; p++) {
+                let tempStr = '';
+                const start = p * provideNumber;
+                const end = start + provideNumber;
+                if (p == rowNumber - 1) {
+                  tempStr = params.substring(start, paramsNameNumber);
+                } else {
+                  tempStr = `${params.substring(start, end)}\n`;
+                }
+                newParamsName += tempStr;
+              }
+            } else {
+              newParamsName = params;
+            }
+            return newParamsName;
           },
         },
       },
@@ -154,7 +176,7 @@ export const foldLine = (
     ],
     grid: {
       left: 10,
-      right: 10,
+      right: 40,
       bottom: 10,
       top: 40,
       containLabel: true,
@@ -208,7 +230,7 @@ export const foldLine = (
         symbol: 'circle',
         markLine: {
           symbol: 'none',
-          data: [...lines],
+          data: lines.length > 0 ? [lines[0], lines[1]] : [],
           tooltip: {
             trigger: 'item',
             formatter: '{b}:{c}',
@@ -227,7 +249,7 @@ export const foldLine = (
         symbol: 'circle',
         markLine: {
           symbol: 'none',
-          data: [...lines],
+          data: lines.length > 2 ? [lines[2], lines[3]] : [],
           tooltip: {
             trigger: 'item',
             formatter: '{b}:{c}',

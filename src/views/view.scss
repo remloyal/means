@@ -7,7 +7,7 @@
   background-color: #e1e3e9;
 
   .brand-img {
-    height: 60px;
+    height: 7vh;
     padding-left: 40px;
     padding-top: 8px;
   }
@@ -17,13 +17,14 @@
     justify-content: center;
 
     .menu-item > div:nth-child(2) {
-      font-size: 14px;
+      font-size: 18px;
       line-height: 1.5;
       margin-top: 10px;
     }
 
     .menu-son {
-      width: 64px;
+      width: 70px;
+      height: 30px;
       margin: 0 20px;
       display: flex;
       justify-content: center;
@@ -35,7 +36,7 @@
       padding: 10px 8px;
       overflow: hidden;
       .menu-img {
-        width: 20px;
+        width: 24px;
       }
 
       i {
@@ -91,34 +92,56 @@
     rgba(201, 221, 236, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 }
+.scrollBarStyle {
+  &::-webkit-scrollbar {
+    width: 6px; /* 滚动条宽度， width：对应竖滚动条的宽度  height：对应横滚动条的高度*/
+    height: 6px;
+    background: #ffffff;
+  }
+  /*定义滚动条轨道（凹槽）样式*/
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); /* 较少使用 */
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  /*定义滑块 样式*/
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    height: 100px; /* 滚动条滑块长度 */
+    -webkit-box-shadow: inset005pxrgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+  }
+}
 
 .left {
   @extend .shadow;
+  @extend .scrollBarStyle;
   // display: Visibility;
   width: 18vw;
-  overflow: scroll;
+  overflow: auto;
   background-image: var(--bg-gradient);
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
   .image {
     margin-top: 10px;
     position: relative;
 
     .disconnect {
-      width: calc(18vw - 20px);
-      height: calc(15vw - 20px);
+      // width: calc(18vw - 20px);
+      // height: calc(15vw - 20px);
       text-align: center;
       img {
-        width: calc(15vw - 20px);
-        height: calc(15vw - 20px);
+        width: 172px;
+        height: 172px;
       }
     }
     .image-device {
-      width: calc(18vw - 20px);
-      height: calc(15vw - 20px);
+      // width: 50px;
+      // height: 150px;
       text-align: center;
+      img {
+        width: 67px;
+        height: 172px;
+      }
     }
 
     .image-alarm {
@@ -141,10 +164,11 @@
 
   .record-operate {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
+    // display: flex;
+    // flex-direction: row;
+    // justify-content: space-between;
     button {
-      margin: 10px 0;
+      margin: 10px;
     }
   }
 }
@@ -181,6 +205,7 @@
 
   .summary-main {
     @extend .shadow;
+    @extend .scrollBarStyle;
     width: calc(100vw - (40vw + 30px));
     margin: 0 10px;
 
@@ -191,28 +216,22 @@
 
   .summary-right {
     @extend .shadow;
+    @extend .scrollBarStyle;
     width: 18vw;
     overflow: auto;
     & > div {
       padding: 10px 20px;
     }
-    &::-webkit-scrollbar {
-      width: 6px; /* 滚动条宽度， width：对应竖滚动条的宽度  height：对应横滚动条的高度*/
-      height: 4px;
-      background: #ffffff;
-    }
-    /*定义滚动条轨道（凹槽）样式*/
-    &::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); /* 较少使用 */
-      border-radius: 3px;
-      background: rgba(0, 0, 0, 0.1);
-    }
-    /*定义滑块 样式*/
-    &::-webkit-scrollbar-thumb {
-      border-radius: 3px;
-      height: 100px; /* 滚动条滑块长度 */
-      -webkit-box-shadow: inset005pxrgba(0, 0, 0, 0.2);
-      background: rgba(0, 0, 0, 0.2);
+  }
+  .analysis-right {
+    @extend .shadow;
+    @extend .scrollBarStyle;
+    width: 18vw;
+    overflow: auto;
+    position: 'relative';
+    z-index: 10;
+    & > div {
+      padding: 10px 20px;
     }
   }
 
@@ -244,10 +263,9 @@
     // width: 100%;
     bottom: 24px;
     left: 18%;
-    font-size: 12px;
+    font-size: 16px;
     transform: translate(-50%, 0);
     text-align: center;
-
     button {
       margin: 0 10px;
     }
@@ -281,6 +299,7 @@
 }
 
 .tableTitle {
+  overflow: auto;
   .ant-table-thead > tr > th {
     color: #000000 !important;
     background: var(--table-title-color) !important;
@@ -288,6 +307,12 @@
   .ant-table-row.ant-table-row-selected > .ant-table-cell {
     background: var(--bg-right-color) !important;
   }
+  .ant-table-body {
+    @extend .scrollBarStyle;
+  }
+  // .rc-virtual-list-scrollbar-thumb{
+  //   width: 200px !important;
+  // }
 }
 
 .deploy-select {
@@ -312,6 +337,7 @@
 }
 
 .summary-analysis {
+  @extend .scrollBarStyle;
   position: absolute;
   top: 0;
   left: 0;
@@ -330,7 +356,7 @@
   & > div {
     margin-right: 32px;
     // padding-bottom: 10px;
-    font-size: 14px;
+    font-size: 18px;
     cursor: pointer;
     line-height: 3.5;
   }
@@ -342,7 +368,71 @@
     border-bottom: var(--text-title-color) 2px solid;
   }
 }
+.deploy-data {
+  overflow: auto;
+  @extend .scrollBarStyle;
+  height: calc(100% - 120px);
+}
 
 .textarea-input::-webkit-scrollbar {
   display: none;
+}
+
+.history-left {
+  padding-left: 4px;
+  font-size: 18px;
+}
+
+// 波浪号
+.tilde {
+  font-size: 20px;
+  margin: 0 10px;
+}
+.dianliang {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  // .dianliang-img {
+  //   width: 36px;
+  //   height: 16px;
+  //   padding-top: 4px;
+  //   display: inline;
+  //   // transform: translateY(-37px);
+  // }
+  .dianliang-span-father {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    height: 20px;
+    width: 36px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 34px 16px;
+    padding-left: 6px;
+  }
+  .dianliang-span {
+    display: block;
+    width: 6px;
+    height: 10px;
+    background-color: #6eb442;
+    margin: 0 1px;
+    border-radius: 1px;
+  }
+}
+
+.analysis-table {
+  @extend .scrollBarStyle;
+  // height: 500px;
+  padding: 14px;
+  .analysis-lable {
+    padding: 2px 6px;
+    color: #ffffff;
+    font-size: 10px;
+  }
+}
+
+.dataSheetTable {
+  .rc-virtual-list-scrollbar-horizontal {
+    display: none !important;
+  }
 }

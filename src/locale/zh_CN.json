@@ -15,7 +15,9 @@
     "restartNow": "必须重启以使新的设置生效，是否立即重启？",
     "example": "示例",
     "version": "版本",
-    "dingwei": "鼎为数据中心"
+    "dingwei": "鼎为数据中心",
+    "openPdfFailed": "打开PDF失败",
+    "obtaining": "获取中"
   },
   "left": {
     "equipmentModel": "设备型号",

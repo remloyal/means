@@ -3,15 +3,15 @@
  * @param {Number} c
  */
 export const c2f = c => {
-    return Math.round((c * 1.8 + 32) * 10) / 10;
-  },
-  /**
-   * 华氏 转成 摄氏
-   * @param {Number} f
-   */
-  f2c = f => {
-    return Math.round(((f - 32) / 1.8) * 10) / 10;
-  };
+  return Math.round((c * 1.8 + 32) * 10) / 10;
+};
+/**
+ * 华氏 转成 摄氏
+ * @param {Number} f
+ */
+export const f2c = f => {
+  return Math.round(((f - 32) / 1.8) * 10) / 10;
+};
 
 // 传入秒数 转换成 时 分
 export const secondsToTime = (seconds: number) => {
@@ -31,4 +31,16 @@ export const secondsToTime = (seconds: number) => {
     return `${day} D ${hours} H ${minutes} M`;
   }
   return `${hours} H ${minutes} M`;
+};
+
+export const dealInt = (
+  number: number | string | null,
+  defaultValue = 0,
+  decimal: number | null = null
+): number => {
+  if (number != null) {
+    return decimal != null ? Number(Number(number).toFixed(decimal)) : Number(number.toString());
+  } else {
+    return Number(defaultValue.toString());
+  }
 };

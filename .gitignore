@@ -36,3 +36,4 @@ yarn.lock
 !/resources/static
 .vscode
 Property
+friggaReadPdf.exe

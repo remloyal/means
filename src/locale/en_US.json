@@ -15,7 +15,9 @@
     "restartNow": "You must restart for the new settings to take effect. Do you want to restart now?",
     "example": "Example",
     "version": "Version",
-    "dingwei": "Frigga Data Center"
+    "dingwei": "Frigga Data Center",
+    "openPdfFailed": "Failed to open PDF",
+    "obtaining": "Obtaining"
   },
   "left": {
     "equipmentModel": "Device Model",

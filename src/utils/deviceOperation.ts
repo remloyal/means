@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { deviceType, batvol, DeviceTypeAT, getNewInstruct } from './deviceType';
 import { convertTZ, sleep } from './time';
 import { ipcRenderer } from 'electron';
+import { usbData } from './detectDevice';
 
 // 指令读取
 export let instructRead;
@@ -172,6 +173,10 @@ class DeviceInstance {
     return new Promise(async (resolve, reject) => {
       try {
         const interval = setInterval(() => {
+          if (!usbData) {
+            clearInterval(interval); //清除定时器
+            resolve('');
+          }
           if (this.isComplete) {
             clearInterval(interval); //清除定时器
             resolve(key != undefined ? this.record[key] : this.record);
@@ -279,6 +284,9 @@ export const deviceExample: DeviceInstance = new DeviceInstance();
 
 // 判断是否为OK
 const isOk = (data: any) => {
+  if (data == '') {
+    return false;
+  }
   return data == 'OK' ? true : data;
 };
 
@@ -289,13 +297,15 @@ const updateDevice = () => {
     timeout = null;
   }
   timeout = setTimeout(() => {
-    deviceExample.setCsvData(deviceExample.csvData);
-    window.eventBus.emit('updateDevice', Object.assign({}, deviceExample));
+    if (usbData) {
+      deviceExample.setCsvData(deviceExample.csvData);
+      window.eventBus.emit('updateDevice', Object.assign({}, deviceExample));
+      if (typePower.includes('setFromAtfs')) {
+        deviceOperate.setFromAtfs();
+      }
+    }
     clearTimeout(timeout);
     timeout = null;
-    if (typePower.includes('setFromAtfs')) {
-      deviceOperate.setFromAtfs();
-    }
   }, 3000);
 };
 
@@ -436,7 +446,8 @@ export const deviceOperate = {
       const str = val[i] || ' ';
       const tempPeriod = Object.create(instructSetup[`setShipment${i + 1}`]);
       tempPeriod.param = str;
-      await setOperateDevice(tempPeriod);
+      await deviceExample.write(tempPeriod);
+      await updateDevice();
     }
     for (let i = 0; i < readList.length; i++) {
       const read = readList[i];

@@ -159,8 +159,8 @@ const SummaryGraph: React.FC = () => {
         power.includes('setHighHumi') ? `${t('home.humidity')}(%RH)` : '',
       ],
       [
-        Math.max(device?.record.hightEmp, device?.record.highHumi || device?.record.hightEmp),
-        Math.min(device?.record.lowtEmp, device?.record.lowHumi || device?.record.lowtEmp),
+        Math.max(device?.record.hightEmp, device?.record.highHumi),
+        Math.min(device?.record.lowtEmp, device?.record.lowHumi),
       ]
     );
     setLine(lines);
@@ -201,20 +201,21 @@ const SummaryGraph: React.FC = () => {
 
   const setLines = () => {
     const record = device?.record;
+    const recordKeys = Object.keys(device?.record || {});
     const lines: StandardLine[] = [];
-    if (record?.highHumi) {
-      lines.push(standardLine(record.highHumi, t('deploy.humiUpperLimit'), '#FF0000'));
-    }
-    if (record?.lowHumi) {
-      lines.push(standardLine(record.lowHumi, t('deploy.humiLowerLimit'), '#0000FF'));
-    }
-    if (record?.hightEmp) {
+    if (recordKeys.includes('hightEmp')) {
       lines.push(
         standardLine(setTempValue(record.hightEmp), t('deploy.heatUpperLimit'), '#FF0000')
       );
     }
-    if (record?.lowtEmp) {
+    if (recordKeys.includes('lowtEmp')) {
       lines.push(standardLine(setTempValue(record.lowtEmp), t('deploy.heatLowerLimit'), '#0000FF'));
+    }
+    if (recordKeys.includes('highHumi')) {
+      lines.push(standardLine(record.highHumi, t('deploy.humiUpperLimit'), '#FF0000'));
+    }
+    if (recordKeys.includes('lowHumi')) {
+      lines.push(standardLine(record.lowHumi, t('deploy.humiLowerLimit'), '#0000FF'));
     }
     return lines;
   };
@@ -306,7 +307,7 @@ const ExportData: React.FC = () => {
   };
   const filterate = () => {};
   const [screen, setScreen] = useState(false);
-
+  const fromat = `${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`;
   return (
     <>
       <div className="summary-graph-labor">
@@ -324,9 +325,14 @@ const ExportData: React.FC = () => {
       </div>
       <div className="summary-graph-screen">
         {filterTime.startTime != '' && filterTime.endTime ? (
-          <span>
-            {filterTime.startTime} ~ {filterTime.endTime}
-          </span>
+          <>
+            <div>
+              {t('home.startTime')}：{dayjs(filterTime.startTime).format(fromat)}
+            </div>
+            <div>
+              {t('home.endTime')}：{dayjs(filterTime.endTime).format(fromat)}
+            </div>
+          </>
         ) : (
           <></>
         )}{' '}

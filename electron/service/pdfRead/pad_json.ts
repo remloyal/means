@@ -1,5 +1,6 @@
 import log from '../../unitls/log';
 import PDFParser from 'pdf2json';
+let readNum = 3;
 export const parsePDF = async (file, size, password = '') => {
   let passwordReading = password != '' || password != null ? true : false;
   return new Promise(async (resolve, reject) => {
@@ -12,10 +13,17 @@ export const parsePDF = async (file, size, password = '') => {
           if (passwordReading) {
             log.error('parsePDF 密码读取失败，尝试无密码读取', err);
             passwordReading = false;
-            const data = await parsePDF(file, size, '');
-            resolve(data);
+            if (readNum > 0) {
+              readNum--;
+              const data = await parsePDF(file, size, '');
+              resolve(data);
+            } else {
+              readNum = 3;
+              resolve(false);
+            }
           } else {
             log.error('parsePDF', err);
+            readNum = 3;
             resolve(false);
           }
           log.error('parsePDF', err);
@@ -32,6 +40,7 @@ export const parsePDF = async (file, size, password = '') => {
         }
       });
     } catch (error) {
+      readNum = 3;
       log.error('parsePDF', error);
       resolve(false);
     }

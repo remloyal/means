@@ -303,7 +303,7 @@ export const DataExport = ({ onCancel }) => {
             style={{ width: 100 }}
             step="0.1"
           />
-          <span style={{ fontSize: '20px', margin: '0 10px' }}>~</span>
+          <span className="tilde">~</span>
           <InputNumber
             min={param.lowtEmp}
             max={param.tempUnit == '℉' ? c2f(OPERATE_CONFIG.MAX_TEMP) : OPERATE_CONFIG.MAX_TEMP}
@@ -328,7 +328,7 @@ export const DataExport = ({ onCancel }) => {
               style={{ width: 100 }}
               step="1"
             />
-            <span style={{ fontSize: '20px', margin: '0 10px' }}>~</span>
+            <span className="tilde">~</span>
             <InputNumber
               min={param.lowHumi}
               max={100}

@@ -3,13 +3,19 @@ import path from 'path';
 import dayjs from 'dayjs';
 import { UTC_PARAM as UTC } from '../config.public';
 const UrlList = {
+  // 本地测试
   test_url: 'http://172.16.18.206:3004/',
+  // 内网
   intranet: 'http://172.16.22.82:3004/',
+  // 内网外部测试
+  intranet_test: 'http://test.api.m.friggatech.com:30001/',
+  // 预服务器
   preService: 'http://pre.friggatech.com/',
+  // 外网
   externalNetwork: 'https://cms.dw.ifrigga.com:7665/',
 };
 
-export const BASE_URL = UrlList['externalNetwork'];
+export const BASE_URL = UrlList['intranet_test'];
 
 export const DYNAMIC_CONFIG = {
   ver: '1.0.0',
@@ -78,6 +84,7 @@ export const PATH_PARAM = {
     ? path.join(process.cwd(), './public/thread.js')
     : path.join(process.cwd(), RESOURCES_NAME, './app.asar/dist/thread.js'),
   CACHE_PATH: path.join(process.cwd(), CACHE_PATH, 'cache'),
+  PDF_PATH: path.join(process.cwd(), CACHE_PATH, 'cache/pdf'),
   STATIC_PATH: path.join(process.cwd(), RESOURCES_NAME, 'static'),
 };
 

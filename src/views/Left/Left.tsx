@@ -1,5 +1,14 @@
 import { MainLeft } from '@/components/main';
-import { equipment, deviceState, resize, historyDevice, typePower, menuKey } from '@/stores';
+import {
+  equipment,
+  deviceState,
+  resize,
+  historyDevice,
+  typePower,
+  menuKey,
+  deviceConfigParam,
+  screenTime,
+} from '@/stores';
 import { deviceOperate, setTypePower } from '@/utils/deviceOperation';
 import { splitStringTime } from '@/utils/time';
 import disconnect from '@/assets/img/disconnect.png';
@@ -15,7 +24,11 @@ import { useNavigate } from 'react-router-dom';
 import M2H from '@/assets/img/M2H.png';
 import M1H from '@/assets/img/M2E.png';
 import M2D from '@/assets/img/M2D.png';
-import DianLiangImg from '@/assets/img/dianliang.png';
+import DianLiangImgRed from '@/assets/img/dianliang-red.png';
+import dianliang_1 from '@/assets/img/dianliang_1.png';
+import dianliang_2 from '@/assets/img/dianliang_2.png';
+import dianliang_3 from '@/assets/img/dianliang_3.png';
+
 import { loadUsbData, reIdentification, setDeviceError, usbData } from '@/utils/detectDevice';
 import { c2f, f2c } from '@/utils/utils';
 import { QuitPrompt } from './ExitPrompt';
@@ -25,6 +38,9 @@ const DeviceImg = {
   M1H,
   M2D,
 };
+
+const DianLiangImgList = [DianLiangImgRed, dianliang_1, dianliang_2, dianliang_3];
+
 const setTimeFormat = (time: string): string => {
   return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
 };
@@ -46,9 +62,11 @@ const Left: React.FC = () => {
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [resizeData, setResizeData] = useRecoilState(resize);
   const [deviceHistory, setDeviceHistory] = useRecoilState(historyDevice);
+  const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
   const leftRef = useRef<HTMLDivElement>(null);
   const [power, setPower] = useRecoilState(typePower);
   const [headKey, setHeadKey] = useRecoilState(menuKey);
+  const [filterTime, setFilterTime] = useRecoilState(screenTime);
   // 设备状态
   // 0: 初始状态，1：工厂模式，2：静默状态，3：延迟状态，4：记录状态、5：停止状态、6：暂停状态
   const DeviceStatus = {
@@ -87,7 +105,12 @@ const Left: React.FC = () => {
         setDevice(null);
         setSaving(false);
         setLoading(false);
+        setDeviceConfig({});
         clearTimeSave();
+        setFilterTime({
+          startTime: '',
+          endTime: '',
+        });
       });
       ipcRenderer.on('resizeEvent', (event, data) => {
         setResizeData(data);
@@ -193,35 +216,6 @@ const Left: React.FC = () => {
     };
   }, []);
 
-  const Time = ({ data }) => {
-    const [deviceTime, setDeviceTime] = useState('');
-    const format = localStorage.getItem('dateFormat') || 'YYYY-MM-DD';
-    useEffect(() => {
-      if (data) {
-        const time = splitStringTime(data);
-        const present = dayjs(time).format(`${format} HH:mm:ss`);
-        setDeviceTime(present);
-      }
-    }, []);
-    let terval;
-    useEffect(() => {
-      if (deviceTime) {
-        if (!terval) {
-          terval = setInterval(() => {
-            const present = dayjs(deviceTime, `${format} HH:mm:ss`).valueOf();
-            setDeviceTime(dayjs(present + 1000).format(`${format} HH:mm:ss`));
-          }, 1000);
-        }
-        return () => {
-          terval && clearInterval(terval);
-          terval = null;
-        };
-      }
-    }, [deviceTime]);
-    // return dayjs(time).format(`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`);
-    return <span>{deviceTime}</span>;
-  };
-
   const setTempValue = value => {
     const unit = MultidUnit[device?.record.multidUnit];
     if (unit == '\u2109') {
@@ -233,45 +227,16 @@ const Left: React.FC = () => {
   const DianLiang = val => {
     if (val && val != '') {
       return (
-        <div className="dianliang" style={{ position: 'relative', overflow: 'hidden' }}>
-          <img
-            src={DianLiangImg}
-            alt=""
-            style={{
-              width: '36px',
-              height: '16px',
-              paddingTop: '4px',
-              transform: 'translateY(-50px)',
-              filter: `drop-shadow(${parseInt(val) == 0 ? 'red' : '#6EB442'} 0 50px)`,
-            }}
-          />
+        <div className="dianliang">
           <div
+            className="dianliang-span-father"
             style={{
-              position: 'absolute',
-              width: '36px',
-              height: '16px',
-              top: '4px',
-              left: 0,
-              padding: '2px',
-              display: 'flex',
+              backgroundImage: `url(${DianLiangImgList[val || 0]})`,
             }}
           >
-            {...[...new Array(parseInt(val) || 0)].map((item, i) => {
-              return (
-                <span
-                  key={i}
-                  style={{
-                    display: 'block',
-                    marginTop: '1px',
-                    width: '8px',
-                    height: '10px',
-                    backgroundColor: '#6EB442',
-                    marginLeft: '1px',
-                    borderRadius: '1px',
-                  }}
-                ></span>
-              );
-            })}
+            {/* {...[...new Array(parseInt(val) || 0)].map((item, i) => {
+              return <span className="dianliang-span" key={i}></span>;
+            })} */}
           </div>
         </div>
       );
@@ -293,7 +258,11 @@ const Left: React.FC = () => {
       label: t('left.deviceTime'),
       children:
         device != null && device?.record.time != '' ? (
-          <Time data={device?.record.time}></Time>
+          deviceHistory != null ? (
+            '---'
+          ) : (
+            <Time data={device?.record.time}></Time>
+          )
         ) : (
           '---'
         ),
@@ -331,11 +300,11 @@ const Left: React.FC = () => {
     items.push(
       {
         label: `${t('home.humidity')} ${t('left.maximumValue')}`,
-        children: device != null ? `${device?.database.humidity.max || 0} ${HUMI_UNIT}` : '---',
+        children: device != null ? `${device?.database?.humidity?.max || 0} ${HUMI_UNIT}` : '---',
       },
       {
         label: `${t('home.humidity')} ${t('left.minimumValue')}`,
-        children: device != null ? `${device?.database.humidity.min || 0} ${HUMI_UNIT}` : '---',
+        children: device != null ? `${device?.database?.humidity?.min || 0} ${HUMI_UNIT}` : '---',
       }
     );
   }
@@ -377,6 +346,9 @@ const Left: React.FC = () => {
       imageClass = 'image-alarm';
       return imageClass;
     }
+    if (Object.keys(device?.database || {}).includes('temperature') == false) {
+      return imageClass;
+    }
     if (device?.record.mode == 2) {
       return 'image-alarm image-alarm-green';
     }
@@ -389,6 +361,7 @@ const Left: React.FC = () => {
       device?.database.temperature.min < device?.record.lowtEmp
     ) {
       imageClass = 'image-alarm image-alarm-red';
+      return imageClass;
     } else {
       imageClass = 'image-alarm image-alarm-green';
     }
@@ -402,6 +375,7 @@ const Left: React.FC = () => {
         device?.database.humidity.min < device?.record.lowHumi
       ) {
         imageClass = 'image-alarm image-alarm-red';
+        return imageClass;
       } else {
         imageClass = 'image-alarm image-alarm-green';
       }
@@ -442,16 +416,16 @@ const Left: React.FC = () => {
           }}
           contentStyle={{
             color: '#FFFFFF',
+            alignItems: 'center',
           }}
           size="small"
         />
         <div className="record-operate">
-          <Button type="primary" danger style={{ width: '45%' }} disabled>
+          <Button type="primary" danger disabled>
             {t('left.stopRecording')}
           </Button>
           <Button
             style={{
-              width: '45%',
               backgroundColor: '#3577F1',
               color: '#fff',
               border: '1px #3577F1 solid',
@@ -509,6 +483,34 @@ const Left: React.FC = () => {
       <QuitPrompt />
     </MainLeft>
   );
+};
+
+let terval;
+const Time = ({ data }) => {
+  const [deviceTime, setDeviceTime] = useState('');
+  const format = localStorage.getItem('dateFormat') || 'YYYY-MM-DD';
+  useEffect(() => {
+    if (data) {
+      const time = splitStringTime(data);
+      const present = dayjs(time).format(`${format} HH:mm:ss`);
+      setDeviceTime(present);
+    }
+  }, []);
+  useEffect(() => {
+    if (deviceTime) {
+      if (!terval) {
+        terval = setInterval(() => {
+          const present = dayjs(deviceTime, `${format} HH:mm:ss`).valueOf();
+          setDeviceTime(dayjs(present + 1000).format(`${format} HH:mm:ss`));
+        }, 1000);
+      }
+      return () => {
+        terval && clearInterval(terval);
+        terval = null;
+      };
+    }
+  }, [deviceTime]);
+  return <span>{deviceTime}</span>;
 };
 
 const deviceFirst = async () => {

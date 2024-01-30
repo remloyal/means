@@ -165,8 +165,12 @@ export const loadUsbData = async data => {
         operation.csvName = csvData.csvName;
         operation.record.stopMode = csvData.stopMode.split(' ')[0];
         operation.markList = csvData.markList;
-        const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
-        operation.database = data;
+        if (csvData.csvData.length > 0) {
+          const data = await ipcRenderer.invoke('createDevice', Object.assign({}, operation));
+          operation.database = data;
+        } else {
+          operation.database = {};
+        }
         // 获取PDF UTC
         const oldData = await ipcRenderer.invoke(
           'deviceUtcUpdate',
@@ -212,7 +216,8 @@ export const setDeviceError = () => {
   setTypePower();
 };
 
-// 识别设备
+// 重新识别设备
+let readTimeout: any = null;
 export const reIdentification = () => {
   const deviceFirst = async () => {
     const data = await ipcRenderer.invoke('deviceFirst');
@@ -220,8 +225,12 @@ export const reIdentification = () => {
       loadUsbData(data);
     }
   };
-  setTimeout(() => {
-    if (usbData) return;
-    deviceFirst();
-  }, 3000);
+  if (!readTimeout) {
+    readTimeout = setTimeout(() => {
+      if (usbData) return;
+      deviceFirst();
+      clearTimeout(readTimeout);
+      readTimeout = null;
+    }, 3000);
+  }
 };

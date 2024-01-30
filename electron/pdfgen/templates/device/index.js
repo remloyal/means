@@ -2664,16 +2664,16 @@ const printThresholdLegend = (pdf, { startX, startY, sensorInfo, pdfInfo, global
   });
   // if (markList.length > 0) {
   pdf.undash();
-  // posY += deltaY;
-  drawLine(pdf, [startX, posY], [lineEndX, posY], {
-    color: MARK_DATA_LINE_COLOR,
-  });
-  pdf
-    .fontSize(FONT_SIZE_SMALLER)
-    .fillColor(DEFAULT_FONT_COLOR)
-    .text('Mark', textPosX, posY - textDeltaY, {
-      lineBreak: false,
-    });
+  // // posY += deltaY;
+  // drawLine(pdf, [startX, posY], [lineEndX, posY], {
+  //   color: MARK_DATA_LINE_COLOR,
+  // });
+  // pdf
+  //   .fontSize(FONT_SIZE_SMALLER)
+  //   .fillColor(DEFAULT_FONT_COLOR)
+  //   .text('Mark', textPosX, posY - textDeltaY, {
+  //     lineBreak: false,
+  //   });
   // }
 };
 

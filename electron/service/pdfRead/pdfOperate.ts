@@ -11,6 +11,7 @@ import { parsePDF } from './pad_json';
 import { ipcMain, ipcRenderer } from 'electron';
 import { win } from '../../main/index';
 import path from 'path';
+import { readAppPdf } from './pdfAppRead';
 const iconv = require('iconv-lite');
 
 // let pdfjsLib;
@@ -143,9 +144,11 @@ export const importPDFFile = async (filePath: string, pdfPassword = '', deviceRe
     deviceInstance.timeZone = formatUtc(deviceInstance.timeZone);
   }
   if (deviceInstance.shipment || deviceInstance.shipmentId) {
-    deviceInstance.shipment = iconv.decode(deviceInstance.shipment, 'GB2312');
-    deviceInstance.shipmentId = iconv.decode(deviceInstance.shipmentId, 'GB2312');
-    console.log(iconv.decode(deviceInstance.shipment, 'GBK'));
+    const todo = await getTrip(filePath, pdfPassword);
+    if (todo) {
+      deviceInstance.shipment = todo.tripCode;
+      deviceInstance.shipmentId = todo?.tripId;
+    }
   }
   return { ...deviceInstance, ...threshold };
   // console.log(csvData);
@@ -366,4 +369,34 @@ function newFromat(text, type) {
     return str;
   }
   return text;
+}
+
+// 获取行程id与行程编码
+async function getTrip(filePath, pdfPassword) {
+  const text = await readAppPdf(filePath, pdfPassword);
+  if (text) {
+    const rules = {
+      tripId: [/行程ID:(.*?)记录概要/],
+      tripCode: [/行程描述:(.*?)设备信息/],
+    };
+    const todo = { tripId: '', tripCode: '' };
+    Object.keys(rules).forEach(key => {
+      const law = rules[key];
+      todo[key] = '';
+      law.forEach(item => {
+        try {
+          const matches = item.exec(text);
+          const result = matches[1];
+          if (!todo[key]) {
+            todo[key] = result;
+          }
+        } catch (error) {
+          console.error(`正则匹配错误===》 ${item}  ${error}`);
+        }
+      });
+    });
+    return todo;
+  } else {
+    return false;
+  }
 }

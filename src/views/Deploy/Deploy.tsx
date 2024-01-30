@@ -1,5 +1,5 @@
 import { MainBody, MainRight } from '@/components/main';
-import { Button, Col, Modal, Row, Tabs, TabsProps } from 'antd';
+import { Button, Col, Modal, Row, Tabs, TabsProps, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -94,13 +94,15 @@ const DeployMain: React.FC = () => {
           );
         })}
       </div>
-      {items.map((item, index) => {
-        return (
-          <div key={index} style={{ display: activeKey == index ? 'block' : 'none' }}>
-            {item.children}
-          </div>
-        );
-      })}
+      <div className="deploy-data">
+        {items.map((item, index) => {
+          return (
+            <div key={index} style={{ display: activeKey == index ? 'block' : 'none' }}>
+              {item.children}
+            </div>
+          );
+        })}
+      </div>
       <DataOperate save={save}></DataOperate>
     </>
   );
@@ -151,17 +153,33 @@ const DataOperate = ({ save }: { save: () => void }) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const selectTemplate = () => {
-    ipcRenderer.send('select-config');
+  const selectTemplate = async () => {
+    const state = await ipcRenderer.invoke('select-config');
+    if (state == true) {
+      message.success(t('history.importSuccess'));
+    } else if (state == 'cancel') {
+      console.log('取消导入');
+    } else {
+      message.error(t('history.importFailed'));
+    }
   };
-  const exportTemplate = () => {
-    ipcRenderer.send('export-config', deviceConfig);
+  const exportTemplate = async () => {
+    const state = await ipcRenderer.invoke('export-config', deviceConfig);
+    if (state == true) {
+      message.success(t('home.exportSuccess'));
+    } else if (state == 'cancel') {
+      console.log('取消导出');
+    } else {
+      message.error(t('home.exportFailed'));
+    }
   };
   useEffect(() => {
     ipcRenderer.on('select-config-reply', (event, arg) => {
       window.eventBus.emit('deviceConfig', arg);
-      setDeviceConfig(arg);
-      setImportConfig(arg);
+      // setDeviceConfig(arg);
+      console.log(arg);
+
+      setImportConfig(Object.assign({}, arg));
       setTimeout(() => {
         setImportConfig({});
       }, 1000);

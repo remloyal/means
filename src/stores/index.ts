@@ -133,10 +133,14 @@ export const screenList = selector<any[]>({
     const device = get(equipment);
     const time = get(screenTime);
     if (time.startTime && time.endTime) {
-      const csvData = device.csvData.filter(
-        item => item.timeStamp >= time.startTime && item.timeStamp <= time.endTime
-      );
-      return csvData;
+      if (device && device?.csvData.length > 0) {
+        const csvData = device.csvData.filter(
+          item => item.timeStamp >= time.startTime && item.timeStamp <= time.endTime
+        );
+        return csvData;
+      } else {
+        return [];
+      }
     }
     return device?.csvData || [];
   },

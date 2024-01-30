@@ -27,29 +27,33 @@ const DataSheet = () => {
   //   const data = useMemo(() => getData(count), [count]);
   const columns: TableProps<RecordType>['columns'] = [
     {
-      title: t('home.serialNumber'),
+      title: <span className="font-14">{t('home.serialNumber')}</span>,
       dataIndex: 'id',
       width: 30,
       align: 'center',
     },
     {
-      title: t('home.time'),
+      title: <span className="font-14">{t('home.time')}</span>,
       dataIndex: 'time',
       width: 120,
       align: 'center',
     },
     {
-      title: `${t('home.temperature')} (${MultidUnit[device?.record.multidUnit || 0]})`,
+      title: (
+        <span className="font-14">{`${t('home.temperature')} (${
+          MultidUnit[device?.record.multidUnit || 0]
+        })`}</span>
+      ),
       dataIndex: 'heat',
-      width: 120,
+      width: 60,
       align: 'center',
     },
   ];
   if (device?.record.highHumi != null && device?.record.lowHumi != null) {
     columns.push({
-      title: `${t('home.humidity')} (%RH)`,
+      title: <span className="font-14">{`${t('home.humidity')} (%RH)`}</span>,
       dataIndex: 'humi',
-      width: 120,
+      width: 60,
       align: 'center',
     });
   }
@@ -70,7 +74,7 @@ const DataSheet = () => {
   function setHight() {
     const element = document.querySelector('.summary-main');
     const height: any = window.getComputedStyle(element!)['height'];
-    const axleHight = parseInt(height) - 180;
+    const axleHight = parseInt(height) - 200;
     setAxle(axleHight);
   }
 
@@ -102,8 +106,8 @@ const DataSheet = () => {
         time: `${item.timeStamp}`,
         heat:
           MultidUnit[device?.record.multidUnit || 0] == '\u2109'
-            ? `${item.f}`
-            : `${item.c.toFixed(1)}`,
+            ? `${Number(item.f).toFixed(1)}`
+            : `${Number(item.c).toFixed(1)}`,
         humi: item.humi || 0,
       }));
       setCsvData(data);
@@ -147,6 +151,7 @@ const DataSheet = () => {
         dataSource={csvData}
         pagination={false}
         rowClassName={getRowClassName}
+        className="dataSheetTable"
       />
     </div>
   );

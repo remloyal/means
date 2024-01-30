@@ -175,6 +175,9 @@ const openFile = (): Promise<string[] | boolean> => {
 export const deviceUtcUpdate = async param => {
   // console.log(param);
   const { drive, database, record, csvTimeZone } = param;
+  if (!database?.gentsn) {
+    return false;
+  }
   const oldData = await Device.findOne({
     where: {
       gentsn: database.gentsn,

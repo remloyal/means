@@ -1,4 +1,4 @@
-import { deviceState, deviceTime, equipment, historyDevice, menuKey } from '@/stores';
+import { deviceState, deviceTime, equipment, historyDevice, menuKey, screenTime } from '@/stores';
 import { Button } from 'antd';
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
@@ -12,9 +12,14 @@ const HistoryRight = () => {
   const [deviceMent, setDeviceMent] = useRecoilState(deviceState);
   const [deviceStateTime, setDeviceStateTime] = useRecoilState(deviceTime);
   const [headKey, setHeadKey] = useRecoilState(menuKey);
+  const [filterTime, setFilterTime] = useRecoilState(screenTime);
   const navigate = useNavigate();
   const toback = () => {
     setDeviceHistory(null);
+    setFilterTime({
+      startTime: '',
+      endTime: '',
+    });
     // 返回上一页
     if (deviceMent) {
       const data = Object.assign({}, deviceExample);

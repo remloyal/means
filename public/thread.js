@@ -22,7 +22,7 @@ process.parentPort.on('message', async message => {
       }
     }
   } catch (error) {
-    device.close();
+    device && device.close();
     device = null;
     process.parentPort.postMessage({ event: 'hidError', data: error });
   }
@@ -77,6 +77,8 @@ const createHid = path => {
       }
     });
     device.on('error', err => {
+      device && device.close();
+      device = null;
       process.parentPort.postMessage({ event: 'hidError', data: err });
     });
   }

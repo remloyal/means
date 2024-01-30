@@ -20,3 +20,6 @@ export const UTC_PARAM = UTC;
 
 // 湿度单位
 export const HUMI_UNIT = '%RH';
+
+// PDF密码不支持版本
+export const PDF_PASSWORD_NOT_VERSION = ['V1'];

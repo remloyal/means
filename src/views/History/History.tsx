@@ -25,7 +25,7 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import { ipcRenderer } from 'electron';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { AnalysisPage, AnalysisPageLeft } from './AnalysisPage';
@@ -36,7 +36,7 @@ const History: React.FC = () => {
   const pageState = useRecoilValue(analysisState);
   return (
     <div className="summary">
-      <MainBody style={{ position: 'relative', overflow: 'hidden' }}>
+      <MainBody style={{ position: 'relative', overflow: 'auto' }}>
         <HistoryMain />
         {pageState ? (
           <></>
@@ -46,9 +46,16 @@ const History: React.FC = () => {
           </div>
         )}
       </MainBody>
-      <MainRight style={{ position: 'relative', overflow: 'hidden' }}>
+      {pageState ? (
+        <></>
+      ) : (
+        <div className="analysis-right" style={{ position: 'relative', zIndex: 10 }}>
+          <AnalysisPageLeft />
+        </div>
+      )}
+
+      <MainRight style={{ position: 'relative', display: pageState ? 'block' : 'none' }}>
         <HistoryRight />
-        {pageState ? <div /> : <AnalysisPageLeft />}
       </MainRight>
     </div>
   );
@@ -71,14 +78,14 @@ const HistoryMain = () => {
   const StorageMethod = [t('history.local'), t('history.clouds')];
   const columns: TableProps<RecordType>['columns'] = [
     {
-      title: t('home.serialNumber'),
+      title: <span className="font-14">{t('home.serialNumber')}</span>,
       dataIndex: 'id',
       width: 60,
       align: 'center',
       render: (text, record, index) => `${index + 1}`,
     },
     // {
-    //   title: <span style={{ fontSize: '12px' }}>{t('history.cloudStorage')}</span>,
+    //   title: <span className="font-14">{t('history.cloudStorage')}</span>,
     //   dataIndex: 'cloudStorage',
     //   width: 60,
     //   align: 'center',
@@ -94,19 +101,19 @@ const HistoryMain = () => {
     //   },
     // },
     {
-      title: <span style={{ fontSize: '12px' }}>{t('left.equipmentModel')}</span>,
+      title: <span className="font-14">{t('left.equipmentModel')}</span>,
       dataIndex: 'type',
-      width: 60,
+      width: 80,
       align: 'center',
     },
     {
-      title: <span style={{ fontSize: '12px' }}>{t('history.dataName')}</span>,
+      title: <span className="font-14">{t('history.dataName')}</span>,
       dataIndex: 'dataName',
       width: 260,
       align: 'center',
     },
     {
-      title: <span style={{ fontSize: '12px' }}>{t('history.startTime')}</span>,
+      title: <span className="font-14">{t('history.startTime')}</span>,
       dataIndex: 'startTime',
       width: 180,
       align: 'center',
@@ -119,15 +126,29 @@ const HistoryMain = () => {
       },
     },
     {
-      title: <span style={{ fontSize: '12px' }}>{t('history.currentNumberEntries')}</span>,
+      title: <span className="font-14">{t('home.runLengthCoding')}</span>,
+      dataIndex: 'runLengthCoding',
+      width: 160,
+      align: 'center',
+      render(value: any, record: any, index: number) {
+        const data = record.otherData.record;
+        if (data.shipmentId) {
+          return <span>{data.shipmentId}</span>;
+        } else {
+          return <></>;
+        }
+      },
+    },
+    {
+      title: <span className="font-14">{t('history.currentNumberEntries')}</span>,
       dataIndex: 'dataCount',
-      width: 60,
+      width: 80,
       align: 'center',
     },
     {
-      title: <span style={{ fontSize: '12px' }}>{`S1(${t('left.maximumValue')})`}</span>,
+      title: <span className="font-14">{`S1(${t('left.maximumValue')})`}</span>,
       dataIndex: 'maxTemperature',
-      width: 60,
+      width: 80,
       align: 'center',
       render(value: any, record: any, index: number) {
         return (
@@ -139,9 +160,9 @@ const HistoryMain = () => {
       },
     },
     {
-      title: <span style={{ fontSize: '12px' }}>{`S1(${t('left.minimumValue')})`}</span>,
+      title: <span className="font-14">{`S1(${t('left.minimumValue')})`}</span>,
       dataIndex: 'minTemperature',
-      width: 60,
+      width: 80,
       align: 'center',
       render(value: any, record: any, index: number) {
         return (
@@ -153,9 +174,9 @@ const HistoryMain = () => {
       },
     },
     {
-      title: <span style={{ fontSize: '12px' }}>{t('history.storeWay')}</span>,
+      title: <span className="font-14">{t('history.storeWay')}</span>,
       dataIndex: 'dataStorage_type',
-      width: 60,
+      width: 80,
       align: 'center',
       render(value: any, record: RecordType, index: number) {
         return <span>{StorageMethod[value]}</span>;
@@ -170,14 +191,13 @@ const HistoryMain = () => {
   const [deviceList, setDeviceList] = useRecoilState(deviceData);
   const [deviceListKey, setDeviceListKey] = useRecoilState(deviceSelectKey);
   const [paramCache, setParamCache] = useRecoilState(deviceDataCache);
-
   useEffect(() => {
     const Y = document.getElementsByClassName('summary-main')[0].clientHeight;
     if (!Y) return;
     if (resizeData >= 1500) {
-      setAxle(Y - 100);
+      setAxle(Y - 120);
     } else {
-      setAxle(Y - 140);
+      setAxle(Y - 150);
     }
   }, [resizeData]);
 
@@ -257,13 +277,13 @@ const HistoryMain = () => {
       <div style={{ padding: 0 }} className="tableTitle">
         <Table
           bordered={false}
-          virtual
+          // virtual
           size="small"
           columns={columns}
           scroll={{ x: 900, y: axle }}
           rowKey="id"
           dataSource={deviceRecord}
-          pagination={false}
+          // pagination={false}
           rowClassName={getRowClassName}
           rowSelection={rowSelection}
           onRow={record => {
@@ -337,7 +357,7 @@ const HistoryRight = () => {
     };
     return (
       <>
-        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('home.dataFilter')}：</div>
+        <div className="history-left">{t('home.dataFilter')}：</div>
         <Radio.Group onChange={dataChange} value={value} size="small" disabled>
           <Space direction="vertical">
             <Radio value={1}>{t('history.allData')}</Radio>
@@ -486,7 +506,7 @@ const HistoryRight = () => {
     return (
       <>
         <div>
-          <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.dataEditing')}：</div>
+          <div className="history-left">{t('history.dataEditing')}：</div>
           <Space direction="vertical" style={{ width: '100%' }}>
             <Button style={{ width: '100%' }} disabled={detailsState} onClick={viewDetails}>
               {t('history.detail')}
@@ -632,7 +652,7 @@ const HistoryRight = () => {
   return (
     <div style={{ padding: '0 10px' }}>
       <Space direction="vertical" size="middle">
-        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.timeOptions')}：</div>
+        <div className="history-left">{t('history.timeOptions')}：</div>
         <RangePicker
           format={`${localStorage.getItem('dateFormat') || 'YYYY-MM-DD'} HH:mm:ss`}
           value={[
@@ -642,9 +662,9 @@ const HistoryRight = () => {
           showTime
           size="small"
           onChange={timeChange}
-          style={{ height: '30px' }}
+          // style={{ height: '30px' }}
         />
-        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.quickView')}：</div>
+        <div className="history-left">{t('history.quickView')}：</div>
         <div className="deploy-select" style={{ padding: '0' }}>
           <Select
             style={{ width: '100%' }}
@@ -659,7 +679,7 @@ const HistoryRight = () => {
             ]}
           />
         </div>
-        <div style={{ paddingLeft: '4px', fontSize: '12px' }}>{t('history.alarmOption')}：</div>
+        <div className="history-left">{t('history.alarmOption')}：</div>
         <Radio.Group value={checked} disabled>
           <Radio onClick={handleChangeCheck} value={true}>
             {t('history.alarmEquipment')}

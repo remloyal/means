@@ -52,6 +52,14 @@ const indexHtml = join(process.env.DIST, 'index.html');
 let tray;
 let updateState = true;
 export async function createWindow() {
+  const windowDisplay = screen.getPrimaryDisplay();
+  console.log(windowDisplay);
+  let isScale = false;
+  if (windowDisplay.workAreaSize.width < 1300) {
+    WINDOW_PARAM.WIDTH = windowDisplay.workAreaSize.width;
+    WINDOW_PARAM.HEIGHT = windowDisplay.workAreaSize.height;
+    isScale = true;
+  }
   // updateState = false;
   win = new BrowserWindow({
     autoHideMenuBar: true,
@@ -59,6 +67,7 @@ export async function createWindow() {
     icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
     width: WINDOW_PARAM.WIDTH,
     height: WINDOW_PARAM.HEIGHT,
+    // resizable: !isScale,
     webPreferences: {
       preload,
       nodeIntegration: true,
@@ -91,13 +100,52 @@ export async function createWindow() {
   });
   win.once('ready-to-show', () => {
     // 限制窗口最小尺寸（int整形）, 无边框模式下，不考虑标题栏高度
-    win!.setMinimumSize(
-      parseInt((WINDOW_PARAM.WIDTH / 1.1).toString()),
-      parseInt((WINDOW_PARAM.HEIGHT / 1.1).toString())
-    );
-    win!.show();
+    if (isScale) {
+      win!.setMinimumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
+      win!.setMaximumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
+    } else {
+      win!.setMinimumSize(
+        parseInt((WINDOW_PARAM.WIDTH / 1.1).toString()),
+        parseInt((WINDOW_PARAM.HEIGHT / 1.1).toString())
+      );
+      win!.show();
+    }
   });
-  win.setAspectRatio(WINDOW_PARAM.RATIO);
+  if (!isScale) {
+    win.setAspectRatio(WINDOW_PARAM.RATIO);
+    win!.setMaximumSize(windowDisplay.size.width, windowDisplay.size.height);
+  } else {
+    win!.setMinimumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
+    win!.setMaximumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
+  }
+  // 监听屏幕分辨率变化事件
+  screen.on('display-metrics-changed', (event, display, changedMetrics) => {
+    win?.center();
+    app.relaunch();
+    app.exit();
+    // const windowDisplay = screen.getPrimaryDisplay();
+    // if (windowDisplay.workAreaSize.width < 1920) {
+    //   WINDOW_PARAM.WIDTH = windowDisplay.workAreaSize.width;
+    //   WINDOW_PARAM.HEIGHT = windowDisplay.workAreaSize.height;
+    //   win!.setMinimumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
+    //   win!.setMaximumSize(WINDOW_PARAM.WIDTH, WINDOW_PARAM.HEIGHT);
+    //   isScale = true;
+    // } else {
+    //   WINDOW_PARAM.WIDTH = windowDisplay.size.width;
+    //   WINDOW_PARAM.HEIGHT = windowDisplay.size.height;
+    //   win?.setAspectRatio(WINDOW_PARAM.RATIO);
+    //   isScale = false;
+    //   win!.setMinimumSize(
+    //     parseInt((WINDOW_PARAM.WIDTH / 1.1).toString()),
+    //     parseInt((WINDOW_PARAM.HEIGHT / 1.1).toString())
+    //   );
+    //   win!.setMaximumSize(windowDisplay.size.width, windowDisplay.size.height);
+    // }
+    // console.log(
+    //   `分辨率发生了变化：${JSON.stringify(display.bounds)}, ${JSON.stringify(changedMetrics)}`
+    // );
+  });
+
   win.webContents.on('did-fail-load', data => {
     console.log('----fail----', data);
     win?.reload();
@@ -119,39 +167,39 @@ export async function createWindow() {
   });
 
   win.on('close', async e => {
-    // if (updateState) {
-    //   await hidProcess?.kill();
-    //   // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
-    //   win?.removeAllListeners();
-    //   win = null;
-    // } else {
-    // }
-    e.preventDefault();
-    win?.show();
-    // win?.webContents.send('exitPrompt');
-    dialog
-      .showMessageBox(win! || null, {
-        type: 'info',
-        message: text('EXIT_PROMPT', DYNAMIC_CONFIG.language || 'en'),
-        buttons: [
-          text('MINIMIZE_TRAY', DYNAMIC_CONFIG.language || 'en'),
-          text('EXIT_APP', DYNAMIC_CONFIG.language || 'en'),
-        ],
-        noLink: true,
-        // defaultId: 0,
-        cancelId: 8,
-      })
-      .then(async res => {
-        if (res.response == 0) {
-          win?.hide();
-        }
-        if (res.response == 1) {
-          await hidProcess?.kill();
-          win?.removeAllListeners();
-          win = null;
-          app.quit();
-        }
-      });
+    if (!updateState) {
+      //   await hidProcess?.kill();
+      //   // 在窗口对象被关闭时，取消订阅所有与该窗口相关的事件
+      //   win?.removeAllListeners();
+      //   win = null;
+      // } else {
+      e.preventDefault();
+      win?.show();
+      // win?.webContents.send('exitPrompt');
+      dialog
+        .showMessageBox(win! || null, {
+          type: 'info',
+          message: text('EXIT_PROMPT', DYNAMIC_CONFIG.language || 'en'),
+          buttons: [
+            text('MINIMIZE_TRAY', DYNAMIC_CONFIG.language || 'en'),
+            text('EXIT_APP', DYNAMIC_CONFIG.language || 'en'),
+          ],
+          noLink: true,
+          // defaultId: 0,
+          cancelId: 8,
+        })
+        .then(async res => {
+          if (res.response == 0) {
+            win?.hide();
+          }
+          if (res.response == 1) {
+            await hidProcess?.kill();
+            win?.removeAllListeners();
+            win = null;
+            app.quit();
+          }
+        });
+    }
   });
 
   Menu.setApplicationMenu(Menu.buildFromTemplate([]));
@@ -318,3 +366,10 @@ const setTray = lan => {
 export const setUpdateState = state => {
   updateState = state;
 };
+
+// 获取缩放系数
+ipcMain.handle('windowDisplay', (_, arg) => {
+  const windowDisplay = screen.getPrimaryDisplay();
+  const { width, height } = windowDisplay.size;
+  return width / 1920;
+});
