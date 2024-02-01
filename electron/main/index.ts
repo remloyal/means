@@ -38,6 +38,9 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0);
 }
 DYNAMIC_CONFIG.ver = app.getVersion();
+if (SYSTEM.IS_MAC) {
+  DYNAMIC_CONFIG.type = 2;
+}
 // Remove electron security warnings
 // This warning only shows in development mode
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security

@@ -7,8 +7,8 @@ import { cryptMd5 } from './encryption';
 import { APP_PATH, BASE_URL, DYNAMIC_CONFIG, PATH_PARAM, RESOURCES_NAME, SYSTEM } from '../config';
 //   项目根路径/resources/{资源}
 export const filePath = (route: string) => {
+  // log.info('获取文件路径====>', "resources" | "Resources");
   if (SYSTEM.IS_DEV) {
-    // log.info('获取文件路径====>', pathroute);
     const pathroute = path.join(process.cwd(), RESOURCES_NAME, route);
     return pathroute;
   }
@@ -83,7 +83,7 @@ export function getUrl() {
 
   const localTimestamp = dayjs().valueOf().toString();
   const hash = cryptMd5(localTimestamp);
-  const url = `${BASE_URL}/cmsapi/tools/check/${localTimestamp}/${hash}?lan=${DYNAMIC_CONFIG.lan}&type=1&ver=${DYNAMIC_CONFIG.ver}&env=${DYNAMIC_CONFIG.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
+  const url = `${BASE_URL}/cmsapi/tools/check/${localTimestamp}/${hash}?lan=${DYNAMIC_CONFIG.lan}&type=${DYNAMIC_CONFIG.type}&ver=${DYNAMIC_CONFIG.ver}&env=${DYNAMIC_CONFIG.env}&secret=DFA11DXdeglonxsEMsx990adf9&access_token=InpoQa3EuTneFBeP5l8xwtRBiMp74ayTm97Fuc36HoPUcWl1gwtMudF6sw7VGdEv`;
   return url;
 }
 export const getPdfUrl = () => {

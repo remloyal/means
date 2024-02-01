@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deviceState, deviceTime, equipment, historyDevice, isFirstPage, menuKey } from '@/stores';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { deviceExample } from '@/utils/deviceOperation';
+import { deviceExample, setTypePower } from '@/utils/deviceOperation';
 import brand from '@/assets/brand.png';
 import * as ImgMenu from './ImgMenu';
 import { ipcRenderer } from 'electron';
@@ -106,10 +106,12 @@ export const Menu: React.FC = () => {
     if (deviceMent) {
       const data = Object.assign({}, deviceExample);
       setDevice(data);
+      setTypePower(deviceExample.database.type, deviceExample?.record?.batvol);
     } else {
       setDevice(null);
       setHeadKey(2);
       navigate('history');
+      setTypePower();
     }
     setDeviceHistory(null);
   };

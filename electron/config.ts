@@ -4,15 +4,15 @@ import dayjs from 'dayjs';
 import { UTC_PARAM as UTC } from '../config.public';
 const UrlList = {
   // 本地测试
-  test_url: 'http://172.16.18.206:3004/',
+  test_url: 'http://172.16.18.206:3004',
   // 内网
-  intranet: 'http://172.16.22.82:3004/',
+  intranet: 'http://172.16.22.82:3004',
   // 内网外部测试
-  intranet_test: 'http://test.api.m.friggatech.com:30001/',
+  intranet_test: 'http://test.api.m.friggatech.com:30001',
   // 预服务器
-  preService: 'http://pre.friggatech.com/',
+  preService: 'http://pre.friggatech.com',
   // 外网
-  externalNetwork: 'https://cms.dw.ifrigga.com:7665/',
+  externalNetwork: 'https://cms.dw.ifrigga.com:7665',
 };
 
 export const BASE_URL = UrlList['intranet_test'];
@@ -22,6 +22,7 @@ export const DYNAMIC_CONFIG = {
   lan: 1,
   env: 1,
   language: 'en',
+  type: 1, // 1 为win, 2为mac
 };
 
 export const LANGUAGE = {

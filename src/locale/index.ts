@@ -25,6 +25,12 @@ i18n
       escapeValue: false,
     },
     resources: {
+      zh_CN: {
+        translation: zh_CN,
+      },
+      en_US: {
+        translation: en_US,
+      },
       zh: {
         translation: zh_CN,
       },

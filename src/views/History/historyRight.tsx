@@ -23,7 +23,7 @@ const HistoryRight = () => {
     // 返回上一页
     if (deviceMent) {
       const data = Object.assign({}, deviceExample);
-      setTypePower(deviceExample.database.type);
+      setTypePower(deviceExample.database.type, deviceExample?.record?.batvol);
       setDevice(data);
     } else {
       setTypePower();
