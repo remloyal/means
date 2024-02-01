@@ -1,6 +1,6 @@
 {
   "name": "frigga",
-  "version": "1.1.0-13.2",
+  "version": "1.0.0-1",
   "main": "dist-electron/main/index.js",
   "description": "Frigga Data Center",
   "author": "Frigga",
@@ -13,6 +13,7 @@
   },
   "scripts": {
     "dev": "chcp 65001 && vite",
+    "mac": "vite",
     "build": "tsc && vite build && electron-builder",
     "build:dir": "tsc && vite build && electron-builder install-app-deps",
     "preview": "vite preview",

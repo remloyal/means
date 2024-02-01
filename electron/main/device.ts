@@ -3,6 +3,7 @@ import { decrypt, encrypt } from '../unitls/encryption';
 import { WebUSB, usb, findByIds } from 'usb';
 import { filterUsbList } from '../service/deviceHid/deviceHid';
 import log from '../unitls/log';
+import { HID_PARAM } from '../config';
 const path = require('path');
 const fs = require('fs');
 
@@ -16,7 +17,7 @@ try {
       const data = await filterUsbList();
       console.log('attach==>', data);
       win?.webContents.send('deviceInsertion', data);
-    }, 1000);
+    }, HID_PARAM.DELAY_HID_TIME);
   });
 
   usb.on('detach', async device => {

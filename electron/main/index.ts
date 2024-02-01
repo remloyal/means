@@ -5,7 +5,7 @@ import { deviceInit } from './device';
 import '../service/router';
 import './renew';
 import { CheckForUpdates, quitRenew, mainWindow } from './renew';
-import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, WINDOW_PARAM } from '../config';
+import { DYNAMIC_CONFIG, LANGUAGE, LANGUAGE_PDF, SYSTEM, WINDOW_PARAM } from '../config';
 import { IsOnlineService, isNetworkState } from '../unitls/request';
 import log from '../unitls/log';
 import { hidProcess, initGidThread } from '../service/deviceHid/deviceHid';
@@ -120,9 +120,11 @@ export async function createWindow() {
   }
   // 监听屏幕分辨率变化事件
   screen.on('display-metrics-changed', (event, display, changedMetrics) => {
-    win?.center();
-    app.relaunch();
-    app.exit();
+    if (SYSTEM.IS_WIN) {
+      win?.center();
+      app.relaunch();
+      app.exit();
+    }
     // const windowDisplay = screen.getPrimaryDisplay();
     // if (windowDisplay.workAreaSize.width < 1920) {
     //   WINDOW_PARAM.WIDTH = windowDisplay.workAreaSize.width;
@@ -203,11 +205,22 @@ export async function createWindow() {
   });
 
   Menu.setApplicationMenu(Menu.buildFromTemplate([]));
-  tray = new Tray(join(process.env.VITE_PUBLIC, 'favicon.ico'));
-  tray.on('double-click', () => {
-    win?.show();
-    win?.center();
-  });
+  try {
+    // 创建系统托盘
+    if (SYSTEM.IS_WIN) {
+      tray = new Tray(join(process.env.VITE_PUBLIC, 'favicon.ico'));
+    }
+    if (SYSTEM.IS_MAC) {
+      tray = new Tray(join(process.env.VITE_PUBLIC, 'macLogoTemplate.png'));
+    }
+    tray &&
+      tray.on('double-click', () => {
+        win?.show();
+        win?.center();
+      });
+  } catch (error) {
+    log.error(error);
+  }
 
   // Apply electron-updater
   deviceInit(win);
@@ -358,8 +371,8 @@ const setTray = lan => {
       },
     },
   ]);
-  tray.setToolTip(lan == 1 ? 'Frigga Data Center' : '鼎为数据中心');
-  tray.setContextMenu(menu);
+  tray && tray.setToolTip(lan == 1 ? 'Frigga Data Center' : '鼎为数据中心');
+  tray && tray.setContextMenu(menu);
 };
 
 // 设置更新状态

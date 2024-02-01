@@ -5,6 +5,7 @@ import {
   deviceDataCache,
   deviceSelectKey,
   equipment,
+  heatUnit,
   historyDevice,
   resize,
 } from '@/stores';
@@ -14,13 +15,11 @@ import {
   Input,
   Modal,
   Radio,
-  RadioChangeEvent,
   Select,
   Space,
   Spin,
   Table,
   TableProps,
-  Tooltip,
   message,
 } from 'antd';
 import dayjs from 'dayjs';
@@ -30,6 +29,8 @@ import { useTranslation } from 'react-i18next';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { AnalysisPage, AnalysisPageLeft } from './AnalysisPage';
 import { Maximum } from '@/config';
+// import { TempUnitEnum } from '@type/store/storeType';
+import { c2f, f2c } from '@/utils/utils';
 const { RangePicker } = DatePicker;
 
 const History: React.FC = () => {
@@ -71,11 +72,17 @@ interface RecordType {
   maxTemperature: string | number;
   minTemperature: string | number;
 }
+enum TempUnitEnum {
+  C = '℃',
+  F = '℉',
+}
 
 const HistoryMain = () => {
   const { t } = useTranslation();
   const [unit, setUnit] = useState('\u2103');
   const StorageMethod = [t('history.local'), t('history.clouds')];
+
+  const temperatureUnit = useRecoilValue<string>(heatUnit);
   const columns: TableProps<RecordType>['columns'] = [
     {
       title: <span className="font-14">{t('home.serialNumber')}</span>,
@@ -151,12 +158,7 @@ const HistoryMain = () => {
       width: 80,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return (
-          <span>
-            {record.temperature.max ? record.temperature.max.toFixed(1) : '0.0'}
-            {unit}
-          </span>
-        );
+        return setTempUnitText(record?.temperature?.max || 0);
       },
     },
     {
@@ -165,12 +167,7 @@ const HistoryMain = () => {
       width: 80,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return (
-          <span>
-            {record.temperature.min ? record.temperature.min.toFixed(1) : '0.0'}
-            {unit}
-          </span>
-        );
+        return setTempUnitText(record?.temperature?.min || 0);
       },
     },
     {
@@ -183,6 +180,17 @@ const HistoryMain = () => {
       },
     },
   ];
+
+  const setTempUnitText = (val: string | number) => {
+    val = Number(val);
+    const text = temperatureUnit == TempUnitEnum.F ? c2f(val) : val;
+    return (
+      <span>
+        {val ? Number(text).toFixed(1) : '0.0'}
+        {temperatureUnit}
+      </span>
+    );
+  };
 
   const [axle, setAxle] = useState<number>(600);
   const [deviceRecord, setDeviceRecord] = useState([]);

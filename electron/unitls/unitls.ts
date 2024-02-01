@@ -4,11 +4,19 @@ import { exec, execSync } from 'child_process';
 import fs from 'fs';
 import dayjs from 'dayjs';
 import { cryptMd5 } from './encryption';
-import { BASE_URL, DYNAMIC_CONFIG, PATH_PARAM, RESOURCES_NAME } from '../config';
+import { APP_PATH, BASE_URL, DYNAMIC_CONFIG, PATH_PARAM, RESOURCES_NAME, SYSTEM } from '../config';
 //   项目根路径/resources/{资源}
 export const filePath = (route: string) => {
+  if (SYSTEM.IS_DEV) {
+    // log.info('获取文件路径====>', pathroute);
+    const pathroute = path.join(process.cwd(), RESOURCES_NAME, route);
+    return pathroute;
+  }
+  if (SYSTEM.IS_MAC) {
+    const pathroute = path.join(APP_PATH.replace('app.asar', ''), route);
+    return pathroute;
+  }
   const pathroute = path.join(process.cwd(), RESOURCES_NAME, route);
-  // log.info('获取文件路径====>', pathroute);
   return pathroute;
 };
 

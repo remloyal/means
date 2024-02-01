@@ -74,31 +74,49 @@ export const RESOURCES_NAME = SYSTEM.IS_WIN
   : SYSTEM.IS_MAC
     ? 'Resources'
     : 'resources';
-export const CACHE_PATH = 'Property';
+export const CACHE_PATH = SYSTEM.IS_MAC ? '.Frigga' : 'Property';
+// win 下为应用程序目录，mac下为 ~/.Frigga
+const FATHER_PATH = SYSTEM.IS_DEV
+  ? process.cwd()
+  : SYSTEM.IS_MAC
+    ? app.getPath('home')
+    : process.cwd();
+// app.asar 路径
+export const APP_PATH = app.getAppPath();
 
 // 路径
 export const PATH_PARAM = {
   APP_PATH: path.resolve(process.cwd()),
-  RESOURCES: path.join(process.cwd(), RESOURCES_NAME),
+  RESOURCES: SYSTEM.IS_DEV
+    ? path.join(process.cwd(), RESOURCES_NAME)
+    : SYSTEM.IS_MAC
+      ? path.join(APP_PATH.replace('app.asar', ''))
+      : path.join(process.cwd(), RESOURCES_NAME),
   THREAD: SYSTEM.IS_DEV
     ? path.join(process.cwd(), './public/thread.js')
-    : path.join(process.cwd(), RESOURCES_NAME, './app.asar/dist/thread.js'),
-  CACHE_PATH: path.join(process.cwd(), CACHE_PATH, 'cache'),
-  PDF_PATH: path.join(process.cwd(), CACHE_PATH, 'cache/pdf'),
-  STATIC_PATH: path.join(process.cwd(), RESOURCES_NAME, 'static'),
+    : SYSTEM.IS_MAC
+      ? path.join(APP_PATH, './dist/thread.js')
+      : path.join(process.cwd(), RESOURCES_NAME, './app.asar/dist/thread.js'),
+  CACHE_PATH: path.join(FATHER_PATH, CACHE_PATH, 'cache'),
+  PDF_PATH: path.join(FATHER_PATH, CACHE_PATH, 'cache/pdf'),
+  STATIC_PATH: SYSTEM.IS_DEV
+    ? path.join(process.cwd(), RESOURCES_NAME, 'static')
+    : SYSTEM.IS_MAC
+      ? path.join(APP_PATH.replace('app.asar', ''), './static')
+      : path.join(process.cwd(), RESOURCES_NAME, 'static'),
 };
 
 // 数据库
 export const DB_PARAM = {
-  DB_PATH: path.join(process.cwd(), CACHE_PATH, 'database/frigga.db'),
-  DB_USER_PATH: path.join(process.cwd(), CACHE_PATH, 'database/friggaUser.db'),
+  DB_PATH: path.join(FATHER_PATH, CACHE_PATH, 'database/frigga.db'),
+  DB_USER_PATH: path.join(FATHER_PATH, CACHE_PATH, 'database/friggaInfo.db'),
   DB_PASSWORD: 'frigga',
 };
 
 export const DATE = dayjs().format('YYYY-MM-DD').split('-');
 // 日志
 export const LOG_PARAM = {
-  LOG_PATH: path.join(process.cwd(), CACHE_PATH, `logs/${DATE[0]}/${DATE[1]}/work`),
+  LOG_PATH: path.join(FATHER_PATH, CACHE_PATH, `logs/${DATE[0]}/${DATE[1]}/work`),
 };
 
 // UTC 对应时区
@@ -125,4 +143,6 @@ export const HID_PARAM = {
     'setShipment7',
   ],
   DELAY_TIME: 120,
+  // hid 延迟读取时间  macos下需要等磁盘完全生成才可识别，约为 5s
+  DELAY_HID_TIME: SYSTEM.IS_MAC ? 5000 : 1000,
 };

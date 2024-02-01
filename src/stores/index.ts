@@ -145,3 +145,6 @@ export const screenList = selector<any[]>({
     return device?.csvData || [];
   },
 });
+
+// 温度单位
+export const heatUnit = atom<string>({ key: 'heatUnit', default: '℃' });

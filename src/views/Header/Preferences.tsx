@@ -1,4 +1,4 @@
-import { dateFormat, language } from '@/stores';
+import { dateFormat, heatUnit, language } from '@/stores';
 import { ConfigProvider, Modal, Select, Tabs, TabsProps } from 'antd';
 import dayjs from 'dayjs';
 import { ipcRenderer } from 'electron';
@@ -127,7 +127,13 @@ const BasicSetting = () => {
       </>
     );
   };
-
+  const [temperatureUnit, setTemperatureUnit] = useRecoilState<string>(heatUnit);
+  const [tempUnit, setTempUnit] = useState<string>(temperatureUnit);
+  const onTempUnit = (e: string) => {
+    setTempUnit(e);
+    setTemperatureUnit(e);
+    localStorage.setItem('tempUnit', e);
+  };
   return (
     <>
       <div className="basic">
@@ -155,6 +161,18 @@ const BasicSetting = () => {
           options={[
             { value: 'zh', label: '简体中文' },
             { value: 'en', label: 'English' },
+          ]}
+        />
+      </div>
+      <div className="basic">
+        <label htmlFor="">{t('deploy.tempUnit')}：</label>
+        <Select
+          value={tempUnit}
+          style={{ width: 200 }}
+          onChange={onTempUnit}
+          options={[
+            { value: '℃', label: '℃' },
+            { value: '℉', label: '℉' },
           ]}
         />
       </div>
