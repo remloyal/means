@@ -14,7 +14,7 @@ import { ipcRenderer } from 'electron';
 const ratio = (await ipcRenderer.invoke('windowDisplay')) || 1;
 
 const px2rem = px2remTransformer({
-  rootValue: 14 / ratio, // 32px = 1rem; @default 16
+  rootValue: 13.8 / ratio, // 32px = 1rem; @default 16
 });
 window.eventBus = new EventEmitter();
 window.eventBus.setMaxListeners(100);

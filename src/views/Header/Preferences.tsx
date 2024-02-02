@@ -115,8 +115,9 @@ const BasicSetting = () => {
     return (
       <>
         <Select
+          size="small"
           defaultValue={localStorage.getItem('dateFormat') || 'YYYY-MM-DD'}
-          style={{ width: 200 }}
+          style={{ width: 160 }}
           onChange={handleChange}
           options={options}
         />
@@ -144,7 +145,8 @@ const BasicSetting = () => {
         <label htmlFor="">{t('header.timeFormat')}：</label>
         <Select
           defaultValue="HH:mm:ss"
-          style={{ width: 200 }}
+          style={{ width: 160 }}
+          size="small"
           options={[{ value: 'HH:mm:ss', label: 'HH:mm:ss' }]}
         />
         <span style={{ marginLeft: '20px' }}>
@@ -156,7 +158,8 @@ const BasicSetting = () => {
         <label htmlFor="">{t('header.systemLanguage')}：</label>
         <Select
           defaultValue={tongue}
-          style={{ width: 200 }}
+          size="small"
+          style={{ width: 160 }}
           onChange={setLanguage}
           options={[
             { value: 'zh', label: '简体中文' },
@@ -167,8 +170,9 @@ const BasicSetting = () => {
       <div className="basic">
         <label htmlFor="">{t('deploy.tempUnit')}：</label>
         <Select
+          size="small"
           value={tempUnit}
-          style={{ width: 200 }}
+          style={{ width: 160 }}
           onChange={onTempUnit}
           options={[
             { value: '℃', label: '℃' },

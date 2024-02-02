@@ -189,8 +189,8 @@ export const Menu: React.FC = () => {
 export const MenuItem = (props: MenuConfig, index, key?) => {
   const { t, i18n } = useTranslation();
   return (
-    <div className="menu-item" key={index} onClick={props.clock}>
-      <div className={`menu-son ${key == index ? 'menu-active' : ''}`}>
+    <div className="menu-item" key={index}>
+      <div className={`menu-son ${key == index ? 'menu-active' : ''}`} onClick={props.clock}>
         <props.icon />
       </div>
       <div>{t(props.name)}</div>

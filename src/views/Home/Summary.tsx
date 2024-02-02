@@ -455,11 +455,17 @@ const SummaryRight: React.FC = () => {
       label: t('home.lowTemperatureAlarm'),
       children: device != null ? setTempValue(device?.record.lowtEmp) : '---',
     },
-    {
+    // {
+    //   label: t('home.runLengthCoding'),
+    //   children: device != null ? device?.record.shipmentId || '---' : '---',
+    // },
+  ];
+  if (device && Object.keys(device?.record).includes('shipmentId')) {
+    items.push({
       label: t('home.runLengthCoding'),
       children: device != null ? device?.record.shipmentId || '---' : '---',
-    },
-  ];
+    });
+  }
   if (device?.record.highHumi != null && device?.record.lowHumi != null) {
     items.splice(
       -1,
@@ -494,25 +500,29 @@ const SummaryRight: React.FC = () => {
           />
         </div>
         <div className="record">
-          <Descriptions
-            items={[
-              {
-                label: t('home.journeyDescription'),
-                children: device != null ? device?.record.shipment || '---' : '---',
-              },
-            ]}
-            column={1}
-            labelStyle={{
-              color: '#000000',
-              marginLeft: '16px',
-            }}
-            layout="vertical"
-            contentStyle={{
-              color: '#000000',
-              marginLeft: '16px',
-            }}
-            size="small"
-          />
+          {device && Object.keys(device?.record).includes('shipment') ? (
+            <Descriptions
+              items={[
+                {
+                  label: t('home.journeyDescription'),
+                  children: device != null ? device?.record.shipment || '---' : '---',
+                },
+              ]}
+              column={1}
+              labelStyle={{
+                color: '#000000',
+                marginLeft: '16px',
+              }}
+              layout="vertical"
+              contentStyle={{
+                color: '#000000',
+                marginLeft: '16px',
+              }}
+              size="small"
+            />
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </MainRight>

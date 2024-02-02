@@ -268,10 +268,6 @@ const Left: React.FC = () => {
         ),
     },
     {
-      label: t('left.batteryLevel'),
-      children: device != null ? DianLiang(device?.record.batvol) : '---',
-    },
-    {
       label: t('left.DeviceStatus'),
       children: device != null ? DeviceStatus[device?.record.mode] : '---',
     },
@@ -296,6 +292,12 @@ const Left: React.FC = () => {
       children: device != null ? setTempValue(device?.record.minimumValue) : '---',
     },
   ];
+  if (device && Object.keys(device?.record).includes('batvol')) {
+    items.splice(3, 0, {
+      label: t('left.batteryLevel'),
+      children: device != null ? DianLiang(device?.record.batvol) : '---',
+    });
+  }
   if (device && device?.record.highHumi != null && device?.record.lowHumi != null) {
     items.push(
       {
@@ -421,9 +423,9 @@ const Left: React.FC = () => {
           size="small"
         />
         <div className="record-operate">
-          <Button type="primary" danger disabled>
+          {/* <Button type="primary" danger disabled>
             {t('left.stopRecording')}
-          </Button>
+          </Button> */}
           <Button
             style={{
               backgroundColor: '#3577F1',
@@ -454,15 +456,20 @@ const Left: React.FC = () => {
           <h3>{t('left.clearText')}</h3>
         </Modal>
       </div>
-      <Modal open={loading} centered width={200} closeIcon={null} footer={null}>
-        <div
-          style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <div style={{ height: 100, width: 100 }}>
-            <Spin size="large" tip={`${t('left.reading')}...`} style={{ height: 100 }}>
-              <div className="content" />
-            </Spin>
-          </div>
+      <Modal
+        open={loading}
+        centered
+        // width={200}
+        closeIcon={null}
+        footer={null}
+        className="loading-model"
+      >
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {/* <div style={{ height: 100, width: 100 }}> */}
+          <Spin size="large" tip={`${t('left.reading')}...`} wrapperClassName="loading-spin">
+            <div className="content" />
+          </Spin>
+          {/* </div> */}
         </div>
       </Modal>
       <Modal open={saving} centered width={200} closeIcon={null} footer={null}>

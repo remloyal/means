@@ -49,7 +49,7 @@ export const unzip = async (zipPath: string, destPath: string) => {
   }
   if (SYSTEM.IS_MAC) {
     // admzip 会把 exec 可执行文件解压成文本文件 ，特殊处理
-    const command = `unzip ${zipPath} -d  ${destPath}`;
+    const command = `unzip ${zipPath.replace(/ /g, '\\ ')} -d  ${destPath.replace(/ /g, '\\ ')}`;
     await execSync(command);
   }
 };
