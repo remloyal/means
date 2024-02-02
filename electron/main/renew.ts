@@ -1,14 +1,14 @@
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
-import electron, { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import electron, { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import log from '../unitls/log';
 import { createWindow, preload, setUpdateState } from './index';
 import { exec, spawn } from 'child_process';
 import { deleteDir, filePath, getUrl, judgingSpaces } from '../unitls/unitls';
 import { listenUpdater } from './update';
 import { isNetworkState } from '../unitls/request';
-import { DYNAMIC_CONFIG, UPDATE_PARAM } from '../config';
+import { DYNAMIC_CONFIG, UPDATE_PARAM, SYSTEM } from '../config';
 import { text } from '../pdfgen/gloable/language';
 
 const baseUrl = `${path.resolve('./')}/resources/`;
@@ -306,6 +306,13 @@ const createRenew = (data?, callback?) => {
 
   ipcMain.handle('startUpdate', (event, params) => {
     try {
+      if (SYSTEM.IS_MAC && data.downloadUrl.includes('.dmg')) {
+        updateMac(data.downloadUrl);
+        setTimeout(() => {
+          win?.destroy();
+        }, 2000);
+        return;
+      }
       if (data.updateType == 1) {
         setUpdateState(true);
         listenUpdater(mainWindow!, data);
@@ -406,3 +413,13 @@ ipcMain.handle('language', (_, arg) => {
 ipcMain.handle('restartNow', () => {
   quitRenew();
 });
+
+const updateMac = (dmgPath: string) => {
+  // mac 下载路径
+  // const dowmloadPath = app.getPath('downloads');
+  // 使用 浏览器打开下载链接
+  shell.openExternal(dmgPath);
+  setTimeout(() => {
+    mainWindow?.destroy();
+  }, 2000);
+};

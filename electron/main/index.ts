@@ -188,6 +188,7 @@ export async function createWindow() {
           buttons: [
             text('MINIMIZE_TRAY', DYNAMIC_CONFIG.language || 'en'),
             text('EXIT_APP', DYNAMIC_CONFIG.language || 'en'),
+            text('CANCEL', DYNAMIC_CONFIG.language || 'en'),
           ],
           noLink: true,
           // defaultId: 0,
@@ -286,6 +287,7 @@ app.on('activate', () => {
   const allWindows = BrowserWindow.getAllWindows();
   if (allWindows.length) {
     allWindows[0].focus();
+    allWindows[0].show();
   } else {
     createWindow();
   }

@@ -32,6 +32,8 @@ export const LANGUAGE = {
 
 export const LANGUAGE_PDF = {
   'zh-CN': 'zh',
+  'zh-HK': 'zh',
+  'zh-TW': 'zh',
   'en-US': 'en',
   default: 'en',
 };

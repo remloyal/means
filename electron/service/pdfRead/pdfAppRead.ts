@@ -1,7 +1,7 @@
 import { PATH_PARAM, SYSTEM } from '../../config';
 import path from 'path';
 import fs from 'fs';
-import { spawn } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import { isfileExist, sleep } from '../../unitls/unitls';
 const AdmZip = require('adm-zip');
 import log from '../../unitls/log';
@@ -10,22 +10,16 @@ export const readAppPdf = async (
   pdfPath: string = '',
   pdfPassword: string = ''
 ): Promise<string> => {
-  if (SYSTEM.IS_WIN) {
-    return await readWin(pdfPath, pdfPassword);
-  }
-  return '';
-};
-
-const readWin = async (pdfPath: string, pdfPassword: string): Promise<string> => {
-  const appZipPath = path.join(PATH_PARAM.STATIC_PATH, 'win.zip');
-
+  const appZipPath = path.join(PATH_PARAM.STATIC_PATH, SYSTEM.IS_MAC ? 'mac.zip' : 'win.zip');
   if (!fs.existsSync(appZipPath)) return '';
-  const appReadPath = path.join(PATH_PARAM.STATIC_PATH, 'friggaReadPdf.exe');
+  const appReadPath = path.join(
+    PATH_PARAM.CACHE_PATH,
+    SYSTEM.IS_MAC ? 'friggaReadPdf' : 'friggaReadPdf.exe'
+  );
 
   if (!fs.existsSync(appReadPath)) {
     // 不存在解压处理
-    const admzip = new AdmZip(appZipPath);
-    admzip.extractAllTo(PATH_PARAM.STATIC_PATH);
+    unzip(appZipPath, PATH_PARAM.CACHE_PATH);
   }
   const fileName = `${Math.random().toString(36).slice(-6)}.txt`;
   const catchPath = path.join(PATH_PARAM.CACHE_PATH, 'pdf');
@@ -43,8 +37,20 @@ const readWin = async (pdfPath: string, pdfPassword: string): Promise<string> =>
       fs.unlinkSync(catchFilePath);
     }, 1500);
     return files;
-  } else {
-    return '';
+  }
+  return '';
+};
+
+// 解压zip到指定目录
+export const unzip = async (zipPath: string, destPath: string) => {
+  if (SYSTEM.IS_WIN) {
+    const admzip = new AdmZip(zipPath);
+    await admzip.extractAllTo(destPath);
+  }
+  if (SYSTEM.IS_MAC) {
+    // admzip 会把 exec 可执行文件解压成文本文件 ，特殊处理
+    const command = `unzip ${zipPath} -d  ${destPath}`;
+    await execSync(command);
   }
 };
 

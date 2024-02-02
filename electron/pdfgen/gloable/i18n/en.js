@@ -372,4 +372,5 @@ export const en = {
   EXIT_PROMPT: 'Turn off prompts',
   MINIMIZE_TRAY: 'Minimize to tray',
   EXIT_APP: 'Exit the application',
+  CANCEL: 'Cancel',
 };

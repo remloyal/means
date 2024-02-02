@@ -322,4 +322,5 @@ export const zh = {
   EXIT_PROMPT: '关闭提示',
   MINIMIZE_TRAY: '最小化至托盘',
   EXIT_APP: '退出应用',
+  CANCEL: '取消',
 };
