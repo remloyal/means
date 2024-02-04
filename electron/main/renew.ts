@@ -308,9 +308,12 @@ const createRenew = (data?, callback?) => {
     try {
       if (SYSTEM.IS_MAC && data.downloadUrl.includes('.dmg')) {
         updateMac(data.downloadUrl);
-        setTimeout(() => {
-          win?.destroy();
-        }, 2000);
+        if (data.updateType == 1) {
+          setUpdateState(true);
+          setTimeout(() => {
+            app.exit();
+          }, 5000);
+        }
         return;
       }
       if (data.updateType == 1) {

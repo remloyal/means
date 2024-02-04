@@ -85,9 +85,9 @@ const HistoryMain = () => {
   const temperatureUnit = useRecoilValue<string>(heatUnit);
   const columns: TableProps<RecordType>['columns'] = [
     {
-      title: <span className="font-14">{t('home.serialNumber')}</span>,
+      title: <span className="font-16">{t('home.serialNumber')}</span>,
       dataIndex: 'id',
-      width: 60,
+      width: 80,
       align: 'center',
       render: (text, record, index) => `${index + 1}`,
     },
@@ -108,19 +108,19 @@ const HistoryMain = () => {
     //   },
     // },
     {
-      title: <span className="font-14">{t('left.equipmentModel')}</span>,
+      title: <span className="font-16">{t('left.equipmentModel')}</span>,
       dataIndex: 'type',
-      width: 80,
+      width: 90,
       align: 'center',
     },
     {
-      title: <span className="font-14">{t('history.dataName')}</span>,
+      title: <span className="font-16">{t('history.dataName')}</span>,
       dataIndex: 'dataName',
       width: 260,
       align: 'center',
     },
     {
-      title: <span className="font-14">{t('history.startTime')}</span>,
+      title: <span className="font-16">{t('history.startTime')}</span>,
       dataIndex: 'startTime',
       width: 180,
       align: 'center',
@@ -133,9 +133,9 @@ const HistoryMain = () => {
       },
     },
     {
-      title: <span className="font-14">{t('home.runLengthCoding')}</span>,
+      title: <span className="font-16">{t('home.runLengthCoding')}</span>,
       dataIndex: 'runLengthCoding',
-      width: 160,
+      width: 180,
       align: 'center',
       render(value: any, record: any, index: number) {
         const data = record.otherData.record;
@@ -147,33 +147,33 @@ const HistoryMain = () => {
       },
     },
     {
-      title: <span className="font-14">{t('history.currentNumberEntries')}</span>,
+      title: <span className="font-16">{t('history.currentNumberEntries')}</span>,
       dataIndex: 'dataCount',
-      width: 80,
+      width: 90,
       align: 'center',
     },
     {
-      title: <span className="font-14">{`S1(${t('left.maximumValue')})`}</span>,
+      title: <span className="font-16">{`S1(${t('left.maximumValue')})`}</span>,
       dataIndex: 'maxTemperature',
-      width: 80,
+      width: 100,
       align: 'center',
       render(value: any, record: any, index: number) {
         return setTempUnitText(record?.temperature?.max || 0);
       },
     },
     {
-      title: <span className="font-14">{`S1(${t('left.minimumValue')})`}</span>,
+      title: <span className="font-16">{`S1(${t('left.minimumValue')})`}</span>,
       dataIndex: 'minTemperature',
-      width: 80,
+      width: 100,
       align: 'center',
       render(value: any, record: any, index: number) {
         return setTempUnitText(record?.temperature?.min || 0);
       },
     },
     {
-      title: <span className="font-14">{t('history.storeWay')}</span>,
+      title: <span className="font-16">{t('history.storeWay')}</span>,
       dataIndex: 'dataStorage_type',
-      width: 80,
+      width: 90,
       align: 'center',
       render(value: any, record: RecordType, index: number) {
         return <span>{StorageMethod[value]}</span>;
@@ -274,7 +274,7 @@ const HistoryMain = () => {
   };
 
   const rowSelection = {
-    columnWidth: 26,
+    columnWidth: 36,
     selectedRowKeys,
     onClick: onSelectChange,
     onChange: onSelectChange,

@@ -3,6 +3,7 @@ const path = require('path');
 import { ipcRenderer, ipcMain } from 'electron';
 import { createDeviceInstance, deviceExample, setTypePower } from './deviceOperation';
 import dayjs from 'dayjs';
+import { parameterValidation } from './deviceParameterVerify';
 
 /**
  * 从新增的磁盘中读取 .csv 文件
@@ -180,7 +181,19 @@ export const loadUsbData = async data => {
           operation.database = oldData;
         }
         console.log(operation);
-        window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
+        // 验证参数是否准确
+        const parameterState = parameterValidation(operation.record);
+        if (parameterState) {
+          window.eventBus.emit('friggaDevice:in', Object.assign({}, operation));
+        } else {
+          ipcRenderer.invoke('setLog', {
+            data: 'Parameter reading error!',
+            type: 'error',
+          });
+          setDeviceError();
+          // 参数错误、尝试重新识别
+          reIdentification();
+        }
         window.eventBus.emit('loadingCompleted');
       });
     } catch (error) {
@@ -192,7 +205,7 @@ export const loadUsbData = async data => {
       // console.log(error);
       // 尝试重新获取一次设备
       setDeviceError();
-      setTimeout(() => reIdentification(), 2000);
+      setTimeout(() => reIdentification(), 1000);
     }
   }
 };

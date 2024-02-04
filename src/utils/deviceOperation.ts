@@ -248,8 +248,8 @@ class DeviceInstance {
       const todo = this.operate?.getData(val) || '';
       this.record = Object.assign({}, record, {
         [key]: todo[0],
-        hardwareVersion: todo[1],
-        firmwareVersion: todo[2],
+        hardwareVersion: todo[1] || '',
+        firmwareVersion: todo[2] || '',
       });
       return;
     }

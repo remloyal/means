@@ -193,7 +193,7 @@ export const MenuItem = (props: MenuConfig, index, key?) => {
       <div className={`menu-son ${key == index ? 'menu-active' : ''}`} onClick={props.clock}>
         <props.icon />
       </div>
-      <div>{t(props.name)}</div>
+      <div className="menu-name">{t(props.name)}</div>
     </div>
   );
 };

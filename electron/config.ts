@@ -4,23 +4,23 @@ import dayjs from 'dayjs';
 import { UTC_PARAM as UTC } from '../config.public';
 const UrlList = {
   // 本地测试
-  test_url: 'http://172.16.18.206:3004',
+  test_url: ['http://172.16.18.206:3004', 4],
   // 内网
-  intranet: 'http://172.16.22.82:3004',
+  intranet: ['http://172.16.22.82:3004', 2],
   // 内网外部测试
-  intranet_test: 'http://test.api.m.friggatech.com:30001',
+  intranet_test: ['http://test.api.m.friggatech.com:30001', 5],
   // 预服务器
-  preService: 'http://pre.friggatech.com',
+  preService: ['http://pre.friggatech.com', 3],
   // 外网
-  externalNetwork: 'https://cms.dw.ifrigga.com:7665',
+  externalNetwork: ['https://cms.dw.ifrigga.com:7665', 1],
 };
 
-export const BASE_URL = UrlList['intranet_test'];
+export const BASE_URL = UrlList['intranet_test'][0];
 
 export const DYNAMIC_CONFIG = {
   ver: '1.0.0',
   lan: 1,
-  env: 1,
+  env: UrlList['intranet_test'][1] || 1,
   language: 'en',
   type: 1, // 1 为win, 2为mac
 };
@@ -147,5 +147,5 @@ export const HID_PARAM = {
   ],
   DELAY_TIME: 120,
   // hid 延迟读取时间  macos下需要等磁盘完全生成才可识别，约为 5s
-  DELAY_HID_TIME: SYSTEM.IS_MAC ? 5000 : 1000,
+  DELAY_HID_TIME: SYSTEM.IS_MAC ? 5000 : 2000,
 };

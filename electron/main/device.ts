@@ -25,7 +25,7 @@ try {
     console.log('detach ==>', data);
     setTimeout(() => {
       win?.webContents.send('deviceRemoval', data);
-    }, 1000);
+    }, HID_PARAM.DELAY_HID_TIME);
   });
 } catch (error) {
   console.log(error);

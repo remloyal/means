@@ -1,7 +1,8 @@
 import { ShareChart, createFoldLine, createSeries } from '@/components/echarts/DisplayCharts';
 import { lang } from '@/config';
-import { analysisState, deviceSelectKey, exportExcelTime, resize } from '@/stores';
+import { analysisState, deviceSelectKey, exportExcelTime, heatUnit, resize } from '@/stores';
 import { color16 } from '@/utils/time';
+import { c2f } from '@/utils/utils';
 import { Button, Modal, Spin, Table, TableProps, message } from 'antd';
 import { ipcRenderer } from 'electron';
 import { createRef, useEffect, useRef, useState } from 'react';
@@ -140,27 +141,32 @@ interface RecordType {
   maxTemperature: string | number;
   minTemperature: string | number;
 }
+enum TempUnitEnum {
+  C = '℃',
+  F = '℉',
+}
 export const AnalysisTable = ({ data, ondelete }) => {
   const { t } = useTranslation();
+  const temperatureUnit = useRecoilValue<string>(heatUnit);
   const columns: TableProps<RecordType>['columns'] = [
     {
-      title: <span className="span_12">{t('home.serialNumber')}</span>,
+      title: <span className="font-16">{t('home.serialNumber')}</span>,
       dataIndex: 'id',
-      width: 30,
+      width: 60,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_12">{index + 1}</span>;
+        return <span className="font-16">{index + 1}</span>;
       },
     },
     {
-      title: <span className="span_12">{t('history.operate')}</span>,
+      title: <span className="font-16">{t('history.operate')}</span>,
       dataIndex: 'operate',
-      width: 30,
+      width: 60,
       align: 'center',
       render(value: any, record: any, index: number) {
         return (
           <span
-            className="span_12"
+            className="font-16"
             style={{ color: '#0000FF', cursor: 'pointer' }}
             onClick={() => ondelete(record)}
           >
@@ -170,9 +176,9 @@ export const AnalysisTable = ({ data, ondelete }) => {
       },
     },
     {
-      title: <span className="span_12">{t('history.identify')}</span>,
+      title: <span className="font-16">{t('history.identify')}</span>,
       dataIndex: 'identifying',
-      width: 30,
+      width: 60,
       align: 'center',
       render(value: any, record: any, index: number) {
         return (
@@ -188,66 +194,75 @@ export const AnalysisTable = ({ data, ondelete }) => {
       },
     },
     {
-      title: <span className="span_12">{t('history.recordName')}</span>,
+      title: <span className="font-16">{t('history.recordName')}</span>,
       dataIndex: 'dataName',
-      width: 80,
+      width: 160,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_12">{value}</span>;
+        return <span className="font-16">{value}</span>;
       },
     },
+    // {
+    //   title: <span className="font-14">{t('history.recordNumber')}</span>,
+    //   dataIndex: 'dataName',
+    //   width: 160,
+    //   align: 'center',
+    //   render(value: any, record: any, index: number) {
+    //     return <span className="font-16">{value}</span>;
+    //   },
+    // },
     {
-      title: <span className="span_12">{t('history.recordNumber')}</span>,
-      dataIndex: 'dataName',
-      width: 80,
-      align: 'center',
-      render(value: any, record: any, index: number) {
-        return <span className="span_12">{value}</span>;
-      },
-    },
-    {
-      title: <span className="span_12">{t('history.dataPoints')}</span>,
+      title: <span className="font-16">{t('history.dataPoints')}</span>,
       dataIndex: 'dataCount',
-      width: 30,
+      width: 60,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_12">{value}</span>;
+        return <span className="font-16">{value}</span>;
       },
     },
     {
-      title: <span className="span_12">{t('history.duration')}</span>,
+      title: <span className="font-16">{t('history.duration')}</span>,
       dataIndex: 'duration',
-      width: 40,
+      width: 60,
       align: 'center',
+      render(value: any, record: any, index: number) {
+        return <span className="font-16">{value}</span>;
+      },
     },
     {
-      title: <span className="span_12">{`${t('left.maximumValue')}(\u2103)`}</span>,
+      title: <span className="font-16">{`${t('left.maximumValue')}(${temperatureUnit})`}</span>,
       dataIndex: 'max',
-      width: 30,
+      width: 60,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_12">{record.temperature.max}</span>;
+        return setTempUnitText(record.temperature.max);
       },
     },
     {
-      title: <span className="span_12">{`${t('left.minimumValue')}(\u2103)`}</span>,
+      title: <span className="font-16">{`${t('left.minimumValue')}(${temperatureUnit})`}</span>,
       dataIndex: 'min',
-      width: 30,
+      width: 60,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_12">{record.temperature.min}</span>;
+        return setTempUnitText(record.temperature.min);
       },
     },
     {
-      title: <span className="span_12">{`${t('history.averageValue')}(\u2103)`}</span>,
+      title: <span className="font-16">{`${t('history.averageValue')}(${temperatureUnit})`}</span>,
       dataIndex: 'average',
-      width: 30,
+      width: 60,
       align: 'center',
       render(value: any, record: any, index: number) {
-        return <span className="span_12">{record.temperature.average}</span>;
+        return setTempUnitText(record.temperature.average);
       },
     },
   ];
+
+  const setTempUnitText = (val: string | number) => {
+    val = Number(val);
+    const text = temperatureUnit == TempUnitEnum.F ? c2f(val) : val;
+    return <span className="font-16">{val ? Number(text).toFixed(1) : '0.0'}</span>;
+  };
 
   const [axle, setAxle] = useState<number>(300);
   const [deviceRecord, setDeviceRecord] = useState([]);
@@ -273,16 +288,16 @@ export const AnalysisTable = ({ data, ondelete }) => {
   };
 
   return (
-    <div className="analysis-table">
+    <div className="analysis-table tableTitle">
       <Table
         bordered
-        virtual
+        // virtual
         size="small"
         columns={columns}
-        scroll={{ x: 800, y: 300 }}
+        scroll={{ x: 900, y: 350 }}
         rowKey="id"
         dataSource={deviceRecord}
-        pagination={false}
+        // pagination={false}
         rowClassName={getRowClassName}
       />
     </div>

@@ -141,6 +141,7 @@ const DataOperate = ({ save }: { save: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deviceConfig, setDeviceConfig] = useRecoilState(deviceConfigParam);
   const [importConfig, setImportConfig] = useRecoilState(importDeviceParam);
+  const power = useRecoilValue(typePower);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -210,7 +211,11 @@ const DataOperate = ({ save }: { save: () => void }) => {
         destroyOnClose={true}
         maskClosable={false}
       >
-        <p>{t('deploy.currentConfiguration')}</p>
+        <p>
+          {power.includes('batvol')
+            ? t('deploy.currentConfiguration')
+            : t('deploy.currentOldConfiguration')}
+        </p>
       </Modal>
     </>
   );

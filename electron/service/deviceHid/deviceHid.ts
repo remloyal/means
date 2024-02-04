@@ -7,6 +7,7 @@ import drivelist from 'drivelist';
 import HID from 'node-hid';
 import { PATH_PARAM, HID_PARAM } from '../../config';
 import { hidGbkKeys, toGBK } from './hidUnit';
+import { sleep } from '../../unitls/unitls';
 
 let mainWindow: BrowserWindow | null = null;
 export let hidProcess: Electron.UtilityProcess | null;
@@ -191,7 +192,11 @@ export const filterUsbList = async () => {
     if (element.productId === PRODUCT_ID && element.vendorId === VERSION_ID) {
       const getsn: any = await hidWrite({ key: 'getsn', value: 'AT+GETSN:', path: element.path });
       hidList.push({ ...element, name: getsn.value.split(':')[1].replaceAll(';', '') });
+      if (!hidProcess) {
+        await createThread();
+      }
       await hidProcess?.postMessage({ event: 'hidClose' });
+      await sleep(200);
     }
   }
 

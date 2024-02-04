@@ -94,6 +94,7 @@
     "importTemplate": "导入模版",
     "exportTemplate": "导出模版",
     "currentConfiguration": "保存参数将清空所有数据，确定要继续吗？",
+    "currentOldConfiguration": "是否保存当前配置？",
     "recordInterval": "记录间隔",
     "buttonStart": "按键启动",
     "timingOn": "定时开启",

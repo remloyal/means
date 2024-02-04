@@ -27,20 +27,20 @@ const DataSheet = () => {
   //   const data = useMemo(() => getData(count), [count]);
   const columns: TableProps<RecordType>['columns'] = [
     {
-      title: <span className="font-14">{t('home.serialNumber')}</span>,
+      title: <span className="font-16">{t('home.serialNumber')}</span>,
       dataIndex: 'id',
       width: 30,
       align: 'center',
     },
     {
-      title: <span className="font-14">{t('home.time')}</span>,
+      title: <span className="font-16">{t('home.time')}</span>,
       dataIndex: 'time',
       width: 120,
       align: 'center',
     },
     {
       title: (
-        <span className="font-14">{`${t('home.temperature')} (${
+        <span className="font-16">{`${t('home.temperature')} (${
           MultidUnit[device?.record.multidUnit || 0]
         })`}</span>
       ),
@@ -51,7 +51,7 @@ const DataSheet = () => {
   ];
   if (device?.record.highHumi != null && device?.record.lowHumi != null) {
     columns.push({
-      title: <span className="font-14">{`${t('home.humidity')} (%RH)`}</span>,
+      title: <span className="font-16">{`${t('home.humidity')} (%RH)`}</span>,
       dataIndex: 'humi',
       width: 60,
       align: 'center',

@@ -467,9 +467,7 @@ const SummaryRight: React.FC = () => {
     });
   }
   if (device?.record.highHumi != null && device?.record.lowHumi != null) {
-    items.splice(
-      -1,
-      0,
+    const list = [
       {
         label: t('deploy.humiUpperLimit'),
         children: device != null ? `${device?.record.highHumi} ${HUMI_UNIT}` : '---',
@@ -477,8 +475,13 @@ const SummaryRight: React.FC = () => {
       {
         label: t('deploy.humiLowerLimit'),
         children: device != null ? `${device?.record.lowHumi} ${HUMI_UNIT}` : '---',
-      }
-    );
+      },
+    ];
+    if (device && Object.keys(device?.record).includes('shipmentId')) {
+      items.splice(-1, 0, ...list);
+    } else {
+      items.push(...list);
+    }
   }
 
   return (
@@ -500,7 +503,7 @@ const SummaryRight: React.FC = () => {
           />
         </div>
         <div className="record">
-          {device && Object.keys(device?.record).includes('shipment') ? (
+          {device && Object.keys(device?.record).includes('shipment1') ? (
             <Descriptions
               items={[
                 {
