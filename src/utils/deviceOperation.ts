@@ -30,7 +30,10 @@ export const setTypePower = (type: any = null, batvolVal = '') => {
     DeviceAttribute = Object.create(DeviceTypeAT[type]);
     instructRead = DeviceAttribute.read;
     instructSetup = DeviceAttribute.setup;
-    if (batvolVal != '') {
+    if (
+      batvolVal.includes('AT+GETBATVOL:') &&
+      ['0', '1', '2', '3'].includes(batvolVal.split(':')[1].replaceAll(';', ''))
+    ) {
       const newInstruct = getNewInstruct();
       instructRead = Object.assign({}, DeviceAttribute.read, newInstruct.read);
       instructSetup = Object.assign({}, DeviceAttribute.setup, newInstruct.setup);
