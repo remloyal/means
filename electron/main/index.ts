@@ -228,9 +228,14 @@ export async function createWindow() {
 
   // Apply electron-updater
   deviceInit(win);
-  CheckForUpdates(win);
   // downLoad();
   initGidThread(win);
+
+  // 防止用户设置的语言还没有获取到
+  // TODO 后续语言改为本地储存
+  setTimeout(() => {
+    CheckForUpdates(win);
+  }, 5000);
 }
 
 // 当应用准备就绪时，执行下面的函数
@@ -391,3 +396,58 @@ ipcMain.handle('windowDisplay', (_, arg) => {
   const { width, height } = windowDisplay.size;
   return width / 1920;
 });
+
+// 使用内置浏览器下载文件
+export const downloadFiles = (
+  url: string,
+  filePath: string,
+  time: number = 120000,
+  main: BrowserWindow | null = win
+): Promise<boolean> => {
+  return new Promise(async (resolve, reject) => {
+    if (main == null) {
+      resolve(false);
+    }
+    main?.webContents.downloadURL(url);
+    main?.webContents.session.on('will-download', (e, item) => {
+      let value = 0;
+      item.setSavePath(filePath); // 'C:\Users\kim\Downloads\第12次.zip'
+      const timeout = setTimeout(() => {
+        item.cancel();
+        // reject(false);
+        log.error('文件下载失败', url, 'to ==>', filePath);
+        resolve(false);
+      }, time);
+
+      //监听下载过程，计算并设置进度条进度
+      item.on('updated', (evt, state) => {
+        if ('progressing' === state) {
+          //此处  用接收到的字节数和总字节数求一个比例  就是进度百分比
+          if (item.getReceivedBytes() && item.getTotalBytes()) {
+            value = 100 * (item.getReceivedBytes() / item.getTotalBytes());
+          }
+          // 把百分比发给渲染进程进行展示
+          console.log(value);
+          // mac 程序坞、windows 任务栏显示进度
+          main?.setProgressBar(value);
+        }
+      });
+      //监听下载结束事件
+      item.on('done', async (e, state) => {
+        clearTimeout(timeout);
+        //如果窗口还在的话，去掉进度条
+        if (!main?.isDestroyed()) {
+          main?.setProgressBar(-1);
+        }
+        //下载被取消或中断了
+        if (state === 'interrupted' || state === 'cancelled') {
+          resolve(false);
+        }
+        if (state === 'completed') {
+          resolve(true);
+        }
+        resolve(true);
+      });
+    });
+  });
+};

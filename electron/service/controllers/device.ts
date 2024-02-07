@@ -11,6 +11,7 @@ import { PATH_PARAM } from '../../config';
 import axios from 'axios';
 import { getPdfUrl } from '../../unitls/unitls';
 import { shell } from 'electron';
+import { downloadFiles } from '../../main/index';
 
 if (!fs.existsSync(PATH_PARAM.CACHE_PATH)) {
   fs.mkdirSync(PATH_PARAM.CACHE_PATH);
@@ -210,30 +211,27 @@ const getDeviceList = (device, file) => {
 };
 
 export const deviceHelp = async (): Promise<boolean> => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const pdfUrl = getPdfUrl();
+    log.error('pdfUrl', pdfUrl);
     if (!fs.existsSync(PATH_PARAM.PDF_PATH)) {
       fs.mkdirSync(PATH_PARAM.PDF_PATH);
     }
     const pdfPath = path.join(PATH_PARAM.PDF_PATH, 'M_tool_help.pdf');
-    axios({
-      method: 'get',
-      url: pdfUrl,
-      responseType: 'arraybuffer',
-      timeout: 10000,
-    })
-      .then(res => {
-        console.log('headers', res.data);
-        fs.writeFileSync(pdfPath, res.data);
-        shell.openExternal(`file://${pdfPath}`);
-        resolve(true);
-      })
-      .catch(err => {
-        if (fs.existsSync(pdfPath)) {
-          shell.openExternal(`file://${pdfPath}`);
-        }
-        log.error(err);
-        resolve(false);
-      });
+    try {
+      await downloadFiles(pdfUrl, pdfPath);
+      // shell.openExternal(`file://${pdfPath}`);
+      shell.openPath(pdfPath);
+      //shell.showItemInFolder(pdfPath);
+      resolve(true);
+    } catch (err) {
+      if (fs.existsSync(pdfPath)) {
+        // shell.openExternal(`file://${pdfPath}`);
+        shell.openPath(pdfPath);
+        //shell.showItemInFolder(pdfPath);
+      }
+      log.error(err);
+      resolve(false);
+    }
   });
 };

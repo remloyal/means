@@ -15,12 +15,12 @@ const UrlList = {
   externalNetwork: ['https://cms.dw.ifrigga.com:7665', 1],
 };
 
-export const BASE_URL = UrlList['intranet_test'][0];
+export const BASE_URL = UrlList['externalNetwork'][0];
 
 export const DYNAMIC_CONFIG = {
   ver: '1.0.0',
-  lan: 1,
-  env: UrlList['intranet_test'][1] || 1,
+  lan: 1, // 1 为英文, 2为中文
+  env: UrlList['externalNetwork'][1] || 1,
   language: 'en',
   type: 1, // 1 为win, 2为mac
 };

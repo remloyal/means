@@ -91,8 +91,12 @@ export const getPdfUrl = () => {
     1: 'en',
     2: 'zh',
   };
-  const url = `${BASE_URL}/userguidDownload/M_tool_help_${plan[DYNAMIC_CONFIG.lan]}.pdf`;
+  let url = `${BASE_URL}/userguidDownload/M_tool_help_${plan[DYNAMIC_CONFIG.lan]}.pdf`;
   // const url = `${BASE_URL}/userguidDownload/M_series_user_guide_en.pdf`;
+  // 正式环境的帮助PDF链接
+  if (DYNAMIC_CONFIG.env == 1) {
+    url = `http://pre.friggatech.com/userguidDownload/M_tool_help_${plan[DYNAMIC_CONFIG.lan]}.pdf`;
+  }
   console.log('pdfUrl', url);
   return url;
 };
